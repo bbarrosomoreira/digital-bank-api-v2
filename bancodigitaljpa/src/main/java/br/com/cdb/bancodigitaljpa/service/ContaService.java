@@ -28,16 +28,16 @@ public class ContaService {
 	
 	//addConta de forma genérica
 	
-	public ContaCorrente addContaCorrente(Long clienteId) {
+	public ContaCorrente addContaCorrente(Long id_cliente) {
 		//VALIDAR SE CLIENTE EXISTE
-		Cliente cliente = clienteService.getClienteById(clienteId);
+		Cliente cliente = clienteService.getClienteById(id_cliente);
 		ContaCorrente conta = new ContaCorrente(cliente);
 		return contaRepository.save(conta);
 	}
 	
-	public ContaPoupanca addContaPoupanca(Long clienteId) {
+	public ContaPoupanca addContaPoupanca(Long id_cliente) {
 		//VALIDAR SE CLIENTE EXISTE
-		Cliente cliente = clienteService.getClienteById(clienteId);
+		Cliente cliente = clienteService.getClienteById(id_cliente);
 		ContaPoupanca conta = new ContaPoupanca(cliente);
 		return contaRepository.save(conta);
 	}
@@ -49,20 +49,20 @@ public class ContaService {
 	}
 	
 	//get uma conta
-	public ContaCorrente getContaCorrenteById(Long id) {
-		return (ContaCorrente) contaRepository.findById(id)
-				.orElseThrow(()-> new ContaNaoEncontradaException(id));
+	public ContaCorrente getContaCorrenteById(Long id_conta) {
+		return (ContaCorrente) contaRepository.findById(id_conta)
+				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
 	}
-	public ContaPoupanca getContaPoupancaById(Long id) {
-		return (ContaPoupanca) contaRepository.findById(id)
-				.orElseThrow(()-> new ContaNaoEncontradaException(id));
+	public ContaPoupanca getContaPoupancaById(Long id_conta) {
+		return (ContaPoupanca) contaRepository.findById(id_conta)
+				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
 	}
 	
 	//transferencia
 	@Transactional
-	public void transferir(Long contaOrigemId, Long contaDestinoId, @Positive BigDecimal valor) throws SaldoInsuficienteException {
-		ContaBase origem = contaRepository.findById(contaOrigemId).orElseThrow(()-> new ClienteNaoEncontradoException(contaOrigemId));
-		ContaBase destino = contaRepository.findById(contaDestinoId).orElseThrow(()-> new ClienteNaoEncontradoException(contaDestinoId));
+	public void transferir(Long id_contaOrigem, Long id_contaDestino, @Positive BigDecimal valor) throws SaldoInsuficienteException {
+		ContaBase origem = contaRepository.findById(id_contaOrigem).orElseThrow(()-> new ClienteNaoEncontradoException(id_contaOrigem));
+		ContaBase destino = contaRepository.findById(id_contaDestino).orElseThrow(()-> new ClienteNaoEncontradoException(id_contaDestino));
 		
 		origem.sacar(valor);
 		destino.depositar(valor);
@@ -78,9 +78,9 @@ public class ContaService {
 	
 	//pix
 	@Transactional
-	public void pix(Long contaOrigemId, Long contaDestinoId, BigDecimal valor) throws SaldoInsuficienteException {
-		ContaBase origem = contaRepository.findById(contaOrigemId).orElseThrow(()-> new ClienteNaoEncontradoException(contaOrigemId));
-		ContaBase destino = contaRepository.findById(contaDestinoId).orElseThrow(()-> new ClienteNaoEncontradoException(contaDestinoId));
+	public void pix(Long id_contaOrigem, Long id_contaDestino, BigDecimal valor) throws SaldoInsuficienteException {
+		ContaBase origem = contaRepository.findById(id_contaOrigem).orElseThrow(()-> new ClienteNaoEncontradoException(id_contaOrigem));
+		ContaBase destino = contaRepository.findById(id_contaDestino).orElseThrow(()-> new ClienteNaoEncontradoException(id_contaDestino));
 		
 		origem.sacar(valor);
 		destino.depositar(valor);
@@ -95,24 +95,24 @@ public class ContaService {
 	}
 	
 	//get saldo
-	public BigDecimal getSaldo(Long id) {
-		ContaBase conta = contaRepository.findById(id)
-				.orElseThrow(()-> new ContaNaoEncontradaException(id));
+	public BigDecimal getSaldo(Long id_conta) {
+		ContaBase conta = contaRepository.findById(id_conta)
+				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
 		return conta.getSaldo();
 	}
 	
 	//deposito
-	public void depositar(Long id, BigDecimal valor) {
-		ContaBase conta = contaRepository.findById(id)
-				.orElseThrow(()-> new ContaNaoEncontradaException(id));
+	public void depositar(Long id_conta, BigDecimal valor) {
+		ContaBase conta = contaRepository.findById(id_conta)
+				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
 		conta.depositar(valor);
 		contaRepository.save(conta);
 	}
 	
 	//saque
-	public void sacar(Long id, BigDecimal valor) throws SaldoInsuficienteException {
-		ContaBase conta = contaRepository.findById(id)
-				.orElseThrow(()-> new ContaNaoEncontradaException(id));
+	public void sacar(Long id_conta, BigDecimal valor) throws SaldoInsuficienteException {
+		ContaBase conta = contaRepository.findById(id_conta)
+				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
 		conta.sacar(valor);
 		contaRepository.save(conta);
 	}

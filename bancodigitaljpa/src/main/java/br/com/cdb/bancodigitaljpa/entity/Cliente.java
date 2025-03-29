@@ -28,7 +28,7 @@ public class Cliente {
 	//atributos
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long id_cliente;
 	
 	@NotBlank(message = "Nome é obrigatótio")
 	@Size(min=2, max=100, message="Nome deve ter entre 2 e 100 caracteres")
@@ -56,10 +56,10 @@ public class Cliente {
 	
 	//getters and setters
 	public Long getId() {
-		return id;
+		return id_cliente;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setId(Long id_cliente) {
+		this.id_cliente = id_cliente;
 	}
 	public String getNome() {
 		return nome;
@@ -104,12 +104,19 @@ public class Cliente {
 	
 	@Override
 	public String toString() {
-		return "Cliente [id= " + id + " , nome= " + nome + " , categoria= " + categoria + " ]";
+		return "Cliente [id= " + id_cliente + " , nome= " + nome + " , categoria= " + categoria + " ]";
 	}
 	
 	//constructor
 	public Cliente() {
 		this.categoria = CategoriaCliente.COMUM; //default de criação de cadastro
+	}
+	public Cliente(String nome, String cpf, LocalDate dataNascimento, EnderecoCliente endereco) {
+		this.nome = nome;
+		this.cpf = cpf;
+		this.dataNascimento = dataNascimento;
+		this.endereco = endereco;
+		this.categoria = CategoriaCliente.COMUM;
 	}
 
 }

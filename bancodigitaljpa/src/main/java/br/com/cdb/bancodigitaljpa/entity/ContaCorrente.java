@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigitaljpa.entity;
+ package br.com.cdb.bancodigitaljpa.entity;
 
 import java.math.BigDecimal;
 

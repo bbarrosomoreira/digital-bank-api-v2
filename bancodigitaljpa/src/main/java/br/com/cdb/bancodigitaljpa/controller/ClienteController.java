@@ -26,18 +26,34 @@ public class ClienteController {
 
 	@Autowired
 	private ClienteService clienteService;
+	
+//	@Autowired
+//	private CorreiosService correiosService;
 
 	@PostMapping("/add")
-	public ResponseEntity<String> addCliente(@Valid @RequestBody Cliente cliente) {
+	public ResponseEntity<Cliente> addCliente(@Valid @RequestBody Cliente cliente) {
+		
+//		EnderecoCliente enderecoCliente = correiosService.consultarEConverterCep(clienteDto.getEndereco().getCep());
+//		String rua, int numero, String complemento, String cidade, String estado, String cep
+//		EnderecoCliente enderecoCliente = new EnderecoCliente(
+//				clienteDto.getEndereco().getRua(), 
+//				clienteDto.getEndereco().getNumero(),
+//				clienteDto.getEndereco().getComplemento(),
+//				clienteDto.getEndereco().getCidade(),
+//				clienteDto.getEndereco().getEstado(),
+//				clienteDto.getEndereco().getCep());
+		
+//		Cliente cliente = clienteDto.transformaParaObjeto();
+		
+		Cliente clienteAdicionado = clienteService.addCliente(cliente);
+		return new ResponseEntity<>(clienteAdicionado, HttpStatus.CREATED);
 
-		Cliente clienteAdicionado = clienteService.addCliente(cliente.getNome(), cliente.getCpf(), cliente.getDataNascimento());
-
-		if (clienteAdicionado != null) {
-			return new ResponseEntity<>("Cliente " + cliente.getNome() + " adicionado com sucesso!",
-					HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>("Informação do cliente inválida!", HttpStatus.NOT_ACCEPTABLE);
-		}
+//		if (clienteAdicionado != null) {
+//			return new ResponseEntity<>("Cliente " + cliente.getNome() + " adicionado com sucesso!",
+//					HttpStatus.CREATED);
+//		} else {
+//			return new ResponseEntity<>("Informação do cliente inválida!", HttpStatus.NOT_ACCEPTABLE);
+//		}
 	}
 
 	@GetMapping("/listAll")
@@ -46,37 +62,37 @@ public class ClienteController {
 		return new ResponseEntity<List<Cliente>>(clientes, HttpStatus.OK);
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<Cliente> getClienteById(@PathVariable Long id) {
-		Cliente cliente = clienteService.getClienteById(id);
+	@GetMapping("/{id_cliente}")
+	public ResponseEntity<Cliente> getClienteById(@PathVariable Long id_cliente) {
+		Cliente cliente = clienteService.getClienteById(id_cliente);
 		return ResponseEntity.ok(cliente);
 	}
 	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> removeCliente(@PathVariable Long id){		
-		if (clienteService.deleteCliente(id)) {
-			return new ResponseEntity<>("Cliente ID " + id + " deletado com sucesso",
+	@DeleteMapping("/{id_cliente}")
+	public ResponseEntity<String> removeCliente(@PathVariable Long id_cliente){		
+		if (clienteService.deleteCliente(id_cliente)) {
+			return new ResponseEntity<>("Cliente ID " + id_cliente + " deletado com sucesso",
 					HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>("Falha ao deletar cliente com ID " + id, HttpStatus.NOT_ACCEPTABLE);
+			return new ResponseEntity<>("Falha ao deletar cliente com ID " + id_cliente, HttpStatus.NOT_ACCEPTABLE);
 		}
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping("/{id_cliente}")
 	public ResponseEntity<Cliente> updateCliente(
-			@PathVariable Long id, 
+			@PathVariable Long id_cliente, 
 			@Valid @RequestBody Cliente clienteAtualizado){
 		
-		Cliente atualizado = clienteService.updateCliente(id, clienteAtualizado);
+		Cliente atualizado = clienteService.updateCliente(id_cliente, clienteAtualizado);
 			return ResponseEntity.ok(atualizado);
 	}
 	
-	@PatchMapping("/{id}")
+	@PatchMapping("/{id_cliente}")
 	public ResponseEntity<Cliente> updateParcial(
-			@PathVariable Long id, 
+			@PathVariable Long id_cliente, 
 			@RequestBody Map<String, Object> camposAtualizados){
 		
-		Cliente atualizado = clienteService.updateParcial(id, camposAtualizados);
+		Cliente atualizado = clienteService.updateParcial(id_cliente, camposAtualizados);
 			return ResponseEntity.ok(atualizado);
 	}
 	

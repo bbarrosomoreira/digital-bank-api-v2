@@ -25,7 +25,7 @@ public abstract class ContaBase implements Conta {
 	//atributos
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long id_conta;
 	
 	@Column(unique=true)
 	protected String numeroConta;
@@ -46,18 +46,18 @@ public abstract class ContaBase implements Conta {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tipo_conta", updatable = false, nullable = false)
-	private TipoConta tipo;
+	private TipoConta tipoConta;
 	
 	// Construtor protegido
-	protected ContaBase(TipoConta tipo, Cliente cliente) {
-		this.tipo = tipo;
+	protected ContaBase(TipoConta tipoConta, Cliente cliente) {
+		this.tipoConta = tipoConta;
 		this.cliente = cliente;
 		this.moeda = Moeda.BRL;
 	}
 	
 	//Getters & Setters
 	public Long getId() {
-		return id;
+		return id_conta;
 	}
 	public String getNumeroConta() {
 		return numeroConta;
@@ -81,8 +81,8 @@ public abstract class ContaBase implements Conta {
 	public LocalDate getDataCriacao() {
 		return dataCriacao;
 	}
-	public void setTipo(TipoConta tipo) {
-		this.tipo = tipo;
+	public void setTipo(TipoConta tipoConta) {
+		this.tipoConta = tipoConta;
 	}
 
 	// Implementações comuns

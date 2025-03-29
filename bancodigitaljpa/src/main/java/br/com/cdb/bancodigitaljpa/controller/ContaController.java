@@ -30,13 +30,13 @@ public class ContaController {
 	//criar nova conta
 	@PostMapping("/add")
 	public ResponseEntity<String> addConta(@RequestParam String tipoConta,
-			@RequestParam Long clienteId){
+			@RequestParam Long id_cliente){
 		
 		try {
 			TipoConta tipo = TipoConta.valueOf(tipoConta.toUpperCase());
 			ContaBase contaAdicionada = switch (tipo) {
-			case CORRENTE -> contaService.addContaCorrente(clienteId);
-			case POUPANCA -> contaService.addContaPoupanca(clienteId);
+			case CORRENTE -> contaService.addContaCorrente(id_cliente);
+			case POUPANCA -> contaService.addContaPoupanca(id_cliente);
 			};
 			
 			return ResponseEntity.status(HttpStatus.CREATED)

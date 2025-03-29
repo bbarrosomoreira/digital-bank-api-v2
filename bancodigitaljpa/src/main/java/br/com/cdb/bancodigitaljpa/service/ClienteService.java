@@ -26,12 +26,12 @@ public class ClienteService {
 	@Autowired
 	private ClienteRepository clienteRepository;
 
-	public Cliente addCliente(String nome, String cpf, LocalDate dataNascimento) {
+	public Cliente addCliente(Cliente cliente) {
 
-		Cliente cliente = new Cliente();
-		cliente.setCpf(cpf);
-		cliente.setNome(nome);
-		cliente.setDataNascimento(dataNascimento);
+//		Cliente cliente = new Cliente();
+//		cliente.setCpf(cpf);
+//		cliente.setNome(nome);
+//		cliente.setDataNascimento(dataNascimento);
 
 		// VALIDAR SE CPF JA ESTA CADASTRADO
 //		if (clienteRepository.exists(cliente.getCpf())) {
@@ -45,30 +45,30 @@ public class ClienteService {
 		return clienteRepository.findAll();
 	}
 
-	public Cliente getClienteById(Long id) {
-		return clienteRepository.findById(id).orElseThrow(() -> new ClienteNaoEncontradoException(id));
+	public Cliente getClienteById(Long id_cliente) {
+		return clienteRepository.findById(id_cliente).orElseThrow(() -> new ClienteNaoEncontradoException(id_cliente));
 	}
 
 	@Transactional
-	public boolean deleteCliente(Long id) {
+	public boolean deleteCliente(Long id_cliente) {
 
 		try {
-			clienteRepository.deleteById(id);
-			log.debug("Cliente ID {} deletado com sucesso", id);
+			clienteRepository.deleteById(id_cliente);
+			log.debug("Cliente ID {} deletado com sucesso", id_cliente);
 			return true;
 		} catch (EmptyResultDataAccessException e) {
-			log.warn("Tentativa de deletar cliente ID {} inexistente", id);
+			log.warn("Tentativa de deletar cliente ID {} inexistente", id_cliente);
 			return false;
 		} catch (Exception e) {
-			log.error("Falha ao deletar cliente com ID {} ", id, e);
+			log.error("Falha ao deletar cliente com ID {} ", id_cliente, e);
 			return false;
 		}
 	}
 
 	@Transactional
-	public Cliente updateParcial(Long id, Map<String, Object> camposAtualizados) {
-		Cliente cliente = clienteRepository.findById(id)
-				.orElseThrow(() -> new ClienteNaoEncontradoException(id));
+	public Cliente updateParcial(Long id_cliente, Map<String, Object> camposAtualizados) {
+		Cliente cliente = clienteRepository.findById(id_cliente)
+				.orElseThrow(() -> new ClienteNaoEncontradoException(id_cliente));
 
 		// atualizando apenas campos não nulos
 		camposAtualizados.forEach((campo, valor) -> {
@@ -103,9 +103,9 @@ public class ClienteService {
 	}
 	
 	@Transactional
-	public Cliente updateCliente(Long id, Cliente clienteAtualizado) {
-		Cliente clienteExistente = clienteRepository.findById(id)
-				.orElseThrow(() -> new ClienteNaoEncontradoException(id));
+	public Cliente updateCliente(Long id_cliente, Cliente clienteAtualizado) {
+		Cliente clienteExistente = clienteRepository.findById(id_cliente)
+				.orElseThrow(() -> new ClienteNaoEncontradoException(id_cliente));
 
 		//atualiza todos os campos
 		clienteExistente.setNome(clienteAtualizado.getNome());

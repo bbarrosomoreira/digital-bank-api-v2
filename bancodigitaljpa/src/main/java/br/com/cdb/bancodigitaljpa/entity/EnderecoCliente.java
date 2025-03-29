@@ -81,7 +81,9 @@ public class EnderecoCliente {
 		this.estado = estado;
 		this.cep = cep;
 	}
-	
+	public EnderecoCliente() {
+		
+	}
 	
 
 }
