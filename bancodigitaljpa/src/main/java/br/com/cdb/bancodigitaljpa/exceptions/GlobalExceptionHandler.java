@@ -48,6 +48,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 		return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 	}
 	
+	// Tratamento para objetos não encontrados
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<String> handleContaNaoEncontrada(RuntimeException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
+	
+	
 	// Tratamento para erro inesperado
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleAllExceptions(

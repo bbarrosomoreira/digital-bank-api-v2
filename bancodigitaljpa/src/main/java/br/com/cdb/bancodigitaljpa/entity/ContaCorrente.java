@@ -1,15 +1,17 @@
  package br.com.cdb.bancodigitaljpa.entity;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
 
 @Entity
-//@DiscriminatorValue("CORRENTE")
+@DiscriminatorValue("CORRENTE")
 public class ContaCorrente extends ContaBase{
 
 	//atributos
@@ -29,8 +31,10 @@ public class ContaCorrente extends ContaBase{
 //	private BigDecimal taxaJurosCheque;
 	
 	// construtor
+	public ContaCorrente() {}
+	
 	public ContaCorrente(Cliente cliente) {
-		super(TipoConta.CORRENTE, cliente);
+		super(cliente);
 	}
 	
 	//getters & setters
@@ -72,11 +76,15 @@ public class ContaCorrente extends ContaBase{
 //}
 	
 	//metodos
+	@Override
+	@Transient
+	public TipoConta getTipoConta() {
+		return TipoConta.CORRENTE;
+	}
+	
 	@PrePersist
 	private void init() {
 		gerarNumeroConta();
-		if (this.getTipo() == null)
-			this.setTipo(TipoConta.CORRENTE);
 	}
 	
 	@Override

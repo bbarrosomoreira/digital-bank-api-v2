@@ -6,10 +6,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
+import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.exceptions.ClienteNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.exceptions.ContaNaoEncontradaException;
 import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
@@ -27,6 +29,22 @@ public class ContaService {
 	private ClienteService clienteService;
 	
 	//addConta de forma genérica
+	@Transactional
+	public ContaBase abrirConta(Long id_cliente, TipoConta tipo) {
+		
+		if(tipo == null) {
+			throw new IllegalArgumentException("Tipo de conta inválido.");
+		}
+		
+		Cliente cliente = clienteService.getClienteById(id_cliente);
+		
+		ContaBase contaNova = switch(tipo) {
+		case CORRENTE -> new ContaCorrente(cliente);
+		case POUPANCA -> new ContaPoupanca(cliente);
+		};
+		return contaRepository.save(contaNova);
+		
+	}
 	
 	public ContaCorrente addContaCorrente(Long id_cliente) {
 		//VALIDAR SE CLIENTE EXISTE
@@ -43,12 +61,48 @@ public class ContaService {
 	}
 	
 	//get contas
-	public List<ContaBase> getContas(){
-		System.out.println(contaRepository.findAll());
-		return contaRepository.findAll();
+	public List<ContaResponse> getContas(){
+		List<ContaBase> contas = contaRepository.findAll();
+		return contas.stream()
+				.map(this::toResponse)
+				.toList();
 	}
 	
+	public ContaResponse toResponse(ContaBase conta) {
+//		ContaResponse response = new ContaResponse (
+//				conta.getId(),
+//				conta.getNumeroConta(),
+//				conta.getTipoConta(),
+//				conta.getCliente().getId(),
+//				conta.getMoeda(),
+//				conta.getDataCriacao());
+		
+//	    // Adiciona campos específicos baseados no tipo de conta
+//	    if (conta instanceof ContaCorrente cc) {
+//	        response.setTaxaManutencao(cc.getTaxaManutencao());
+//	    } else if (conta instanceof ContaPoupanca cp) {
+//	        response.setTaxaRendimento(cp.getTaxaRendimento());
+//	    }
+		
+		return ContaResponse.fromContaBase(conta);
+	}
+	
+	//get conta por cliente
+	public List<ContaResponse> listarPorCliente(Long id_cliente){
+		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
+		return contas.stream()
+				.map(this::toResponse)
+				.toList();
+	}
+	
+	
 	//get uma conta
+	public ContaResponse getContaById(Long id_conta) {
+		ContaBase conta = contaRepository.findById(id_conta)
+				.orElseThrow(()-> new RuntimeException("Conta não encontrada"));
+		return toResponse(conta);
+	}
+	
 	public ContaCorrente getContaCorrenteById(Long id_conta) {
 		return (ContaCorrente) contaRepository.findById(id_conta)
 				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));

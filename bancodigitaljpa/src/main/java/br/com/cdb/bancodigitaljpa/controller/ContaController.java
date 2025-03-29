@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigitaljpa.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cdb.bancodigitaljpa.dto.AberturaContaDTO;
+import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
-import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
-import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.service.ContaService;
 
@@ -29,31 +30,51 @@ public class ContaController {
 	
 	//criar nova conta
 	@PostMapping("/add")
-	public ResponseEntity<String> addConta(@RequestParam String tipoConta,
-			@RequestParam Long id_cliente){
+	public ResponseEntity<ContaResponse> abrirConta(@RequestBody AberturaContaDTO dto){
+		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta());
+		ContaResponse response = contaService.toResponse(contaNova);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 		
-		try {
-			TipoConta tipo = TipoConta.valueOf(tipoConta.toUpperCase());
-			ContaBase contaAdicionada = switch (tipo) {
-			case CORRENTE -> contaService.addContaCorrente(id_cliente);
-			case POUPANCA -> contaService.addContaPoupanca(id_cliente);
-			};
-			
-			return ResponseEntity.status(HttpStatus.CREATED)
-					.body(contaAdicionada.getTipo() + " adicionada com sucesso! ID: " + contaAdicionada.getId());
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.badRequest().body("Tipo de conta inválido. Use CORRENTE ou POUPANCA.");
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("Erro: " + e.getMessage());
-		}
+//		try {
+//			TipoConta tipo = TipoConta.valueOf(tipoConta.toUpperCase());
+//			ContaBase contaAdicionada = switch (tipo) {
+//			case CORRENTE -> contaService.addContaCorrente(id_cliente);
+//			case POUPANCA -> contaService.addContaPoupanca(id_cliente);
+//			};
+//			
+//			return ResponseEntity.status(HttpStatus.CREATED)
+//					.body(contaAdicionada.getTipo() + " adicionada com sucesso! ID: " + contaAdicionada.getId());
+//		} catch (IllegalArgumentException e) {
+//			return ResponseEntity.badRequest().body("Tipo de conta inválido. Use CORRENTE ou POUPANCA.");
+//		} catch (Exception e) {
+//			return ResponseEntity.badRequest().body("Erro: " + e.getMessage());
+//		}
 		
 	}
 	
-	@GetMapping("/listAll")
-	public ResponseEntity<List<ContaBase>> getContas() {
-		List<ContaBase> contas = contaService.getContas();
-		return new ResponseEntity<List<ContaBase>>(contas, HttpStatus.OK);
+	@GetMapping("/tipos")
+	public ResponseEntity<List<TipoConta>> listarTiposContas() {
+		return ResponseEntity.ok(Arrays.asList(TipoConta.values()));
 	}
+	
+	@GetMapping("/listAll")
+	public ResponseEntity<List<ContaResponse>> getContas() {
+		List<ContaResponse> contas = contaService.getContas();
+		return ResponseEntity.ok(contas);
+	}
+	
+	@GetMapping("/cliente/{id_cliente}")
+	public ResponseEntity<List<ContaResponse>> listarPorCliente(@PathVariable Long id_cliente) {
+		List<ContaResponse> contas = contaService.listarPorCliente(id_cliente);
+		return ResponseEntity.ok(contas);
+	}
+	
+	@GetMapping("/{id_conta}")
+	public ResponseEntity<ContaResponse> getContaById(@PathVariable Long id_conta) {
+		ContaResponse conta = contaService.getContaById(id_conta);
+		return ResponseEntity.ok(conta);
+	}
+	
 
 //	@GetMapping("/{id}")
 //	//obter detalhes de uma conta

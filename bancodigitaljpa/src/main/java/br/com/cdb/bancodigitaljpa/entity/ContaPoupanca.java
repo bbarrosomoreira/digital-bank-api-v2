@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigitaljpa.entity;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
@@ -29,16 +30,22 @@ public class ContaPoupanca extends ContaBase {
 	}
 	
 	//constructor
+	public ContaPoupanca() {}
+	
 	public ContaPoupanca(Cliente cliente) {
-		super(TipoConta.POUPANCA, cliente);
+		super(cliente);
 	}
 	
 	//metodos
+	@Override
+	@Transient
+	public TipoConta getTipoConta() {
+		return TipoConta.POUPANCA;
+	}
+	
 	@PrePersist
 	private void init() {
 		gerarNumeroConta();
-		if (this.getTipo() == null)
-			this.setTipo(TipoConta.POUPANCA);
 	}
 	
 	@Override

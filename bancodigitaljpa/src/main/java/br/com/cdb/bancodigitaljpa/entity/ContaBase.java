@@ -1,25 +1,32 @@
 package br.com.cdb.bancodigitaljpa.entity;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigitaljpa.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
 
-//@Entity
-//@Inheritance(strategy = InheritanceType.SINGLE_TABLE) //todas as contas na mesma tabela
-//@DiscriminatorColumn(name = "tipo_conta", discriminatorType = DiscriminatorType.STRING)
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "tipo_conta", discriminatorType = DiscriminatorType.STRING)
+//@MappedSuperclass
 public abstract class ContaBase implements Conta {
 	
 	//atributos
@@ -42,15 +49,20 @@ public abstract class ContaBase implements Conta {
 	private Cliente cliente;
 	
 	@Column(name = "data_criacao", nullable = false, updatable = false)
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dataCriacao = LocalDate.now();
+
+	@Transient
+	public abstract TipoConta getTipoConta();
 	
-	@Enumerated(EnumType.STRING)
-	@Column(name = "tipo_conta", updatable = false, nullable = false)
-	private TipoConta tipoConta;
+//	@Enumerated(EnumType.STRING)
+//	@Column(name = "tipo_conta", updatable = false, nullable = false)
+//	private TipoConta tipoConta;
 	
 	// Construtor protegido
-	protected ContaBase(TipoConta tipoConta, Cliente cliente) {
-		this.tipoConta = tipoConta;
+	protected ContaBase() {}
+	
+	protected ContaBase(Cliente cliente) {
 		this.cliente = cliente;
 		this.moeda = Moeda.BRL;
 	}
@@ -81,9 +93,9 @@ public abstract class ContaBase implements Conta {
 	public LocalDate getDataCriacao() {
 		return dataCriacao;
 	}
-	public void setTipo(TipoConta tipoConta) {
-		this.tipoConta = tipoConta;
-	}
+//	public void setTipo(TipoConta tipoConta) {
+//		this.tipoConta = tipoConta;
+//	}
 
 	// Implementações comuns
 	@Override
