@@ -2,7 +2,7 @@ package br.com.cdb.bancodigitaljpa.dto;
 
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 
-public class ContaDTO {
+public class AbrirContaDTO {
 	private Long id_cliente;
 	private TipoConta tipoConta;
 	
@@ -23,6 +23,6 @@ public class ContaDTO {
 		this.tipoConta = TipoConta.valueOf(tipoConta.name().toUpperCase());
 	}
 	
-	public ContaDTO() {}
+	public AbrirContaDTO() {}
 
 }

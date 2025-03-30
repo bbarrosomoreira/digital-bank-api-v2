@@ -116,4 +116,14 @@ public class ClienteService {
 		
 		return clienteRepository.save(clienteExistente);
 	}
+	
+	@Transactional
+	public Cliente updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) {
+		Cliente cliente = clienteRepository.findById(id_cliente)
+				.orElseThrow(()-> new ClienteNaoEncontradoException(id_cliente));
+		
+		cliente.setCategoria(novaCategoria);
+		
+		return clienteRepository.save(cliente);
+	}
 }

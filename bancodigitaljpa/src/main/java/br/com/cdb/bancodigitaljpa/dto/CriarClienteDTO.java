@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class ClienteDTO {
+public class CriarClienteDTO {
 	
 	@NotBlank(message = "Nome é obrigatótio")
 	@Size(min=2, max=100, message="Nome deve ter entre 2 e 100 caracteres")
@@ -62,7 +62,7 @@ public class ClienteDTO {
 	public Cliente transformaParaObjeto() {
 		return new Cliente(nome, cpf, dataNascimento, endereco);
 	}
-	public ClienteDTO() {}
+	public CriarClienteDTO() {}
 	
 
 }

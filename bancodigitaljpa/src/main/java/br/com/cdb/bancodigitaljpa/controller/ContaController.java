@@ -12,14 +12,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigitaljpa.dto.ContaDTO;
+import br.com.cdb.bancodigitaljpa.dto.AbrirContaDTO;
 import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
+import br.com.cdb.bancodigitaljpa.dto.DepositoSaqueDTO;
+import br.com.cdb.bancodigitaljpa.dto.SaldoResponse;
+import br.com.cdb.bancodigitaljpa.dto.TransferenciaDTO;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.service.ContaService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/contas")
@@ -30,7 +33,7 @@ public class ContaController {
 	
 	//criar nova conta
 	@PostMapping("/add")
-	public ResponseEntity<ContaResponse> abrirConta(@RequestBody ContaDTO dto){
+	public ResponseEntity<ContaResponse> abrirConta(@RequestBody AbrirContaDTO dto){
 		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta());
 		ContaResponse response = contaService.toResponse(contaNova);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -92,20 +95,54 @@ public class ContaController {
 //		return ResponseEntity.ok(conta);
 //	}
 	
-	//@PostMapping("/{id}/transferencia")
 	//realizar uma transf entre contas
+	@PostMapping("/{id_contaOrigem}/transferencia")
+	public ResponseEntity<String> transferir(
+			@PathVariable Long id_contaOrigem, 
+			@Valid @RequestBody TransferenciaDTO dto)
+	{	
+		contaService.transferir(id_contaOrigem, dto.getId_contaDestino(), dto.getValor());
+		// Retornar infos da Transação
+		return ResponseEntity.ok("Transferência realizada com sucesso.");
+	}
 	
-	//@PostMapping("/{id}/pix")
 	//realizar um pg pix
+	@PostMapping("/{id_contaOrigem}/pix")
+	public ResponseEntity<String> pix(
+			@PathVariable Long id_contaOrigem, 
+			@Valid @RequestBody TransferenciaDTO dto)
+	{	
+		contaService.pix(id_contaOrigem, dto.getId_contaDestino(), dto.getValor());
+		return ResponseEntity.ok("PIX realizado com sucesso.");
+	}
 	
-	//@GetMapping("/{id}/saldo")
 	//consultar saldo da conta
+	@GetMapping("/{id_conta}/saldo")
+	public ResponseEntity<SaldoResponse> getSaldo(
+			@PathVariable Long id_conta) {
+		SaldoResponse saldoConta = contaService.getSaldo(id_conta);
+		return ResponseEntity.ok(saldoConta);
+	}
 	
-	//@PostMapping("{id}/deposito")
 	//depositar em conta
+	@PostMapping("{id_conta}/deposito")
+	public ResponseEntity<String> depositar(
+			@PathVariable Long id_conta, 
+			@Valid @RequestBody DepositoSaqueDTO dto)
+	{	
+		contaService.depositar(id_conta, dto.getValor());
+		return ResponseEntity.ok("Depósito realizado com sucesso.");
+	}
 	
-	//@PostMapping("/{id}/saque")
 	//sacar da conta
+	@PostMapping("/{id_conta}/saque")
+	public ResponseEntity<String> sacar(
+			@PathVariable Long id_conta, 
+			@Valid @RequestBody DepositoSaqueDTO dto)
+	{	
+		contaService.sacar(id_conta, dto.getValor());
+		return ResponseEntity.ok("Depósito realizado com sucesso.");
+	}
 	
 	//@PutMapping("/{id}/manutencao")
 	//debitar tx mensal manut CC

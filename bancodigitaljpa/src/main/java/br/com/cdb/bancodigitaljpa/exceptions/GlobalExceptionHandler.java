@@ -54,6 +54,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
 	
+	// Tratamento para saldo insuficiente
+	@ExceptionHandler(SaldoInsuficienteException.class)
+	public ResponseEntity<String> handleSaldoInsuficiente(SaldoInsuficienteException ex) {
+	    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	}
+
+	// Tratamento para contas não encontradas
+	@ExceptionHandler(ContaNaoEncontradaException.class)
+	public ResponseEntity<String> handleContaNaoEncontrada(ContaNaoEncontradaException ex) {
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
+	
 	
 	// Tratamento para erro inesperado
 	@ExceptionHandler(Exception.class)

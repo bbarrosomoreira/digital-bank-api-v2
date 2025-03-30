@@ -51,7 +51,7 @@ public class ContaPoupanca extends ContaBase {
 	@Override
 	public void sacar(BigDecimal valor) throws SaldoInsuficienteException {
 		if (valor.compareTo(this.getSaldo()) > 0) {
-			throw new SaldoInsuficienteException("Saldo insuficiente para saque.");
+			throw new SaldoInsuficienteException(this.getId(), this.numeroConta, this.getSaldo());
 		}
 		BigDecimal novoSaldo = this.getSaldo().subtract(valor);
 		this.setSaldo(novoSaldo);

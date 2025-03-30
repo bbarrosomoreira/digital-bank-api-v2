@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigitaljpa.dto.ClienteDTO;
+import br.com.cdb.bancodigitaljpa.dto.AtualizarCategoriaClienteDTO;
+import br.com.cdb.bancodigitaljpa.dto.CriarClienteDTO;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.service.ClienteService;
 import jakarta.validation.Valid;
@@ -32,7 +33,7 @@ public class ClienteController {
 //	private CorreiosService correiosService;
 
 	@PostMapping("/add")
-	public ResponseEntity<Cliente> addCliente(@Valid @RequestBody ClienteDTO dto) {
+	public ResponseEntity<Cliente> addCliente(@Valid @RequestBody CriarClienteDTO dto) {
 		
 //		EnderecoCliente enderecoCliente = correiosService.consultarEConverterCep(clienteDto.getEndereco().getCep());
 //		String rua, int numero, String complemento, String cidade, String estado, String cep
@@ -98,4 +99,12 @@ public class ClienteController {
 			return ResponseEntity.ok(atualizado);
 	}
 	
+	@PutMapping("/{id_cliente}/categoria")
+	public ResponseEntity<Cliente> updateCategoriaCliente(
+			@PathVariable Long id_cliente, 
+			@Valid @RequestBody AtualizarCategoriaClienteDTO dto){
+		
+		Cliente atualizado = clienteService.updateCategoriaCliente(id_cliente, dto.getCategoriaCliente());
+			return ResponseEntity.ok(atualizado);
+	}
 }

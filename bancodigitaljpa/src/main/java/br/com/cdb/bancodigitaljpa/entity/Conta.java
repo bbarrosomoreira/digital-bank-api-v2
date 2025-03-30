@@ -9,6 +9,6 @@ public interface Conta {
 	void depositar(BigDecimal valor);
 	void sacar(BigDecimal valor) throws SaldoInsuficienteException;
 	String getTipo();
-	void transferir(Conta destino, BigDecimal valor) throws SaldoInsuficienteException;;
-	void pix(Conta destino, BigDecimal valor) throws SaldoInsuficienteException;;
+	void transferir(Conta destino, BigDecimal valor) throws SaldoInsuficienteException;
+	void pix(Conta destino, BigDecimal valor) throws SaldoInsuficienteException;
 }

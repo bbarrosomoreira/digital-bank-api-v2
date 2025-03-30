@@ -16,11 +16,16 @@ public class Transacao {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-//	@ManyToOne
-//	private ContaBase conta;
+	@ManyToOne
+	private ContaBase contaOrigem;
+	
+	@ManyToOne
+	private ContaBase contaDestino;
 	
 	private BigDecimal valor;
+	
 	private LocalTime data;
+	
 	private String tipo; //SAQUE, DEPOSITO, etc
 	
 	//GETTERS & SETTERS
@@ -30,12 +35,18 @@ public class Transacao {
 	public void setId(Long id) {
 		this.id = id;
 	}
-//	public ContaBase getConta() {
-//		return conta;
-//	}
-//	public void setConta(ContaBase conta) {
-//		this.conta = conta;
-//	}
+	public ContaBase getContaOrigem() {
+		return contaOrigem;
+	}
+	public void setContaOrigem(ContaBase contaOrigem) {
+		this.contaOrigem = contaOrigem;
+	}
+	public ContaBase getContaDestino() {
+		return contaDestino;
+	}
+	public void setContaDestino(ContaBase contaDestino) {
+		this.contaDestino = contaDestino;
+	}
 	public BigDecimal getValor() {
 		return valor;
 	}
@@ -54,6 +65,11 @@ public class Transacao {
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
+
+	//constructor
+	public Transacao() {
+	}
+	
 	
 	
 }
