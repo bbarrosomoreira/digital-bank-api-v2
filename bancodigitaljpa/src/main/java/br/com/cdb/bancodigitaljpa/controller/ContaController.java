@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigitaljpa.dto.AberturaContaDTO;
+import br.com.cdb.bancodigitaljpa.dto.ContaDTO;
 import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
@@ -30,7 +30,7 @@ public class ContaController {
 	
 	//criar nova conta
 	@PostMapping("/add")
-	public ResponseEntity<ContaResponse> abrirConta(@RequestBody AberturaContaDTO dto){
+	public ResponseEntity<ContaResponse> abrirConta(@RequestBody ContaDTO dto){
 		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta());
 		ContaResponse response = contaService.toResponse(contaNova);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);

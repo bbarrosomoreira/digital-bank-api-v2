@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cdb.bancodigitaljpa.dto.ClienteDTO;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.service.ClienteService;
 import jakarta.validation.Valid;
@@ -31,7 +32,7 @@ public class ClienteController {
 //	private CorreiosService correiosService;
 
 	@PostMapping("/add")
-	public ResponseEntity<Cliente> addCliente(@Valid @RequestBody Cliente cliente) {
+	public ResponseEntity<Cliente> addCliente(@Valid @RequestBody ClienteDTO dto) {
 		
 //		EnderecoCliente enderecoCliente = correiosService.consultarEConverterCep(clienteDto.getEndereco().getCep());
 //		String rua, int numero, String complemento, String cidade, String estado, String cep
@@ -45,7 +46,8 @@ public class ClienteController {
 		
 //		Cliente cliente = clienteDto.transformaParaObjeto();
 		
-		Cliente clienteAdicionado = clienteService.addCliente(cliente);
+		Cliente clienteAdicionado = clienteService.addCliente(dto.transformaParaObjeto());
+//		ClienteResponse response = clienteService.toResponse(clienteAdicionado);
 		return new ResponseEntity<>(clienteAdicionado, HttpStatus.CREATED);
 
 //		if (clienteAdicionado != null) {

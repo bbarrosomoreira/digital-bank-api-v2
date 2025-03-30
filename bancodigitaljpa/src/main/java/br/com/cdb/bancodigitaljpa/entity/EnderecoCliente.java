@@ -2,6 +2,7 @@ package br.com.cdb.bancodigitaljpa.entity;
 
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -17,8 +18,7 @@ public class EnderecoCliente {
 	@Size(max = 100)
 	private String rua;
 	
-	@NotBlank(message = "Numero é um campo obrigatório - Se endereço não tiver número, digite 0")
-	@Size(max = 10)
+	@NotNull(message = "Numero é um campo obrigatório - Se endereço não tiver número, digite 0")
 	private int numero;
 	
 	@Size(max = 100, message = "Complemento deve ter no máximo 100 caracteres")
@@ -29,7 +29,7 @@ public class EnderecoCliente {
 	private String cidade;
 	
 	@NotBlank(message = "Estado é obrigatório")
-    @Size(min = 2, max = 2, message = "Estado deve ter 2 caracteres")
+    @Size(min = 2, max = 2, message = "Estado deve ter 2 caracteres (ex: SP)")
 	private String estado;
 
 	
@@ -81,8 +81,7 @@ public class EnderecoCliente {
 		this.estado = estado;
 		this.cep = cep;
 	}
-	public EnderecoCliente() {
-		
+	public EnderecoCliente() {	
 	}
 	
 

@@ -36,8 +36,8 @@ public class Cliente {
 	@Column(nullable = false, length = 100)
 	private String nome;
 	
-	@NotBlank(message = "CPF é obrigatótio")
 //	@ValidCPF
+	@NotBlank(message = "CPF é obrigatótio")
 	@CPF
 	@Column(nullable = false, unique = true, length = 11)
 	private String cpf;
@@ -47,8 +47,8 @@ public class Cliente {
 	private CategoriaCliente categoria;
 	
 	@Past(message = "Data de nascimento dever ser no passado")
-	@Column(nullable = false)
 	@JsonFormat(pattern = "dd-MM-yyyy")
+	@Column(nullable = false)
 	private LocalDate dataNascimento;
 	
 	@Embedded
