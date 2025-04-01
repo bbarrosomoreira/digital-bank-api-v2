@@ -67,13 +67,15 @@ public class ContaController {
 	}
 	
 	@GetMapping("/cliente/{id_cliente}")
-	public ResponseEntity<List<ContaResponse>> listarPorCliente(@PathVariable Long id_cliente) {
+	public ResponseEntity<List<ContaResponse>> listarPorCliente(
+			@PathVariable Long id_cliente) {
 		List<ContaResponse> contas = contaService.listarPorCliente(id_cliente);
 		return ResponseEntity.ok(contas);
 	}
 	
 	@GetMapping("/{id_conta}")
-	public ResponseEntity<ContaResponse> getContaById(@PathVariable Long id_conta) {
+	public ResponseEntity<ContaResponse> getContaById(
+			@PathVariable Long id_conta) {
 		ContaResponse conta = contaService.getContaById(id_conta);
 		return ResponseEntity.ok(conta);
 	}
@@ -141,14 +143,26 @@ public class ContaController {
 			@Valid @RequestBody DepositoSaqueDTO dto)
 	{	
 		contaService.sacar(id_conta, dto.getValor());
-		return ResponseEntity.ok("Depósito realizado com sucesso.");
+		return ResponseEntity.ok("Saque realizado com sucesso.");
 	}
 	
-	//@PutMapping("/{id}/manutencao")
 	//debitar tx mensal manut CC
+	@PutMapping("/{id_conta}/manutencao")
+	public ResponseEntity<String> aplicarTxManutencao(
+			@PathVariable Long id_conta){
+		contaService.debitarTaxaManutencao(id_conta);
+		return ResponseEntity.ok("Taxa de manutenção debitada com sucesso.");
+		
+	}
 	
-	//@PutMapping("/{id}/rendimentos")
 	//creditar mensal rend CP
+	@PutMapping("/{id_conta}/rendimentos")
+	public ResponseEntity<String> aplicarTxRendimento(
+			@PathVariable Long id_conta){
+		contaService.creditarRendimento(id_conta);
+		return ResponseEntity.ok("Rendimento creditado com sucesso.");
+		
+	}
 	
 	
 

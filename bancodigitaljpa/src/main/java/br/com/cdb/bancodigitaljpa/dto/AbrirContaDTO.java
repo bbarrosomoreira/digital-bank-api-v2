@@ -1,9 +1,16 @@
 package br.com.cdb.bancodigitaljpa.dto;
 
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 
 public class AbrirContaDTO {
+	
 	private Long id_cliente;
+	
+	@NotNull
+	@Enumerated(EnumType.STRING)
 	private TipoConta tipoConta;
 	
 	//G&S
@@ -20,7 +27,7 @@ public class AbrirContaDTO {
 		this.tipoConta = TipoConta.valueOf(tipoConta.toUpperCase());
 	}
 	public void setTipoConta(TipoConta tipoConta) {
-		this.tipoConta = TipoConta.valueOf(tipoConta.name().toUpperCase());
+		this.tipoConta = tipoConta;
 	}
 	
 	public AbrirContaDTO() {}

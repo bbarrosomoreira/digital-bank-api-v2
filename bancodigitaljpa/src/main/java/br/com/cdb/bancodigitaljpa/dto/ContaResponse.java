@@ -1,41 +1,47 @@
 package br.com.cdb.bancodigitaljpa.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import br.com.cdb.bancodigitaljpa.entity.ContaBase;
-import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
-import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
 import br.com.cdb.bancodigitaljpa.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public record ContaResponse (
-		Long id_conta,
-		String numConta,
-		TipoConta tipoConta,
-		Long id_cliente,
-		Moeda moeda,
-		LocalDate dataCriacao,
-		// Campos específicos (opcionais)
-	    BigDecimal taxaManutencao,
-	    BigDecimal taxaRendimento
-		){
+public abstract class ContaResponse {
+	protected Long id;
+	protected String numConta;
+	protected TipoConta tipoConta;
+	protected Long id_cliente;
+	protected Moeda moeda;
+	protected LocalDate dataCriacao;
 	
-    // Método estático para construção a partir de ContaBase
-    public static ContaResponse fromContaBase(ContaBase conta) {
-        return new ContaResponse(
-            conta.getId(),
-            conta.getNumeroConta(),
-            conta.getTipoConta(),
-            conta.getCliente().getId(),
-            conta.getMoeda(),
-            conta.getDataCriacao(),
-            // Campos específicos
-            (conta instanceof ContaCorrente cc) ? cc.getTaxaManutencao() : null,
-            (conta instanceof ContaPoupanca cp) ? cp.getTaxaRendimento() : null
-        );
+	//G
+	public Long getId() {
+		return id;
+	}
+	public String getNumConta() {
+		return numConta;
+	}
+	public TipoConta getTipoConta() {
+		return tipoConta;
+	}
+	public Long getId_cliente() {
+		return id_cliente;
+	}
+	public Moeda getMoeda() {
+		return moeda;
+	}
+	public LocalDate getDataCriacao() {
+		return dataCriacao;
+	}
+	
+	//C
+    protected ContaResponse(Long id, String numConta, TipoConta tipoConta, 
+                          Long id_cliente, Moeda moeda, LocalDate dataCriacao) {
+        this.id = id;
+        this.numConta = numConta;
+        this.tipoConta = tipoConta;
+        this.id_cliente = id_cliente;
+        this.moeda = moeda;
+        this.dataCriacao = dataCriacao;
     }
+	
 }

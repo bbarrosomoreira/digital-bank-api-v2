@@ -2,61 +2,72 @@ package br.com.cdb.bancodigitaljpa.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
+import br.com.cdb.bancodigitaljpa.dto.ContaResponseFactory;
 import br.com.cdb.bancodigitaljpa.dto.SaldoResponse;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
+import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
+import br.com.cdb.bancodigitaljpa.exceptions.ClienteNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.exceptions.ContaNaoEncontradaException;
 import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
+import br.com.cdb.bancodigitaljpa.exceptions.TipoContaInvalidoException;
+import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
-import jakarta.transaction.Transactional;
 
 @Service
 public class ContaService {
+	
+	private static final BigDecimal TAXA_COMUM_MANUTENCAO = new BigDecimal("12.00");
+	private static final BigDecimal TAXA_SUPER_MANUTENCAO = new BigDecimal("8.00");
+	private static final BigDecimal TAXA_PREMIUM_MANUTENCAO = BigDecimal.ZERO;
+	
+	private static final BigDecimal TAXA_COMUM_RENDIMENTO = new BigDecimal("0.005");
+	private static final BigDecimal TAXA_SUPER_RENDIMENTO = new BigDecimal("0.007");
+	private static final BigDecimal TAXA_PREMIUM_RENDIMENTO = new BigDecimal("0.009");
 	
 	@Autowired
 	private ContaRepository contaRepository;
 	
 	@Autowired
-	private ClienteService clienteService;
+	private ClienteRepository clienteRepository;
 	
 	//addConta de forma genérica
 	@Transactional
 	public ContaBase abrirConta(Long id_cliente, TipoConta tipo) {
 		
-		if(tipo == null) {
-			throw new IllegalArgumentException("Tipo de conta inválido.");
-		}
+		Objects.requireNonNull(tipo, "Tipo de conta não pode ser nulo");
 		
-		Cliente cliente = clienteService.getClienteById(id_cliente);
+		Cliente cliente = clienteRepository.findById(id_cliente)
+				.orElseThrow(() -> new ClienteNaoEncontradoException(id_cliente));	
 		
-		ContaBase contaNova = switch(tipo) {
-		case CORRENTE -> new ContaCorrente(cliente);
-		case POUPANCA -> new ContaPoupanca(cliente);
+		ContaBase contaNova = criarContaPorTipo(tipo, cliente);
+		
+		return contaRepository.save(contaNova);			
+	}
+	
+	private ContaBase criarContaPorTipo(TipoConta tipo, Cliente cliente) {
+		return switch(tipo) {
+			case CORRENTE -> {
+				ContaCorrente cc = new ContaCorrente(cliente);
+				cc.setTaxaManutencao(calcularTaxaManutencao(cliente.getCategoria()));
+				yield cc; // retorno de valor ~ return
+			}
+			case POUPANCA -> {
+				ContaPoupanca cp = new ContaPoupanca(cliente);
+				cp.setTaxaRendimento(calcularTaxaRendimento(cliente.getCategoria()));
+				yield cp;
+			}
 		};
-		return contaRepository.save(contaNova);
-		
-	}
-	
-	public ContaCorrente addContaCorrente(Long id_cliente) {
-		//VALIDAR SE CLIENTE EXISTE
-		Cliente cliente = clienteService.getClienteById(id_cliente);
-		ContaCorrente conta = new ContaCorrente(cliente);
-		return contaRepository.save(conta);
-	}
-	
-	public ContaPoupanca addContaPoupanca(Long id_cliente) {
-		//VALIDAR SE CLIENTE EXISTE
-		Cliente cliente = clienteService.getClienteById(id_cliente);
-		ContaPoupanca conta = new ContaPoupanca(cliente);
-		return contaRepository.save(conta);
 	}
 	
 	//get contas
@@ -73,6 +84,21 @@ public class ContaService {
 		return contas.stream()
 				.map(this::toResponse)
 				.toList();
+	}
+	
+	public List<ContaBase> listarContasBasePorCliente(Long id_cliente){
+		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
+		return contas;
+	}
+	
+	public List<ContaCorrente> listarContasCorrentePorCliente(Long id_cliente){
+		List<ContaCorrente> contas = contaRepository.findContasCorrenteByClienteId(id_cliente);
+		return contas;
+	}
+	
+	public List<ContaPoupanca> listarContasPoupancaPorCliente(Long id_cliente){
+		List<ContaPoupanca> contas = contaRepository.findContasPoupancaByClienteId(id_cliente);
+		return contas;
 	}
 	
 	//get uma conta
@@ -170,36 +196,56 @@ public class ContaService {
 	}
 	
 	//txmanutencao
-	public void debitarTaxaManutencao() {
-		//TODO
+	public void debitarTaxaManutencao(Long id_conta) {
+		ContaCorrente cc = contaRepository.findContaCorrenteById(id_conta)
+				.orElseThrow(()-> new TipoContaInvalidoException("Conta corrente não encontrada com ID: "+ id_conta));
+		BigDecimal taxaMensal = cc.getTaxaManutencao();
+		BigDecimal saldoAtual = cc.getSaldo();
+		if (taxaMensal.compareTo(saldoAtual) > 0) {
+			throw new SaldoInsuficienteException(cc.getId(), cc.getNumeroConta(), cc.getSaldo());
+		}
+		else {
+			BigDecimal saldoNovo = saldoAtual.subtract(taxaMensal);
+			cc.setSaldo(saldoNovo);
+			contaRepository.save(cc);
+		}
 	}
 	
 	//rendimento
-	public void creditarRendimento() {
-		//TODO
+	public void creditarRendimento(Long id_conta) {
+		ContaPoupanca cp = contaRepository.findContaPoupancaById(id_conta)
+				.orElseThrow(()-> new TipoContaInvalidoException("Conta poupança não encontrada com ID: "+ id_conta));
+		BigDecimal taxaMensal = cp.getTaxaRendimento();
+		BigDecimal saldoAtual = cp.getSaldo();
+		BigDecimal rendimento = saldoAtual.multiply(taxaMensal);
+		BigDecimal saldoNovo = saldoAtual.add(rendimento);
+		cp.setSaldo(saldoNovo);
+		contaRepository.save(cp);
+		
 	}
 	
-	public ContaResponse toResponse(ContaBase conta) {
-//		ContaResponse response = new ContaResponse (
-//				conta.getId(),
-//				conta.getNumeroConta(),
-//				conta.getTipoConta(),
-//				conta.getCliente().getId(),
-//				conta.getMoeda(),
-//				conta.getDataCriacao());
-		
-//	    // Adiciona campos específicos baseados no tipo de conta
-//	    if (conta instanceof ContaCorrente cc) {
-//	        response.setTaxaManutencao(cc.getTaxaManutencao());
-//	    } else if (conta instanceof ContaPoupanca cp) {
-//	        response.setTaxaRendimento(cp.getTaxaRendimento());
-//	    }
-		
-		return ContaResponse.fromContaBase(conta);
+	public ContaResponse toResponse(ContaBase conta) {		
+		return ContaResponseFactory.createFromConta(conta);
 	}
 	
 	public SaldoResponse toSaldoResponse(ContaBase conta) {
 		
 		return SaldoResponse.fromContaBase(conta);
 	}
+	
+	public BigDecimal calcularTaxaManutencao(CategoriaCliente categoria) {
+		return switch (categoria) {
+		case COMUM -> TAXA_COMUM_MANUTENCAO;
+		case SUPER -> TAXA_SUPER_MANUTENCAO;
+		case PREMIUM -> TAXA_PREMIUM_MANUTENCAO;
+		};
+	}
+	public BigDecimal calcularTaxaRendimento(CategoriaCliente categoria) {
+		return switch (categoria) {
+		case COMUM -> TAXA_COMUM_RENDIMENTO;
+		case SUPER -> TAXA_SUPER_RENDIMENTO;
+		case PREMIUM -> TAXA_PREMIUM_RENDIMENTO;
+		};
+	}
+
 }

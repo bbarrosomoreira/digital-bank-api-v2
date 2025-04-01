@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.cdb.bancodigitaljpa.dto.AtualizarCategoriaClienteDTO;
 import br.com.cdb.bancodigitaljpa.dto.CriarClienteDTO;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
+import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.service.ClienteService;
 import jakarta.validation.Valid;
 
@@ -29,34 +30,14 @@ public class ClienteController {
 	@Autowired
 	private ClienteService clienteService;
 	
-//	@Autowired
-//	private CorreiosService correiosService;
+//	private final ClienteContaService ccService;
 
 	@PostMapping("/add")
 	public ResponseEntity<Cliente> addCliente(@Valid @RequestBody CriarClienteDTO dto) {
 		
-//		EnderecoCliente enderecoCliente = correiosService.consultarEConverterCep(clienteDto.getEndereco().getCep());
-//		String rua, int numero, String complemento, String cidade, String estado, String cep
-//		EnderecoCliente enderecoCliente = new EnderecoCliente(
-//				clienteDto.getEndereco().getRua(), 
-//				clienteDto.getEndereco().getNumero(),
-//				clienteDto.getEndereco().getComplemento(),
-//				clienteDto.getEndereco().getCidade(),
-//				clienteDto.getEndereco().getEstado(),
-//				clienteDto.getEndereco().getCep());
-		
-//		Cliente cliente = clienteDto.transformaParaObjeto();
-		
 		Cliente clienteAdicionado = clienteService.addCliente(dto.transformaParaObjeto());
 //		ClienteResponse response = clienteService.toResponse(clienteAdicionado);
 		return new ResponseEntity<>(clienteAdicionado, HttpStatus.CREATED);
-
-//		if (clienteAdicionado != null) {
-//			return new ResponseEntity<>("Cliente " + cliente.getNome() + " adicionado com sucesso!",
-//					HttpStatus.CREATED);
-//		} else {
-//			return new ResponseEntity<>("Informação do cliente inválida!", HttpStatus.NOT_ACCEPTABLE);
-//		}
 	}
 
 	@GetMapping("/listAll")
@@ -104,7 +85,8 @@ public class ClienteController {
 			@PathVariable Long id_cliente, 
 			@Valid @RequestBody AtualizarCategoriaClienteDTO dto){
 		
-		Cliente atualizado = clienteService.updateCategoriaCliente(id_cliente, dto.getCategoriaCliente());
+		CategoriaCliente novaCategoria = dto.getCategoriaCliente();
+		Cliente atualizado = clienteService.updateCategoriaCliente(id_cliente, novaCategoria);
 			return ResponseEntity.ok(atualizado);
 	}
 }
