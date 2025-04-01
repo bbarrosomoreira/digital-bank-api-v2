@@ -5,12 +5,15 @@ import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 
 public class AtualizarCategoriaClienteDTO {
 
 	@JsonProperty("categoria")
 	@NotNull(message = "Categoria é um campo obrigatório")
+	@Enumerated(EnumType.STRING)
 	private CategoriaCliente categoria;
 	
 	public CategoriaCliente getCategoriaCliente() {

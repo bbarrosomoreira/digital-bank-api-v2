@@ -3,8 +3,6 @@ package br.com.cdb.bancodigitaljpa.controller;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.cdb.bancodigitaljpa.dto.AtualizarCategoriaClienteDTO;
 import br.com.cdb.bancodigitaljpa.dto.CriarClienteDTO;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
+import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.service.ClienteService;
 import jakarta.validation.Valid;
 
@@ -31,8 +30,6 @@ public class ClienteController {
 
 	@Autowired
 	private ClienteService clienteService;
-	
-	private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
 	
 //	private final ClienteContaService ccService;
 
@@ -107,8 +104,8 @@ public class ClienteController {
 	    if (bindingResult.hasErrors()) {
 	        return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
 	    }
-	    
-	    Cliente atualizado = clienteService.updateCategoriaCliente(id_cliente, dto.getCategoriaCliente());
+	    CategoriaCliente novaCategoria = dto.getCategoriaCliente();
+	    Cliente atualizado = clienteService.updateCategoriaCliente(id_cliente, novaCategoria);
 	    return ResponseEntity.ok(atualizado);
 	}
 }

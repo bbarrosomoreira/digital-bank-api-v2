@@ -38,21 +38,6 @@ public class ContaController {
 		ContaResponse response = contaService.toResponse(contaNova);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 		
-//		try {
-//			TipoConta tipo = TipoConta.valueOf(tipoConta.toUpperCase());
-//			ContaBase contaAdicionada = switch (tipo) {
-//			case CORRENTE -> contaService.addContaCorrente(id_cliente);
-//			case POUPANCA -> contaService.addContaPoupanca(id_cliente);
-//			};
-//			
-//			return ResponseEntity.status(HttpStatus.CREATED)
-//					.body(contaAdicionada.getTipo() + " adicionada com sucesso! ID: " + contaAdicionada.getId());
-//		} catch (IllegalArgumentException e) {
-//			return ResponseEntity.badRequest().body("Tipo de conta inválido. Use CORRENTE ou POUPANCA.");
-//		} catch (Exception e) {
-//			return ResponseEntity.badRequest().body("Erro: " + e.getMessage());
-//		}
-		
 	}
 	
 	@GetMapping("/tipos")
