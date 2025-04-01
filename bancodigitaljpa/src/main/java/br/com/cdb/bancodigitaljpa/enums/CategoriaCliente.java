@@ -13,6 +13,10 @@ public enum CategoriaCliente {
 		this.nivel = nivel;
 	}
 	
+	public static CategoriaCliente fromString(String value) {
+		return valueOf(value.toUpperCase());
+	}
+	
 	public String getDescricao() {
 		return descricao;
 	}

@@ -3,9 +3,12 @@ package br.com.cdb.bancodigitaljpa.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.cdb.bancodigitaljpa.dto.AtualizarCategoriaClienteDTO;
 import br.com.cdb.bancodigitaljpa.dto.CriarClienteDTO;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
-import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.service.ClienteService;
 import jakarta.validation.Valid;
 
@@ -29,6 +31,8 @@ public class ClienteController {
 
 	@Autowired
 	private ClienteService clienteService;
+	
+	private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
 	
 //	private final ClienteContaService ccService;
 
@@ -80,13 +84,31 @@ public class ClienteController {
 			return ResponseEntity.ok(atualizado);
 	}
 	
+//	@PutMapping("/{id_cliente}/categoria")
+//	public ResponseEntity<Cliente> updateCategoriaCliente(
+//			@PathVariable Long id_cliente, 
+//			@Valid @RequestBody AtualizarCategoriaClienteDTO dto){
+//		
+//		CategoriaCliente novaCategoria = dto.getCategoriaCliente();
+//		Cliente atualizado = clienteService.updateCategoriaCliente(id_cliente, novaCategoria);
+//			return ResponseEntity.ok(atualizado);
+//	}
+	
 	@PutMapping("/{id_cliente}/categoria")
-	public ResponseEntity<Cliente> updateCategoriaCliente(
-			@PathVariable Long id_cliente, 
-			@Valid @RequestBody AtualizarCategoriaClienteDTO dto){
-		
-		CategoriaCliente novaCategoria = dto.getCategoriaCliente();
-		Cliente atualizado = clienteService.updateCategoriaCliente(id_cliente, novaCategoria);
-			return ResponseEntity.ok(atualizado);
+	public ResponseEntity<?> updateCategoriaCliente(
+	        @PathVariable Long id_cliente,
+	        @RequestBody @Valid AtualizarCategoriaClienteDTO dto,
+	        BindingResult bindingResult) {
+	    
+		// Log temporário para diagnóstico
+	    System.out.println("DTO recebido: " + dto.getCategoriaCliente());
+	    System.out.println("Binding result: " + bindingResult.getAllErrors());
+	    
+	    if (bindingResult.hasErrors()) {
+	        return ResponseEntity.badRequest().body(bindingResult.getAllErrors());
+	    }
+	    
+	    Cliente atualizado = clienteService.updateCategoriaCliente(id_cliente, dto.getCategoriaCliente());
+	    return ResponseEntity.ok(atualizado);
 	}
 }

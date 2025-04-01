@@ -2,15 +2,15 @@ package br.com.cdb.bancodigitaljpa.dto;
 
 import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 
 public class AtualizarCategoriaClienteDTO {
 
-	@NotNull(message = "Categoria não pode ser nula")
-	@Enumerated(EnumType.STRING)
+	@JsonProperty("categoria")
+	@NotNull(message = "Categoria é um campo obrigatório")
 	private CategoriaCliente categoria;
 	
 	public CategoriaCliente getCategoriaCliente() {
@@ -21,8 +21,8 @@ public class AtualizarCategoriaClienteDTO {
 		try {
 			
 			this.categoria = CategoriaCliente.valueOf(categoria.toUpperCase());
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Categoria inválida. Use: "
+		} catch (IllegalArgumentException | NullPointerException e) {
+			throw new IllegalArgumentException("Categoria inválida. Valores permitidos: "
 					+ Arrays.toString(CategoriaCliente.values()));
 		}
 	}
