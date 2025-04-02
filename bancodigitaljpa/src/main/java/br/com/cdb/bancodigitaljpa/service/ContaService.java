@@ -15,7 +15,7 @@ import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
-import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
+import br.com.cdb.bancodigitaljpa.entity.Parametros;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.exceptions.ClienteNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.exceptions.ContaNaoEncontradaException;
@@ -23,23 +23,19 @@ import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
 import br.com.cdb.bancodigitaljpa.exceptions.TipoContaInvalidoException;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
+import br.com.cdb.bancodigitaljpa.repository.ParametrosRepository;
 
 @Service
 public class ContaService {
-	
-	private static final BigDecimal TAXA_COMUM_MANUTENCAO = new BigDecimal("12.00");
-	private static final BigDecimal TAXA_SUPER_MANUTENCAO = new BigDecimal("8.00");
-	private static final BigDecimal TAXA_PREMIUM_MANUTENCAO = BigDecimal.ZERO;
-	
-	private static final BigDecimal TAXA_COMUM_RENDIMENTO = new BigDecimal("0.005");
-	private static final BigDecimal TAXA_SUPER_RENDIMENTO = new BigDecimal("0.007");
-	private static final BigDecimal TAXA_PREMIUM_RENDIMENTO = new BigDecimal("0.009");
 	
 	@Autowired
 	private ContaRepository contaRepository;
 	
 	@Autowired
 	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private ParametrosRepository parametrosRepository;
 	
 	//addConta de forma genérica
 	@Transactional
@@ -56,15 +52,19 @@ public class ContaService {
 	}
 	
 	private ContaBase criarContaPorTipo(TipoConta tipo, Cliente cliente) {
+		
+		Parametros parametros = parametrosRepository.findByCategoria(cliente.getCategoria()).orElseThrow(
+				() -> new RuntimeException("Parâmetros não encontrados para a categoria: " + cliente.getCategoria()));
+		
 		return switch(tipo) {
 			case CORRENTE -> {
 				ContaCorrente cc = new ContaCorrente(cliente);
-				cc.setTaxaManutencao(calcularTaxaManutencao(cliente.getCategoria()));
+				cc.setTaxaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
 				yield cc; // retorno de valor ~ return
 			}
 			case POUPANCA -> {
 				ContaPoupanca cp = new ContaPoupanca(cliente);
-				cp.setTaxaRendimento(calcularTaxaRendimento(cliente.getCategoria()));
+				cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
 				yield cp;
 			}
 		};
@@ -231,21 +231,6 @@ public class ContaService {
 	public SaldoResponse toSaldoResponse(ContaBase conta) {
 		
 		return SaldoResponse.fromContaBase(conta);
-	}
-	
-	public BigDecimal calcularTaxaManutencao(CategoriaCliente categoria) {
-		return switch (categoria) {
-		case COMUM -> TAXA_COMUM_MANUTENCAO;
-		case SUPER -> TAXA_SUPER_MANUTENCAO;
-		case PREMIUM -> TAXA_PREMIUM_MANUTENCAO;
-		};
-	}
-	public BigDecimal calcularTaxaRendimento(CategoriaCliente categoria) {
-		return switch (categoria) {
-		case COMUM -> TAXA_COMUM_RENDIMENTO;
-		case SUPER -> TAXA_SUPER_RENDIMENTO;
-		case PREMIUM -> TAXA_PREMIUM_RENDIMENTO;
-		};
 	}
 
 }
