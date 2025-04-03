@@ -111,6 +111,9 @@ public abstract class CartaoBase implements Cartao {
 	}
 
 	//M
+	public abstract void realizarPagamento(BigDecimal valor);
+	public abstract void alterarLimite(BigDecimal valor);
+	
 	@Transient
 	public abstract TipoCartao getTipoCartao();
 	
@@ -149,10 +152,7 @@ public abstract class CartaoBase implements Cartao {
 		if (!this.senha.equals(senhaAntiga)) {
 			throw new SenhaIncorretaException("Senha atual incorreta!");
 		}
-		if (!senhaNova.matches("\\d{4}")) {
-			throw new IllegalArgumentException("A nova senha deve conter exatamente 4 dígitos numéricos!");
-		}
-		this.senha = senhaNova;
+		definirSenha(senhaNova);
 	}
 	
 	@Override

@@ -149,6 +149,7 @@ public class ContaService {
 	}
 	
 	//deposito
+	@Transactional
 	public void depositar(Long id_conta, BigDecimal valor) {
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
@@ -161,6 +162,7 @@ public class ContaService {
 	}
 	
 	//saque
+	@Transactional
 	public void sacar(Long id_conta, BigDecimal valor) throws SaldoInsuficienteException {
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
@@ -173,6 +175,7 @@ public class ContaService {
 	}
 	
 	//txmanutencao
+	@Transactional
 	public void debitarTarifaManutencao(Long id_conta) {
 		ContaCorrente cc = contaRepository.findContaCorrenteById(id_conta)
 				.orElseThrow(()-> new TipoContaInvalidoException("Conta corrente não encontrada com ID: "+ id_conta));
@@ -189,6 +192,7 @@ public class ContaService {
 	}
 	
 	//rendimento
+	@Transactional
 	public void creditarRendimento(Long id_conta) {
 		ContaPoupanca cp = contaRepository.findContaPoupancaById(id_conta)
 				.orElseThrow(()-> new TipoContaInvalidoException("Conta poupança não encontrada com ID: "+ id_conta));

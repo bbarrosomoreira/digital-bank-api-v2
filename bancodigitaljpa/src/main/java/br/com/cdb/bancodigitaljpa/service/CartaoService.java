@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigitaljpa.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,13 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.cdb.bancodigitaljpa.dto.CartaoResponse;
-import br.com.cdb.bancodigitaljpa.dto.EmitirCartaoDTO;
+import br.com.cdb.bancodigitaljpa.dto.FaturaResponse;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
+import br.com.cdb.bancodigitaljpa.enums.StatusCartao;
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
 import br.com.cdb.bancodigitaljpa.exceptions.CartaoNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.exceptions.ContaNaoEncontradaException;
@@ -35,13 +37,15 @@ public class CartaoService {
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
 
 	// add cartao
-	public CartaoResponse emitirCartao(Long id_conta, EmitirCartaoDTO dto) {
-		Objects.requireNonNull(dto, "Campos não podem ser nulos");
+	@Transactional
+	public CartaoResponse emitirCartao(Long id_conta, TipoCartao tipo, String senha) {
+		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
+		Objects.requireNonNull(senha, "A senha do cartão não pode ser nula");
 
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(() -> new ContaNaoEncontradaException(id_conta));
 
-		CartaoBase cartaoNovo = criarCartaoPorTipo(dto.getTipoCartao(), conta, dto.getSenha());
+		CartaoBase cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
 		cartaoRepository.save(cartaoNovo);
 		
 		return toResponse(cartaoNovo);
@@ -100,17 +104,66 @@ public class CartaoService {
 
 	// pagar
 	@Transactional
+	public void pagar(Long id_cartao, BigDecimal valor) {
+		CartaoBase cartao = cartaoRepository.findById(id_cartao)
+				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+		cartao.realizarPagamento(valor);
+		cartaoRepository.save(cartao);
+	}
 	
 
 	// alter limite
+	@Transactional
+	public void alterLimite(Long id_cartao, BigDecimal valor) {
+		CartaoBase cartao = cartaoRepository.findById(id_cartao)
+				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+		cartao.alterarLimite(valor);
+		cartaoRepository.save(cartao);
+	}
 
 	// alter status cartao
+	@Transactional
+	public void alterarStatus(Long id_cartao, StatusCartao statusNovo) {
+		CartaoBase cartao = cartaoRepository.findById(id_cartao)
+				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+		cartao.alterarStatus(statusNovo);
+		cartaoRepository.save(cartao);
+	}
 
 	// alter senha
+	@Transactional
+	public void alterarSenha(Long id_cartao, String senhaAntiga, String senhaNova) {
+		CartaoBase cartao = cartaoRepository.findById(id_cartao)
+				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+		cartao.alterarSenha(senhaAntiga, senhaNova);
+		cartaoRepository.save(cartao);
+	}
 
 	// get fatura
+	public FaturaResponse getFatura(Long id_cartao) {
+		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartao)
+				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+		return FaturaResponse.fromCartaoCredito(ccr);
+	}
 
-	// alter limite diario
+	// ressetar limite credito
+	@Transactional
+	public void pagarFatura(Long id_cartao) {
+		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartao)
+				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+		ccr.pagarFatura();
+		cartaoRepository.save(ccr);
+	}
+
+	// ressetar limite diario
+	@Transactional
+	public void ressetarDebito(Long id_cartao) {
+		CartaoDebito cdb = cartaoRepository.findCartaoDebitoById(id_cartao)
+				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+		cdb.ressetarLimiteDiario();
+		cartaoRepository.save(cdb);
+	}
+	
 
 	//M
 	public CartaoResponse toResponse(CartaoBase cartao) {

@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
+import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
+import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
@@ -21,6 +24,7 @@ import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.exceptions.ClienteNaoEncontradoException;
+import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
@@ -36,8 +40,8 @@ public class ClienteService {
 	@Autowired
 	private ContaRepository contaRepository;
 
-//	@Autowired
-//	private CartaoRepository cartaoRepository; // Repositório de cartões
+	@Autowired
+	private CartaoRepository cartaoRepository;
 
 	@Autowired
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
@@ -173,27 +177,21 @@ public class ClienteService {
 				});
 
 				contaRepository.saveAll(contas);
-
-//			    // ✅ Confirmar que a atualização foi aplicada
-//			    List<ContaBase> contasAtualizadas = contaRepository.findByClienteId(id_cliente);
-//			    for (ContaBase conta : contasAtualizadas) {
-//			        if (conta instanceof ContaCorrente cc && !cc.getTaxaManutencao().equals(calcularTaxaManutencao(novaCategoria))) {
-//			            throw new IllegalStateException("Erro: Taxa de manutenção não foi atualizada corretamente!");
-//			        }
-//			        if (conta instanceof ContaPoupanca cp && !cp.getTaxaRendimento().equals(calcularTaxaRendimento(novaCategoria))) {
-//			            throw new IllegalStateException("Erro: Taxa de rendimento não foi atualizada corretamente!");
-//			        }
-//			    }
 			}
 
-//			List<Cartao> cartoes = cartaoRepository.findByClienteId(id_cliente);
-//			if (cartoes.isEmpty()) {
-//				log.warn("Cliente Id {} não possui cartões.", id_cliente);
-//			} else {
-//				cartoes.forEach(cartao -> {
-//					cartao.
-//				});
-//			}
+			List<CartaoBase> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
+			
+			if (cartoes.isEmpty()) {
+				log.warn("Cliente Id {} não possui cartões.", id_cliente);
+			} else {
+				cartoes.forEach(cartao -> {
+					if (cartao instanceof CartaoCredito ccr) {
+						ccr.setLimiteCredito(parametros.getLimiteCartaoCredito());
+					} else if (cartao instanceof CartaoDebito cdb) {
+						cdb.setLimiteDiario(parametros.getLimiteDiarioDebito());
+					}
+				});
+			}
 
 		} catch (Exception e) {
 			log.error("Falha ao atualizar taxas das contas do cliente ID {}", id_cliente, e);

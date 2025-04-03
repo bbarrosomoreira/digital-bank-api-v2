@@ -25,7 +25,7 @@ public interface CartaoRepository extends JpaRepository<CartaoBase, Long> {
 	@Query("SELECT ccr FROM CartaoCredito ccr WHERE ccr.conta.id = :contaId")
 	List<CartaoCredito> findCartaoCreditoByContaId(@Param("contaId") Long contaId);
 	
-	@Query("SELECT ccr FROM CartaoCredito crd WHERE ccr.id = :id")
+	@Query("SELECT ccr FROM CartaoCredito ccr WHERE ccr.id = :id")
 	Optional<CartaoCredito> findCartaoCreditoById(@Param("id") Long id);
 	
 	@Query("SELECT cdb FROM CartaoDebito cdb WHERE cdb.conta.id = :contaId")

@@ -78,7 +78,7 @@ public class CartaoCredito extends CartaoBase {
 		this.setLimiteCredito(limiteNovo);
 	}
 	
-	//pagarFatura() e consultar
+	//pagarFatura()
 	public void pagarFatura() throws SaldoInsuficienteException {
 		if(this.totalFatura.compareTo(this.getConta().getSaldo())>0) {
 			throw new SaldoInsuficienteException(this.getConta().getId(), this.getConta().getNumeroConta(), this.getConta().getSaldo());
@@ -87,9 +87,6 @@ public class CartaoCredito extends CartaoBase {
 		this.getConta().setSaldo(saldoAtualizado);
 		this.setLimiteAtual(limiteCredito);
 		this.setTotalFatura(BigDecimal.ZERO);
-	}
-	public BigDecimal consultarFatura() {
-		return this.totalFatura;
 	}
 
 }
