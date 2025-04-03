@@ -166,7 +166,7 @@ public class ClienteService {
 			} else {
 				contas.forEach(conta -> {
 					if (conta instanceof ContaCorrente cc) {
-						cc.setTaxaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
+						cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
 					} else if (conta instanceof ContaPoupanca cp) {
 						cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
 					}

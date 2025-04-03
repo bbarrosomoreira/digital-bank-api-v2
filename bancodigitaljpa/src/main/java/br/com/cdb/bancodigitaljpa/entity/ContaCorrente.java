@@ -15,20 +15,8 @@ import jakarta.persistence.PrePersist;
 public class ContaCorrente extends ContaBase{
 
 	//atributos
-	@Column(name = "taxa_manutencao", precision = 19, scale = 2)
-	private BigDecimal taxaManutencao;
-	
-//	@Column(name = "limite_cheque_especial", precision = 19, scale = 2)
-//	private BigDecimal limiteChequeEspecial;
-//	
-//	@Column(name = "cheque_especial_utilizado", precision = 19, scale = 2)
-//	private BigDecimal chequeEspecialUtilizado = BigDecimal.ZERO;
-//	
-//	@Column(name = "data_uso_cheque_especial")
-//	private LocalDate dataUsoCheque;
-//	
-//	@Column(name = "taxa_juros_cheque_especial", precision = 5, scale = 4)
-//	private BigDecimal taxaJurosCheque;
+	@Column(name = "tarifa_manutencao", precision = 19, scale = 2)
+	private BigDecimal tarifaManutencao;
 	
 	// construtor
 	public ContaCorrente() {}
@@ -43,37 +31,13 @@ public class ContaCorrente extends ContaBase{
 		return TipoConta.CORRENTE.getDescricao();
 	}
 	
-	public BigDecimal getTaxaManutencao() {
-		return taxaManutencao;
+	// virá dos parâmetros
+	public BigDecimal getTarifaManutencao() {
+		return tarifaManutencao;
 	}
-	public void setTaxaManutencao(BigDecimal taxaManutencao) {
-		this.taxaManutencao = taxaManutencao;
+	public void setTarifaManutencao(BigDecimal tarifaManutencao) {
+		this.tarifaManutencao = tarifaManutencao;
 	}
-	
-//	public BigDecimal getLimiteChequeEspecial() {
-//	return limiteChequeEspecial;
-//}
-//public void setLimiteChequeEspecial(BigDecimal limiteChequeEspecial) {
-//	this.limiteChequeEspecial = limiteChequeEspecial;
-//}
-//public BigDecimal getChequeEspecialUtilizado() {
-//	return chequeEspecialUtilizado;
-//}
-//public void setChequeEspecialUtilizado(BigDecimal chequeEspecialUtilizado) {
-//	this.chequeEspecialUtilizado = chequeEspecialUtilizado;
-//}
-//public LocalDate getDataUsoCheque() {
-//	return dataUsoCheque;
-//}
-//public void setDataUsoCheque(LocalDate dataUsoCheque) {
-//	this.dataUsoCheque = dataUsoCheque;
-//}
-//public BigDecimal getTaxaJurosCheque() {
-//	return taxaJurosCheque;
-//}
-//public void setTaxaJurosCheque(BigDecimal taxaJurosCheque) {
-//	this.taxaJurosCheque = taxaJurosCheque;
-//}
 	
 	//metodos
 	@Override
@@ -97,7 +61,7 @@ public class ContaCorrente extends ContaBase{
 	}
 	
 	public void aplicarTxManutencao() {
-		BigDecimal novoSaldo = this.getSaldo().subtract(taxaManutencao);
+		BigDecimal novoSaldo = this.getSaldo().subtract(tarifaManutencao);
 		this.setSaldo(novoSaldo);
 	}
 	

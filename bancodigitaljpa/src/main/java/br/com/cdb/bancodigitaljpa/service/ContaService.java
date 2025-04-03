@@ -59,7 +59,7 @@ public class ContaService {
 		return switch(tipo) {
 			case CORRENTE -> {
 				ContaCorrente cc = new ContaCorrente(cliente);
-				cc.setTaxaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
+				cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
 				yield cc; // retorno de valor ~ return
 			}
 			case POUPANCA -> {
@@ -196,10 +196,10 @@ public class ContaService {
 	}
 	
 	//txmanutencao
-	public void debitarTaxaManutencao(Long id_conta) {
+	public void debitarTarifaManutencao(Long id_conta) {
 		ContaCorrente cc = contaRepository.findContaCorrenteById(id_conta)
 				.orElseThrow(()-> new TipoContaInvalidoException("Conta corrente não encontrada com ID: "+ id_conta));
-		BigDecimal taxaMensal = cc.getTaxaManutencao();
+		BigDecimal taxaMensal = cc.getTarifaManutencao();
 		BigDecimal saldoAtual = cc.getSaldo();
 		if (taxaMensal.compareTo(saldoAtual) > 0) {
 			throw new SaldoInsuficienteException(cc.getId(), cc.getNumeroConta(), cc.getSaldo());

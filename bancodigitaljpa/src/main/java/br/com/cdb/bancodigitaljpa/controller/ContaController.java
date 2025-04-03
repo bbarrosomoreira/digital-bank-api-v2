@@ -65,23 +65,6 @@ public class ContaController {
 		return ResponseEntity.ok(conta);
 	}
 	
-
-//	@GetMapping("/{id}")
-//	//obter detalhes de uma conta
-//	public ResponseEntity<ContaBase> getContaById(@PathVariable Long id, @RequestParam String tipoConta ) {
-//		ContaBase conta;
-//		if (tipoConta.equals(TipoConta.CORRENTE)) {
-//			((ContaCorrente) conta) = contaService.getContaCorrenteById(id);
-//		}
-//
-//		if (tipoConta.equals(TipoConta.POUPANCA)) {
-//			((ContaPoupanca) conta) = contaService.getContaPoupancaById(id);
-//		}
-//
-//		
-//		return ResponseEntity.ok(conta);
-//	}
-	
 	//realizar uma transf entre contas
 	@PostMapping("/{id_contaOrigem}/transferencia")
 	public ResponseEntity<String> transferir(
@@ -135,7 +118,7 @@ public class ContaController {
 	@PutMapping("/{id_conta}/manutencao")
 	public ResponseEntity<String> aplicarTxManutencao(
 			@PathVariable Long id_conta){
-		contaService.debitarTaxaManutencao(id_conta);
+		contaService.debitarTarifaManutencao(id_conta);
 		return ResponseEntity.ok("Taxa de manutenção debitada com sucesso.");
 		
 	}

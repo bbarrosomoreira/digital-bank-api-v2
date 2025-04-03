@@ -13,7 +13,7 @@ public class ContaResponseFactory {
                 cc.getCliente().getId(),
                 cc.getMoeda(),
                 cc.getDataCriacao(),
-                cc.getTaxaManutencao()
+                cc.getTarifaManutencao()
             );
         } else if (conta instanceof ContaPoupanca cp) {
             return new ContaPoupancaResponse(

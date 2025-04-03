@@ -34,7 +34,7 @@ public abstract class ContaBase implements Conta {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id_conta;
 	
-	@Column(unique=true)
+	@Column(unique = true)
 	protected String numeroConta;
 
 	@Column(nullable = false, precision = 19, scale = 2)
@@ -45,7 +45,7 @@ public abstract class ContaBase implements Conta {
 	private Moeda moeda;
 	
 	@ManyToOne
-	@JoinColumn(name = "cliente_id", nullable = false, updatable = false)
+	@JoinColumn(name = "id_cliente", nullable = false, updatable = false)
 	private Cliente cliente;
 	
 	@Column(name = "data_criacao", nullable = false, updatable = false)
@@ -54,10 +54,6 @@ public abstract class ContaBase implements Conta {
 
 	@Transient
 	public abstract TipoConta getTipoConta();
-	
-//	@Enumerated(EnumType.STRING)
-//	@Column(name = "tipo_conta", updatable = false, nullable = false)
-//	private TipoConta tipoConta;
 	
 	// Construtor protegido
 	protected ContaBase() {}
@@ -93,9 +89,6 @@ public abstract class ContaBase implements Conta {
 	public LocalDate getDataCriacao() {
 		return dataCriacao;
 	}
-//	public void setTipo(TipoConta tipoConta) {
-//		this.tipoConta = tipoConta;
-//	}
 
 	// Implementações comuns
 	@Override
