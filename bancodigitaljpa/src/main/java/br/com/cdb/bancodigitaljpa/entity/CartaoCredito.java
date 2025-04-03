@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
 import br.com.cdb.bancodigitaljpa.exceptions.LimiteInsuficienteException;
+import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -13,10 +14,6 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("CREDITO")
 public class CartaoCredito extends CartaoBase {
 	
-	//limiteCredito
-	//limiteAtual
-	//fatura
-	//pagarFatura() e consultar
 	@Column(name = "limite_mensal_de_credito", precision = 19, scale = 2)
 	private BigDecimal limiteCredito;
 	
@@ -28,9 +25,10 @@ public class CartaoCredito extends CartaoBase {
 	
 	//C
 	public CartaoCredito() {}
-	public CartaoCredito(ContaBase conta) {
-		super(conta);
-		this.limiteAtual = this.limiteCredito;
+	public CartaoCredito(ContaBase conta, String senha, BigDecimal limiteCredito) {
+		super(conta, senha);
+		this.limiteCredito = limiteCredito;
+		this.limiteAtual = limiteCredito;
 		this.totalFatura = BigDecimal.ZERO;
 	}
 	
@@ -45,17 +43,11 @@ public class CartaoCredito extends CartaoBase {
 	public BigDecimal getLimiteAtual() {
 		return limiteAtual;
 	}
-	public void setLimiteAtual() {
-		this.limiteAtual = this.limiteCredito;
-	}
 	public void setLimiteAtual(BigDecimal limiteAtual) {
 		this.limiteAtual = limiteAtual;
 	}
 	public BigDecimal getTotalFatura() {
 		return totalFatura;
-	}
-	public void setTotalFatura() {
-		this.totalFatura = BigDecimal.ZERO;
 	}
 	public void setTotalFatura(BigDecimal totalFatura) {
 		this.totalFatura = totalFatura;
@@ -66,25 +58,38 @@ public class CartaoCredito extends CartaoBase {
 	@Transient
 	public TipoCartao getTipoCartao() {
 		return TipoCartao.CREDITO;
-	}
-	
+	}	
 	@Override
 	public String getTipo() {
 		return TipoCartao.CREDITO.getDescricao();
 	}
-	
 	@Override
 	public void realizarPagamento(BigDecimal valor) throws LimiteInsuficienteException {
-		// TODO Auto-generated method stub
+		if(valor.compareTo(this.getLimiteAtual())>0) {
+			throw new LimiteInsuficienteException(this.getId_cartao(), this.getNumeroCartao(), this.getLimiteAtual());
+		}
+		BigDecimal limiteAtualizado = this.limiteAtual.subtract(valor);
+		this.setLimiteAtual(limiteAtualizado);
+		BigDecimal faturaAtualizada = this.totalFatura.add(valor);
+		this.setTotalFatura(faturaAtualizada);
 	}
 	@Override
-	public void alterarLimite() {
-		// TODO Auto-generated method stub
+	public void alterarLimite(BigDecimal limiteNovo) {
+		this.setLimiteCredito(limiteNovo);
 	}
-	@Override
-	public void alterarStatus() {
-		// TODO Auto-generated method stub
+	
+	//pagarFatura() e consultar
+	public void pagarFatura() throws SaldoInsuficienteException {
+		if(this.totalFatura.compareTo(this.getConta().getSaldo())>0) {
+			throw new SaldoInsuficienteException(this.getConta().getId(), this.getConta().getNumeroConta(), this.getConta().getSaldo());
+		}
+		BigDecimal saldoAtualizado = this.getConta().getSaldo().subtract(this.totalFatura);
+		this.getConta().setSaldo(saldoAtualizado);
+		this.setLimiteAtual(limiteCredito);
+		this.setTotalFatura(BigDecimal.ZERO);
 	}
-
+	public BigDecimal consultarFatura() {
+		return this.totalFatura;
+	}
 
 }

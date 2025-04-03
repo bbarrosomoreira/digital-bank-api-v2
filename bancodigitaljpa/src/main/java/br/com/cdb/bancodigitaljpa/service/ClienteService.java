@@ -18,12 +18,12 @@ import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
-import br.com.cdb.bancodigitaljpa.entity.Parametros;
+import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.exceptions.ClienteNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
-import br.com.cdb.bancodigitaljpa.repository.ParametrosRepository;
+import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 
 @Service
 public class ClienteService {
@@ -40,7 +40,7 @@ public class ClienteService {
 //	private CartaoRepository cartaoRepository; // Repositório de cartões
 
 	@Autowired
-	private ParametrosRepository parametrosRepository;
+	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
 
 	// Cadastrar cliente
 	public Cliente addCliente(Cliente cliente) {
@@ -155,7 +155,7 @@ public class ClienteService {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void atualizarTaxasDasContasECartoes(Long id_cliente, CategoriaCliente novaCategoria) {
 		try {
-			Parametros parametros = parametrosRepository.findByCategoria(novaCategoria).orElseThrow(
+			PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(novaCategoria).orElseThrow(
 					() -> new RuntimeException("Parâmetros não encontrados para a categoria: " + novaCategoria));
 
 			List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);

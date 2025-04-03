@@ -47,7 +47,7 @@ public abstract class CartaoBase implements Cartao {
 	@Column(nullable = false)
 	private StatusCartao status;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	@Size(min = 4, max = 4, message = "A senha deve ter exatamente 4 dígitos numéricos.")
 	private String senha;
 	
@@ -65,14 +65,13 @@ public abstract class CartaoBase implements Cartao {
 	//C
 	public CartaoBase() {}
 		
-	public CartaoBase(ContaBase conta) {
+	public CartaoBase(ContaBase conta, String senha) {
 		super();
 		this.conta = conta;
 		this.dataEmissao = LocalDate.now();
 		this.dataVencimento = this.dataEmissao.plusYears(5);
-		this.status = StatusCartao.DESATIVADO;
-		// criar uma forma de senha de 4 digitos numéricos
-		this.senha = String.format("%04d", new Random().nextInt(10000));
+		this.status = StatusCartao.ATIVADO;
+		definirSenha(senha);
 		gerarNumeroCartao();
 	}
 
@@ -152,6 +151,18 @@ public abstract class CartaoBase implements Cartao {
 		}
 		if (!senhaNova.matches("\\d{4}")) {
 			throw new IllegalArgumentException("A nova senha deve conter exatamente 4 dígitos numéricos!");
+		}
+		this.senha = senhaNova;
+	}
+	
+	@Override
+	public void alterarStatus(StatusCartao statusNovo) {
+		this.setStatus(statusNovo);
+	}
+	
+	public void definirSenha(String senhaNova) {
+		if (senha.equals(null) || !senhaNova.matches("\\d{4}")) {
+			throw new IllegalArgumentException("A senha deve ter exatamente 4 dígitos numéricos.");
 		}
 		this.senha = senhaNova;
 	}

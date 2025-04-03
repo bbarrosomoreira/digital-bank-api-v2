@@ -15,7 +15,7 @@ import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
-import br.com.cdb.bancodigitaljpa.entity.Parametros;
+import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.exceptions.ClienteNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.exceptions.ContaNaoEncontradaException;
@@ -23,7 +23,7 @@ import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
 import br.com.cdb.bancodigitaljpa.exceptions.TipoContaInvalidoException;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
-import br.com.cdb.bancodigitaljpa.repository.ParametrosRepository;
+import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 
 @Service
 public class ContaService {
@@ -35,7 +35,7 @@ public class ContaService {
 	private ClienteRepository clienteRepository;
 	
 	@Autowired
-	private ParametrosRepository parametrosRepository;
+	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
 	
 	//addConta de forma genérica
 	@Transactional
@@ -53,7 +53,7 @@ public class ContaService {
 	
 	private ContaBase criarContaPorTipo(TipoConta tipo, Cliente cliente) {
 		
-		Parametros parametros = parametrosRepository.findByCategoria(cliente.getCategoria()).orElseThrow(
+		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(cliente.getCategoria()).orElseThrow(
 				() -> new RuntimeException("Parâmetros não encontrados para a categoria: " + cliente.getCategoria()));
 		
 		return switch(tipo) {
@@ -81,24 +81,10 @@ public class ContaService {
 	//get conta por cliente
 	public List<ContaResponse> listarPorCliente(Long id_cliente){
 		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
+		//ADD VALIDACAO DE ID CLIENTE?
 		return contas.stream()
 				.map(this::toResponse)
 				.toList();
-	}
-	
-	public List<ContaBase> listarContasBasePorCliente(Long id_cliente){
-		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
-		return contas;
-	}
-	
-	public List<ContaCorrente> listarContasCorrentePorCliente(Long id_cliente){
-		List<ContaCorrente> contas = contaRepository.findContasCorrenteByClienteId(id_cliente);
-		return contas;
-	}
-	
-	public List<ContaPoupanca> listarContasPoupancaPorCliente(Long id_cliente){
-		List<ContaPoupanca> contas = contaRepository.findContasPoupancaByClienteId(id_cliente);
-		return contas;
 	}
 	
 	//get uma conta
@@ -106,15 +92,6 @@ public class ContaService {
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
 		return toResponse(conta);
-	}
-	
-	public ContaCorrente getContaCorrenteById(Long id_conta) {
-		return (ContaCorrente) contaRepository.findById(id_conta)
-				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
-	}
-	public ContaPoupanca getContaPoupancaById(Long id_conta) {
-		return (ContaPoupanca) contaRepository.findById(id_conta)
-				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
 	}
 	
 	//transferencia
@@ -228,8 +205,7 @@ public class ContaService {
 		return ContaResponseFactory.createFromConta(conta);
 	}
 	
-	public SaldoResponse toSaldoResponse(ContaBase conta) {
-		
+	public SaldoResponse toSaldoResponse(ContaBase conta) {	
 		return SaldoResponse.fromContaBase(conta);
 	}
 
