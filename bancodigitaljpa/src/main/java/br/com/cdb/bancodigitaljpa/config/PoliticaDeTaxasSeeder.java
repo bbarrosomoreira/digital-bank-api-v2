@@ -6,28 +6,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import br.com.cdb.bancodigitaljpa.entity.Parametros;
+import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
-import br.com.cdb.bancodigitaljpa.repository.ParametrosRepository;
+import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 
 @Component
-public class ParametrosSeeder implements CommandLineRunner {
+public class PoliticaDeTaxasSeeder implements CommandLineRunner {
 	
 	@Autowired
-	private ParametrosRepository parametrosRepository;
+	private PoliticaDeTaxasRepository parametrosRepository;
 	
 	@Override
     public void run(String... args) {
         if (parametrosRepository.count() == 0) { // Evita duplicação de dados
-            parametrosRepository.save(new Parametros(CategoriaCliente.COMUM, 
+            parametrosRepository.save(new PoliticaDeTaxas(CategoriaCliente.COMUM, 
                 new BigDecimal("12.00"), new BigDecimal("0.005"), 
                 new BigDecimal("1000.00"), new BigDecimal("500.00"), new BigDecimal("50.00")));
 
-            parametrosRepository.save(new Parametros(CategoriaCliente.SUPER, 
+            parametrosRepository.save(new PoliticaDeTaxas(CategoriaCliente.SUPER, 
                 new BigDecimal("8.00"), new BigDecimal("0.007"), 
                 new BigDecimal("5000.00"), new BigDecimal("2500.00"), new BigDecimal("50.00")));
 
-            parametrosRepository.save(new Parametros(CategoriaCliente.PREMIUM, 
+            parametrosRepository.save(new PoliticaDeTaxas(CategoriaCliente.PREMIUM, 
                 new BigDecimal("0.00"), new BigDecimal("0.009"), 
                 new BigDecimal("10000.00"), new BigDecimal("5000.00"), new BigDecimal("0.00")));
         }

@@ -28,6 +28,8 @@ public class Transacao {
 	
 	private String tipo; //SAQUE, DEPOSITO, etc
 	
+	private String descricao;
+	
 	//GETTERS & SETTERS
 	public Long getId() {
 		return id;
@@ -65,7 +67,13 @@ public class Transacao {
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
-
+	public String getDescricao() {
+		return descricao;
+	}
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+	
 	//constructor
 	public Transacao() {
 	}

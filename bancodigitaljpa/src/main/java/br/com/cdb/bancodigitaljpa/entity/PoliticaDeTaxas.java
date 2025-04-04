@@ -12,7 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Parametros {
+public class PoliticaDeTaxas {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -76,9 +76,9 @@ public class Parametros {
 	
  
 	//C
-	public Parametros() {
+	public PoliticaDeTaxas() {
 	}
-	public Parametros(
+	public PoliticaDeTaxas(
 			CategoriaCliente categoria, 
 			BigDecimal tarifaManutencaoMensalContaCorrente,
 			BigDecimal rendimentoPercentualMensalContaPoupanca, 

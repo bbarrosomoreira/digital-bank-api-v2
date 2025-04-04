@@ -20,13 +20,13 @@ public interface ContaRepository extends JpaRepository<ContaBase, Long> {
 	@Query("SELECT cc FROM ContaCorrente cc WHERE cc.cliente.id = :clienteId")
 	List<ContaCorrente> findContasCorrenteByClienteId(@Param("clienteId") Long clienteId);
 	
-	@Query("SELECT cp FROM ContaPoupanca cp WHERE cp.cliente.id = :clienteId")
-	List<ContaPoupanca> findContasPoupancaByClienteId(@Param("clienteId") Long clienteId);
-	
 	@Query("SELECT cc FROM ContaCorrente cc WHERE cc.id = :id")
 	Optional<ContaCorrente> findContaCorrenteById(@Param("id") Long id); 
 	
+	@Query("SELECT cp FROM ContaPoupanca cp WHERE cp.cliente.id = :clienteId")
+	List<ContaPoupanca> findContasPoupancaByClienteId(@Param("clienteId") Long clienteId);
+	
 	@Query("SELECT cp FROM ContaPoupanca cp WHERE cp.id = :id")
-	Optional<ContaPoupanca> findContaPoupancaById(@Param("id") Long id); 
+	Optional<ContaPoupanca> findContaPoupancaById(@Param("id") Long id);
 	
 }

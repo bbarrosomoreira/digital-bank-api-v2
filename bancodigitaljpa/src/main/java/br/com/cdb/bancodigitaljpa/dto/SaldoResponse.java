@@ -7,7 +7,7 @@ import br.com.cdb.bancodigitaljpa.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 
 public record SaldoResponse (
-		Long id_conta,
+		Long id,
 		String numConta,
 		TipoConta tipoConta,
 		Long id_cliente,

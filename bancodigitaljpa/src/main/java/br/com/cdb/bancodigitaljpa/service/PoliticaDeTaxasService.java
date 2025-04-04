@@ -5,23 +5,23 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigitaljpa.entity.Parametros;
+import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
-import br.com.cdb.bancodigitaljpa.repository.ParametrosRepository;
+import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 
 @Service
-public class ParametrosService {
+public class PoliticaDeTaxasService {
 	
 	@Autowired
-	private ParametrosRepository parametrosRepository;
+	private PoliticaDeTaxasRepository parametrosRepository;
 	
 
-	public Parametros buscarParametosPorCategoria(CategoriaCliente categoria) {
+	public PoliticaDeTaxas buscarParametosPorCategoria(CategoriaCliente categoria) {
 		return parametrosRepository.findByCategoria(categoria)
 				.orElseThrow(()-> new RuntimeException("Parâmetros não encontrados para a categoria: " + categoria));
 	}
 	
-	public List<Parametros> listarTodosParametros(){
+	public List<PoliticaDeTaxas> listarTodosParametros(){
 		return parametrosRepository.findAll();
 	}
 }

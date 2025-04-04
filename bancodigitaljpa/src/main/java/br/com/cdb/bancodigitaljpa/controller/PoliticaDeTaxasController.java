@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigitaljpa.entity.Parametros;
+import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
-import br.com.cdb.bancodigitaljpa.service.ParametrosService;
+import br.com.cdb.bancodigitaljpa.service.PoliticaDeTaxasService;
 
 @RestController
 @RequestMapping("/parametros")
-public class ParametrosController {
+public class PoliticaDeTaxasController {
 	
 	@Autowired
-	private ParametrosService parametrosService;
+	private PoliticaDeTaxasService parametrosService;
 	
 	@GetMapping("/{categoria}")
-	public ResponseEntity<Parametros> buscarPorCategoria(
+	public ResponseEntity<PoliticaDeTaxas> buscarPorCategoria(
 			@PathVariable String categoria){
 		try {
 			CategoriaCliente categoriaEnum = CategoriaCliente.valueOf(categoria.toUpperCase());
@@ -32,7 +32,7 @@ public class ParametrosController {
 	}
 	
     @GetMapping("/listAll")
-    public ResponseEntity<List<Parametros>> listarTodos() {
+    public ResponseEntity<List<PoliticaDeTaxas>> listarTodos() {
         return ResponseEntity.ok(parametrosService.listarTodosParametros());
     }
 
