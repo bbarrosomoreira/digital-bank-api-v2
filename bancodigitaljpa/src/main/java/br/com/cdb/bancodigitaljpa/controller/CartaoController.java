@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.AlterarSenhaDTO;
+import br.com.cdb.bancodigitaljpa.dto.AlterarStatusCartaoDTO;
 import br.com.cdb.bancodigitaljpa.dto.CartaoResponse;
 import br.com.cdb.bancodigitaljpa.dto.EmitirCartaoDTO;
 import br.com.cdb.bancodigitaljpa.dto.FaturaResponse;
 import br.com.cdb.bancodigitaljpa.dto.PagamentoDTO;
 import br.com.cdb.bancodigitaljpa.dto.PagamentoResponse;
-import br.com.cdb.bancodigitaljpa.enums.StatusCartao;
+import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.service.CartaoService;
 
 @RestController
@@ -87,7 +88,8 @@ public class CartaoController {
 	@PutMapping("/{id_cartao}/status")
 	public ResponseEntity<String> alterarStatus(
 			@PathVariable Long id_cartao,
-			@RequestBody StatusCartao statusNovo){
+			@RequestBody AlterarStatusCartaoDTO dto){
+		Status statusNovo = dto.getStatus();
 		cartaoService.alterarStatus(id_cartao, statusNovo);
 		return ResponseEntity.ok("O cartão " + cartaoService.getCartaoById(id_cartao).getNumCartao() + " está "+ statusNovo.toString().toLowerCase());
 	}

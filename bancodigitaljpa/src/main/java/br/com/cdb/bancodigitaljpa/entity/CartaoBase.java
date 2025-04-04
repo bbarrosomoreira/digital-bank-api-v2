@@ -7,7 +7,7 @@ import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigitaljpa.enums.StatusCartao;
+import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
 import br.com.cdb.bancodigitaljpa.exceptions.SenhaIncorretaException;
 import jakarta.persistence.Column;
@@ -45,7 +45,7 @@ public abstract class CartaoBase implements Cartao {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private StatusCartao status;
+	private Status status;
 	
 	@Column(nullable = true)
 	@Size(min = 4, max = 4, message = "A senha deve ter exatamente 4 dígitos numéricos.")
@@ -70,7 +70,7 @@ public abstract class CartaoBase implements Cartao {
 		this.conta = conta;
 		this.dataEmissao = LocalDate.now();
 		this.dataVencimento = this.dataEmissao.plusYears(5);
-		this.status = StatusCartao.ATIVADO;
+		this.status = Status.ATIVADO;
 		definirSenha(senha);
 		gerarNumeroCartao();
 	}
@@ -85,10 +85,10 @@ public abstract class CartaoBase implements Cartao {
 	public ContaBase getConta() {
 		return conta;
 	}
-	public StatusCartao getStatus() {
+	public Status getStatus() {
 		return status;
 	}
-	public void setStatus(StatusCartao status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 	public String getSenha() {
@@ -156,7 +156,7 @@ public abstract class CartaoBase implements Cartao {
 	}
 	
 	@Override
-	public void alterarStatus(StatusCartao statusNovo) {
+	public void alterarStatus(Status statusNovo) {
 		this.setStatus(statusNovo);
 	}
 	

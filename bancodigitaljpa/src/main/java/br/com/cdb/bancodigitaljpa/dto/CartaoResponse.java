@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigitaljpa.enums.StatusCartao;
+import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
 
 public class CartaoResponse {
@@ -13,7 +13,7 @@ public class CartaoResponse {
 	private Long id;
 	private String numCartao;
 	private TipoCartao tipoCartao;
-	private StatusCartao status;
+	private Status status;
 	private Long id_conta;
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dataVencimento;
@@ -29,7 +29,7 @@ public class CartaoResponse {
 	public TipoCartao getTipoCartao() {
 		return tipoCartao;
 	}
-	public StatusCartao getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 	public Long getId_conta() {
@@ -43,7 +43,7 @@ public class CartaoResponse {
 	}
 
 	//C
-	public CartaoResponse(Long id, String numCartao, TipoCartao tipoCartao, StatusCartao status, Long id_conta,
+	public CartaoResponse(Long id, String numCartao, TipoCartao tipoCartao, Status status, Long id_conta,
 			LocalDate dataVencimento, BigDecimal limite) {
 		this.id = id;
 		this.numCartao = numCartao;

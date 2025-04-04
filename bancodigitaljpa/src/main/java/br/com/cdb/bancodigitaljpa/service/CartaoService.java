@@ -17,7 +17,7 @@ import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
-import br.com.cdb.bancodigitaljpa.enums.StatusCartao;
+import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
 import br.com.cdb.bancodigitaljpa.exceptions.CartaoNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.exceptions.ContaNaoEncontradaException;
@@ -129,7 +129,7 @@ public class CartaoService {
 
 	// alter status cartao
 	@Transactional
-	public void alterarStatus(Long id_cartao, StatusCartao statusNovo) {
+	public void alterarStatus(Long id_cartao, Status statusNovo) {
 		CartaoBase cartao = cartaoRepository.findById(id_cartao)
 				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
 		cartao.alterarStatus(statusNovo);
