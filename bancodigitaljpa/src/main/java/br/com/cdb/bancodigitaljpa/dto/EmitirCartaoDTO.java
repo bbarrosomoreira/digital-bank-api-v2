@@ -1,7 +1,6 @@
 package br.com.cdb.bancodigitaljpa.dto;
 
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +14,7 @@ public class EmitirCartaoDTO {
 	@Enumerated(EnumType.STRING)
 	private TipoCartao tipoCartao;
 	
-	@Column(nullable = true)
+	@NotNull
 	@Size(min = 4, max = 4, message = "A senha deve ter exatamente 4 dígitos numéricos.")
 	private String senha;
 

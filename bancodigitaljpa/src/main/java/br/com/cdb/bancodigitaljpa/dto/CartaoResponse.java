@@ -3,6 +3,8 @@ package br.com.cdb.bancodigitaljpa.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import br.com.cdb.bancodigitaljpa.enums.StatusCartao;
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
 
@@ -13,6 +15,7 @@ public class CartaoResponse {
 	private TipoCartao tipoCartao;
 	private StatusCartao status;
 	private Long id_conta;
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dataVencimento;
 	private BigDecimal limite;
 	

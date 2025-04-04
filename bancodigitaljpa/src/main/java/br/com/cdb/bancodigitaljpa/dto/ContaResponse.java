@@ -2,6 +2,8 @@ package br.com.cdb.bancodigitaljpa.dto;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import br.com.cdb.bancodigitaljpa.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 
@@ -11,6 +13,7 @@ public abstract class ContaResponse {
 	protected TipoConta tipoConta;
 	protected Long id_cliente;
 	protected Moeda moeda;
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	protected LocalDate dataCriacao;
 	
 	//G

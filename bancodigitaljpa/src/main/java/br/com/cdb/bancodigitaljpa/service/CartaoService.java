@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.cdb.bancodigitaljpa.dto.CartaoResponse;
 import br.com.cdb.bancodigitaljpa.dto.FaturaResponse;
+import br.com.cdb.bancodigitaljpa.dto.PagamentoResponse;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
@@ -20,6 +21,7 @@ import br.com.cdb.bancodigitaljpa.enums.StatusCartao;
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
 import br.com.cdb.bancodigitaljpa.exceptions.CartaoNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.exceptions.ContaNaoEncontradaException;
+import br.com.cdb.bancodigitaljpa.exceptions.SenhaIncorretaException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
@@ -104,17 +106,21 @@ public class CartaoService {
 
 	// pagar
 	@Transactional
-	public void pagar(Long id_cartao, BigDecimal valor) {
+	public PagamentoResponse pagar(Long id_cartao, BigDecimal valor, String senha, String descricao) {
 		CartaoBase cartao = cartaoRepository.findById(id_cartao)
 				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+		if (!senha.equals(cartao.getSenha())) {
+			throw new SenhaIncorretaException("Compra não finalizda. Senha incorreta!");
+		}
 		cartao.realizarPagamento(valor);
 		cartaoRepository.save(cartao);
+		return PagamentoResponse.toPagamentoResponse(cartao, valor, descricao);
 	}
 	
 
 	// alter limite
 	@Transactional
-	public void alterLimite(Long id_cartao, BigDecimal valor) {
+	public void alterarLimite(Long id_cartao, BigDecimal valor) {
 		CartaoBase cartao = cartaoRepository.findById(id_cartao)
 				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
 		cartao.alterarLimite(valor);

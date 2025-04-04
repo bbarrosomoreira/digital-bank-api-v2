@@ -161,7 +161,7 @@ public abstract class CartaoBase implements Cartao {
 	}
 	
 	public void definirSenha(String senhaNova) {
-		if (senha.equals(null) || !senhaNova.matches("\\d{4}")) {
+		if (senhaNova == null || !senhaNova.matches("\\d{4}")) {
 			throw new IllegalArgumentException("A senha deve ter exatamente 4 dígitos numéricos.");
 		}
 		this.senha = senhaNova;
