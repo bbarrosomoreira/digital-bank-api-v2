@@ -6,11 +6,12 @@ import java.math.BigDecimal;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
 
 @Entity
-//@DiscriminatorValue("POUPANCA")
+@DiscriminatorValue("POUPANCA")
 public class ContaPoupanca extends ContaBase {
 	
 	//atributos

@@ -36,7 +36,7 @@ public abstract class CartaoBase implements Cartao {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id_cartao;
 	
-	@Column(unique = true)
+	@Column(nullable = false, unique = true, updatable = false)
 	protected String numeroCartao;
 	
 	@ManyToOne
@@ -47,7 +47,7 @@ public abstract class CartaoBase implements Cartao {
 	@Column(nullable = false)
 	private Status status;
 	
-	@Column(nullable = true)
+	@Column(nullable = false)
 	@Size(min = 4, max = 4, message = "A senha deve ter exatamente 4 dígitos numéricos.")
 	private String senha;
 	

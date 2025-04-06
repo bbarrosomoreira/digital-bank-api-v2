@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
-import br.com.cdb.bancodigitaljpa.dto.ContaResponseFactory;
 import br.com.cdb.bancodigitaljpa.dto.SaldoResponse;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
@@ -60,7 +59,7 @@ public class ContaService {
 			case CORRENTE -> {
 				ContaCorrente cc = new ContaCorrente(cliente);
 				cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
-				yield cc; // retorno de valor ~ return
+				yield cc; // retorno de valor
 			}
 			case POUPANCA -> {
 				ContaPoupanca cp = new ContaPoupanca(cliente);
@@ -206,7 +205,16 @@ public class ContaService {
 	}
 	
 	public ContaResponse toResponse(ContaBase conta) {		
-		return ContaResponseFactory.createFromConta(conta);
+		return new ContaResponse (
+				conta.getId(),
+				conta.getNumeroConta(),
+				conta.getTipoConta(),
+				conta.getCliente().getId(),
+				conta.getMoeda(),
+				conta.getDataCriacao(),
+				(conta instanceof ContaCorrente) ? ((ContaCorrente) conta).getTarifaManutencao() :
+					(conta instanceof ContaPoupanca) ? ((ContaPoupanca) conta).getTaxaRendimento() : null);
+	
 	}
 	
 	public SaldoResponse toSaldoResponse(ContaBase conta) {	
