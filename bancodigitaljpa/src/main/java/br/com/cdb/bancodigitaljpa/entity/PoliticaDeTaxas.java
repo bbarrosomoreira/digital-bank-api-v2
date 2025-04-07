@@ -29,6 +29,7 @@ public class PoliticaDeTaxas {
     private BigDecimal limiteCartaoCredito;
     private BigDecimal limiteDiarioDebito;
     private BigDecimal tarifaSeguroViagem;
+    private BigDecimal tarifaSeguroFraude;
     
     //G&S
 	public Long getId() {
@@ -73,8 +74,13 @@ public class PoliticaDeTaxas {
 	public void setTarifaSeguroViagem(BigDecimal tarifaSeguroViagem) {
 		this.tarifaSeguroViagem = tarifaSeguroViagem;
 	}
+	public BigDecimal getTarifaSeguroFraude() {
+		return tarifaSeguroFraude;
+	}
+	public void setTarifaSeguroFraude(BigDecimal tarifaSeguroFraude) {
+		this.tarifaSeguroFraude = tarifaSeguroFraude;
+	}
 	
- 
 	//C
 	public PoliticaDeTaxas() {
 	}
@@ -84,7 +90,8 @@ public class PoliticaDeTaxas {
 			BigDecimal rendimentoPercentualMensalContaPoupanca, 
 			BigDecimal limiteCartaoCredito, 
 			BigDecimal limiteDiarioDebito,
-			BigDecimal tarifaSeguroViagem) {
+			BigDecimal tarifaSeguroViagem,
+			BigDecimal tarifaSeguroFraude) {
 		super();
 		this.categoria = categoria;
 		this.tarifaManutencaoMensalContaCorrente = tarifaManutencaoMensalContaCorrente;
@@ -92,6 +99,7 @@ public class PoliticaDeTaxas {
 		this.limiteCartaoCredito = limiteCartaoCredito;
 		this.limiteDiarioDebito = limiteDiarioDebito;
 		this.tarifaSeguroViagem = tarifaSeguroViagem;
+		this.tarifaSeguroFraude = tarifaSeguroFraude;
 	}
     
 

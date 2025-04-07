@@ -80,7 +80,6 @@ public class ContaService {
 	//get conta por cliente
 	public List<ContaResponse> listarPorCliente(Long id_cliente){
 		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
-		//ADD VALIDACAO DE ID CLIENTE?
 		return contas.stream()
 				.map(this::toResponse)
 				.toList();

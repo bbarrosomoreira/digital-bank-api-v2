@@ -11,4 +11,5 @@ public interface Conta {
 	void pix(Conta destino, BigDecimal valor) throws SaldoInsuficienteException;
 	void depositar(BigDecimal valor);
 	void sacar(BigDecimal valor) throws SaldoInsuficienteException;
+	void setarTarifa(BigDecimal valor);
 }

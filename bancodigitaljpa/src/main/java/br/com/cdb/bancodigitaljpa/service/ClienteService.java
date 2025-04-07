@@ -18,6 +18,7 @@ import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
+import br.com.cdb.bancodigitaljpa.entity.Conta;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
@@ -40,6 +41,8 @@ public class ClienteService {
 	@Autowired
 	private ContaRepository contaRepository;
 
+	private Conta conta;
+	
 	@Autowired
 	private CartaoRepository cartaoRepository;
 
@@ -161,6 +164,8 @@ public class ClienteService {
 		try {
 			PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(novaCategoria).orElseThrow(
 					() -> new RuntimeException("Parâmetros não encontrados para a categoria: " + novaCategoria));
+			
+//			conta.setarTarifa(null);
 
 			List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
 
