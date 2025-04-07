@@ -26,7 +26,6 @@ import jakarta.persistence.ManyToOne;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo_conta", discriminatorType = DiscriminatorType.STRING)
-//@MappedSuperclass
 public abstract class ContaBase implements Conta {
 	
 	//atributos

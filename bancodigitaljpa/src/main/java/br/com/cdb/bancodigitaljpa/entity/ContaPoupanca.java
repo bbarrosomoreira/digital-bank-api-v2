@@ -29,6 +29,9 @@ public class ContaPoupanca extends ContaBase {
 	public void setTaxaRendimento(BigDecimal taxaRendimento) {
 		this.taxaRendimento = taxaRendimento;
 	}
+	public void setarTarifa(BigDecimal taxaRendimento) {
+		this.setTaxaRendimento(taxaRendimento);
+	}
 	
 	//constructor
 	public ContaPoupanca() {}
