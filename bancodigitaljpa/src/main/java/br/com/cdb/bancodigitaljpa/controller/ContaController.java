@@ -32,7 +32,7 @@ public class ContaController {
 	private ContaService contaService;
 	
 	//criar nova conta
-	@PostMapping("/add")
+	@PostMapping
 	public ResponseEntity<ContaResponse> abrirConta(@RequestBody AbrirContaDTO dto){
 		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta());
 		ContaResponse response = contaService.toResponse(contaNova);
@@ -45,7 +45,7 @@ public class ContaController {
 		return ResponseEntity.ok(Arrays.asList(TipoConta.values()));
 	}
 	
-	@GetMapping("/listAll")
+	@GetMapping
 	public ResponseEntity<List<ContaResponse>> getContas() {
 		List<ContaResponse> contas = contaService.getContas();
 		return ResponseEntity.ok(contas);

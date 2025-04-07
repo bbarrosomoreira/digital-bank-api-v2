@@ -8,4 +8,5 @@ import br.com.cdb.bancodigitaljpa.entity.Cliente;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
+	boolean existsByCpf(String cpf);
 }

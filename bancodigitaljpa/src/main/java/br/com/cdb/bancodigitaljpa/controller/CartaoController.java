@@ -32,7 +32,7 @@ public class CartaoController {
 	private CartaoService cartaoService;
 	
 	//post emitir novo cartao
-	@PostMapping("/add")
+	@PostMapping
 	public ResponseEntity<CartaoResponse> emitirCartao(@RequestBody EmitirCartaoDTO dto) {
 		CartaoResponse cartaoNovo = cartaoService.emitirCartao(dto.getId_conta(), dto.getTipoCartao(), dto.getSenha());
 		return ResponseEntity.status(HttpStatus.CREATED).body(cartaoNovo);
@@ -46,7 +46,7 @@ public class CartaoController {
 	}
 
 	//outros gets
-	@GetMapping("/listAll")
+	@GetMapping
 	public ResponseEntity<List<CartaoResponse>> getCartoes(){
 		List<CartaoResponse> cartoes = cartaoService.getCartoes();
 		return ResponseEntity.ok(cartoes);

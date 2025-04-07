@@ -30,7 +30,7 @@ public class SeguroController {
 	private SeguroService seguroService;
 	
 	//contratar seguro
-	@PostMapping("/add")
+	@PostMapping
 	public ResponseEntity<SeguroResponse> contratarSeguro (@RequestBody ContratarSeguroDTO dto) {
 		SeguroResponse response = seguroService.contratarSeguro(dto.getId_cartao(), dto.getTipo());
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -47,7 +47,7 @@ public class SeguroController {
 	}
 	
 	// Listar todos seguros
-	@GetMapping("/listAll")
+	@GetMapping
 	public ResponseEntity<List<SeguroResponse>> getSeguros(){
 		List<SeguroResponse> seguros = seguroService.getSeguros();
 		return ResponseEntity.ok(seguros);

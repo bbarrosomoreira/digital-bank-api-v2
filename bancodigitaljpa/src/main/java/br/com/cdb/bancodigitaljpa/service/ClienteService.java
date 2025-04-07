@@ -9,11 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.cdb.bancodigitaljpa.dto.ClienteResponse;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
@@ -26,12 +26,14 @@ import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
 import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
 import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
-import br.com.cdb.bancodigitaljpa.exceptions.ClienteNaoEncontradoException;
+import br.com.cdb.bancodigitaljpa.exceptions.ResourceAlreadyExistsException;
+import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
+import jakarta.validation.ValidationException;
 
 @Service
 public class ClienteService {
@@ -43,10 +45,10 @@ public class ClienteService {
 
 	@Autowired
 	private ContaRepository contaRepository;
-	
+
 	@Autowired
 	private CartaoRepository cartaoRepository;
-	
+
 	@Autowired
 	private SeguroRepository seguroRepository;
 
@@ -54,41 +56,49 @@ public class ClienteService {
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
 
 	// Cadastrar cliente
-	public Cliente addCliente(Cliente cliente) {
+	public ClienteResponse addCliente(Cliente cliente) {
+		validarCpfUnico(cliente.getCpf());
+		validarMaiorIdade(cliente);
 
-		return clienteRepository.save(cliente);
+		clienteRepository.save(cliente);
+		return toResponse(cliente);
 	}
 
 	// Ver cliente(s)
-	public List<Cliente> getClientes() {
-		return clienteRepository.findAll();
+	public List<ClienteResponse> getClientes() {
+		List<Cliente> clientes = clienteRepository.findAll();
+		return clientes.stream().map(this::toResponse).toList();
 	}
 
-	public Cliente getClienteById(Long id_cliente) {
-		return clienteRepository.findById(id_cliente).orElseThrow(() -> new ClienteNaoEncontradoException(id_cliente));
+	public ClienteResponse getClienteById(Long id_cliente) {
+		Cliente cliente = clienteRepository.findById(id_cliente)
+				.orElseThrow(() -> new ResourceNotFoundException("Cliente com ID " + id_cliente + " não encontrado."));
+		return toResponse(cliente);
 	}
 
 	// Excluir cadastro de cliente
 	@Transactional
-	public boolean deleteCliente(Long id_cliente) {
-		try {
-			clienteRepository.deleteById(id_cliente);
-			log.debug("Cliente ID {} deletado com sucesso", id_cliente);
-			return true;
-		} catch (EmptyResultDataAccessException e) {
-			log.warn("Tentativa de deletar cliente ID {} inexistente", id_cliente);
-			return false;
-		} catch (Exception e) {
-			log.error("Falha ao deletar cliente com ID {} ", id_cliente, e);
-			return false;
+	public void deleteCliente(Long id_cliente) {
+		Cliente cliente = clienteRepository.findById(id_cliente)
+			.orElseThrow(() -> new ResourceNotFoundException("Cliente com ID " + id_cliente + " não encontrado."));
+
+		boolean temContas = !contaRepository.findByClienteId(id_cliente).isEmpty();
+		boolean temCartoes = !cartaoRepository.findByContaClienteId(id_cliente).isEmpty();
+		boolean temSeguros = !seguroRepository.findByClienteId(id_cliente).isEmpty();
+
+		if (temContas || temCartoes || temSeguros) {
+			throw new ValidationException("Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.");
 		}
+
+		clienteRepository.delete(cliente);
+		log.info("Cliente ID {} deletado com sucesso", id_cliente);
 	}
 
 	// Atualizações de cliente
 	@Transactional
-	public Cliente updateParcial(Long id_cliente, Map<String, Object> camposAtualizados) {
+	public ClienteResponse updateParcial(Long id_cliente, Map<String, Object> camposAtualizados) {
 		Cliente cliente = clienteRepository.findById(id_cliente)
-				.orElseThrow(() -> new ClienteNaoEncontradoException(id_cliente));
+				.orElseThrow(() -> new ResourceNotFoundException("Cliente com ID " + id_cliente + " não encontrado."));
 
 		// atualizando apenas campos não nulos
 		camposAtualizados.forEach((campo, valor) -> {
@@ -118,36 +128,36 @@ public class ClienteService {
 				break;
 			}
 		});
-
-		return clienteRepository.save(cliente);
+		clienteRepository.save(cliente);
+		return toResponse(cliente);
 	}
 
 	@Transactional
-	public Cliente updateCliente(Long id_cliente, Cliente clienteAtualizado) {
-		Cliente clienteExistente = clienteRepository.findById(id_cliente)
-				.orElseThrow(() -> new ClienteNaoEncontradoException(id_cliente));
+	public ClienteResponse updateCliente(Long id_cliente, Cliente clienteAtualizado) {
+		Cliente cliente = clienteRepository.findById(id_cliente)
+				.orElseThrow(() -> new ResourceNotFoundException("Cliente com ID " + id_cliente + " não encontrado."));
 
 		// atualiza todos os campos
-		clienteExistente.setNome(clienteAtualizado.getNome());
-		clienteExistente.setCpf(clienteAtualizado.getCpf());
-		clienteExistente.setDataNascimento(clienteAtualizado.getDataNascimento());
-		clienteExistente.setCategoria(clienteAtualizado.getCategoria());
-
-		return clienteRepository.save(clienteExistente);
+		cliente.setNome(clienteAtualizado.getNome());
+		cliente.setCpf(clienteAtualizado.getCpf());
+		cliente.setDataNascimento(clienteAtualizado.getDataNascimento());
+		cliente.setCategoria(clienteAtualizado.getCategoria());
+		clienteRepository.save(cliente);	
+		return toResponse(cliente);
 	}
 
 	// CRIAR CLIENTE RESPONSE
 	@Transactional
-	public Cliente updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) {
+	public ClienteResponse updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) {
 		Cliente cliente = clienteRepository.findById(id_cliente)
-				.orElseThrow(() -> new ClienteNaoEncontradoException(id_cliente));
+				.orElseThrow(() -> new ResourceNotFoundException("Cliente com ID " + id_cliente + " não encontrado."));
 
 		if (cliente.getCategoria().equals(novaCategoria)) {
 			log.info("Cliente ID {} já está na categoria {}. Nenhuma atualização necessária.", id_cliente,
 					novaCategoria);
-			return cliente;
+			return toResponse(cliente);
 		}
-		
+
 		cliente.setCategoria(novaCategoria);
 		clienteRepository.save(cliente);
 
@@ -160,7 +170,7 @@ public class ClienteService {
 
 		atualizarTaxasDasContasECartoesESeguros(id_cliente, cliente.getCategoria());
 
-		return clienteAtualizado;
+		return toResponse(clienteAtualizado);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -168,7 +178,7 @@ public class ClienteService {
 		try {
 			PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(novaCategoria).orElseThrow(
 					() -> new RuntimeException("Parâmetros não encontrados para a categoria: " + novaCategoria));
-			
+
 //			conta.setarTarifa(null);
 
 			List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
@@ -189,7 +199,7 @@ public class ClienteService {
 			}
 
 			List<CartaoBase> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
-			
+
 			if (cartoes.isEmpty()) {
 				log.warn("Cliente Id {} não possui cartões.", id_cliente);
 			} else {
@@ -201,9 +211,9 @@ public class ClienteService {
 					}
 				});
 			}
-			
+
 			List<SeguroBase> seguros = seguroRepository.findByClienteId(id_cliente);
-			
+
 			if (seguros.isEmpty()) {
 				log.warn("Cliente Id {} não possui seguros.", id_cliente);
 			} else {
@@ -215,12 +225,25 @@ public class ClienteService {
 					}
 				});
 			}
-			
 
 		} catch (Exception e) {
 			log.error("Falha ao atualizar taxas das contas do cliente ID {}", id_cliente, e);
 			throw e;
 		}
+	}
+
+	// M
+	public ClienteResponse toResponse(Cliente cliente) {
+		return new ClienteResponse(cliente);
+	}
+	private void validarCpfUnico(String cpf) {
+		if (clienteRepository.existsByCpf(cpf))
+			throw new ResourceAlreadyExistsException("Já existe um cadastro no sistema com o CPF informado!");
+	}
+
+	private void validarMaiorIdade(Cliente cliente) {
+		if (!cliente.isMaiorDeIdade())
+			throw new ValidationException("Cliente deve ser maior de idade para se cadastrar.");
 	}
 
 }
