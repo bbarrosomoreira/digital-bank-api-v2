@@ -18,17 +18,20 @@ import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
-import br.com.cdb.bancodigitaljpa.entity.Conta;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
+import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
+import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.exceptions.ClienteNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
+import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
 
 @Service
 public class ClienteService {
@@ -40,11 +43,12 @@ public class ClienteService {
 
 	@Autowired
 	private ContaRepository contaRepository;
-
-	private Conta conta;
 	
 	@Autowired
 	private CartaoRepository cartaoRepository;
+	
+	@Autowired
+	private SeguroRepository seguroRepository;
 
 	@Autowired
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
@@ -154,13 +158,13 @@ public class ClienteService {
 			throw new IllegalStateException("Erro: Categoria do cliente não foi atualizada no banco!");
 		}
 
-		atualizarTaxasDasContasECartoes(id_cliente, cliente.getCategoria());
+		atualizarTaxasDasContasECartoesESeguros(id_cliente, cliente.getCategoria());
 
 		return clienteAtualizado;
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void atualizarTaxasDasContasECartoes(Long id_cliente, CategoriaCliente novaCategoria) {
+	public void atualizarTaxasDasContasECartoesESeguros(Long id_cliente, CategoriaCliente novaCategoria) {
 		try {
 			PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(novaCategoria).orElseThrow(
 					() -> new RuntimeException("Parâmetros não encontrados para a categoria: " + novaCategoria));
@@ -197,6 +201,21 @@ public class ClienteService {
 					}
 				});
 			}
+			
+			List<SeguroBase> seguros = seguroRepository.findByClienteId(id_cliente);
+			
+			if (seguros.isEmpty()) {
+				log.warn("Cliente Id {} não possui seguros.", id_cliente);
+			} else {
+				seguros.forEach(seguro -> {
+					if (seguro instanceof SeguroFraude sf) {
+						sf.setPremioApolice(parametros.getTarifaSeguroFraude());
+					} else if (seguro instanceof SeguroViagem sv) {
+						sv.setPremioApolice(parametros.getTarifaSeguroViagem());
+					}
+				});
+			}
+			
 
 		} catch (Exception e) {
 			log.error("Falha ao atualizar taxas das contas do cliente ID {}", id_cliente, e);

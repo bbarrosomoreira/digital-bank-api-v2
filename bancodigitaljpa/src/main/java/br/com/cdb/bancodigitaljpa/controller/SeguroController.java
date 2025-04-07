@@ -19,7 +19,6 @@ import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroResponse;
 import br.com.cdb.bancodigitaljpa.dto.ContratarSeguroDTO;
 import br.com.cdb.bancodigitaljpa.dto.SeguroResponse;
 import br.com.cdb.bancodigitaljpa.dto.TipoSeguroResponse;
-import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
 import br.com.cdb.bancodigitaljpa.service.SeguroService;
 
@@ -91,8 +90,7 @@ public class SeguroController {
 	public ResponseEntity<AcionarSeguroResponse> acionarSeguro(
 			@PathVariable Long id_seguro,
 			@RequestBody AcionarSeguroDTO dto){
-		CartaoCredito ccr = (CartaoCredito) seguroService.getSeguroByCartaoId(dto.getId_cartao());
-		AcionarSeguroResponse response = seguroService.acionarSeguroFraude(id_seguro,ccr, dto.getValorFraude());
+		AcionarSeguroResponse response = seguroService.acionarSeguroFraude(id_seguro, dto.getValorFraude());
 		return ResponseEntity.ok(response);
 	}
 	

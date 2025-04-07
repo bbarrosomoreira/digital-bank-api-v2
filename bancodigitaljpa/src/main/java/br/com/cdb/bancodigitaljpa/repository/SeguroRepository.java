@@ -13,8 +13,8 @@ import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
 public interface SeguroRepository extends JpaRepository<SeguroBase, Long>{
 	
 	//Listar seguros por cartao de credito
-	@Query("SELECT seguro FROM SeguroBase seguro WHERE seguro.cartaoCredito.id = :cartaoId")
-	List<SeguroBase> findByCartaoCreditoId (@Param("cartaId") Long cartaoId);
+	@Query("SELECT seguro FROM SeguroBase seguro WHERE seguro.cartaoCredito.id = :cartaoCreditoId")
+	List<SeguroBase> findByCartaoCreditoId (@Param("cartaoCreditoId") Long cartaoCreditoId);
 	
 	//Listar seguros por cliente
 	@Query("SELECT seguro FROM SeguroBase seguro WHERE seguro.cartaoCredito.conta.cliente.id = :clienteId")

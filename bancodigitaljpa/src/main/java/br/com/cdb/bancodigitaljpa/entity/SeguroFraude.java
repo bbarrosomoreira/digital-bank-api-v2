@@ -46,12 +46,12 @@ public class SeguroFraude extends SeguroBase {
 	}
 	
 	//C
+	public SeguroFraude () {}
 	public SeguroFraude (CartaoCredito ccr) {
 		super(ccr);
 		this.statusSeguro = Status.ATIVADO;
 		this.setDescricaoCondicoes(TipoSeguro.FRAUDE.getDescricao());
 		this.setValorApolice(BigDecimal.valueOf(5000.00));
-		this.setPremioApolice(BigDecimal.ZERO);
 	}
 	
 	//M
@@ -65,7 +65,7 @@ public class SeguroFraude extends SeguroBase {
 	}
 	@Override
 	public void setarStatusSeguro(Status statusNovo) {
-		this.setarStatusSeguro(statusNovo);
+		this.setStatusSeguro(statusNovo);
 	}
 	
 	public BigDecimal getValorRessarcido() {
@@ -79,10 +79,10 @@ public class SeguroFraude extends SeguroBase {
 	}
 
 	@Override
-	public void acionarSeguro(CartaoCredito ccr) {
+	public void acionarSeguro() {
 		if(valorFraude == null) throw new IllegalArgumentException("Valor da fraude é obrigatório!");
 		BigDecimal valorRessarcido = getValorRessarcido();
-		ccr.getConta().depositar(valorRessarcido);
+		this.getCartaoCredito().getConta().depositar(valorRessarcido);
 		this.setDataAcionamento(LocalDate.now());
 	}
 

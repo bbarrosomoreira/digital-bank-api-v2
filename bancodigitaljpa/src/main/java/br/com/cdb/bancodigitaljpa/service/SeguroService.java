@@ -10,14 +10,17 @@ import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroResponse;
 import br.com.cdb.bancodigitaljpa.dto.SeguroResponse;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
+import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
 import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
 import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
+import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
 import br.com.cdb.bancodigitaljpa.exceptions.CartaoNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.exceptions.SeguroNaoEncontradoException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
+import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
 import jakarta.transaction.Transactional;
 
@@ -29,6 +32,9 @@ public class SeguroService {
 
 	@Autowired
 	private CartaoRepository cartaoRepository;
+	
+	@Autowired
+	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
 
 	// contrataSeguro
 	@Transactional
@@ -42,15 +48,21 @@ public class SeguroService {
 	}
 
 	public SeguroBase contratarSeguroPorTipo(TipoSeguro tipo, CartaoCredito ccr) {
-		// ver categoria e ver parametros para definir valor do premio
+		
+		CategoriaCliente categoria = ccr.getConta().getCliente().getCategoria();
+
+		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
+				.orElseThrow(() -> new RuntimeException("Parâmetros não encontrados para a categoria: " + categoria));
 
 		return switch (tipo) {
 		case FRAUDE -> {
 			SeguroFraude sf = new SeguroFraude(ccr);
+			sf.setPremioApolice(parametros.getTarifaSeguroFraude());
 			yield sf;
 		}
 		case VIAGEM -> {
 			SeguroViagem sv = new SeguroViagem(ccr);
+			sv.setPremioApolice(parametros.getTarifaSeguroViagem());
 			yield sv;
 		}
 		};
@@ -92,11 +104,12 @@ public class SeguroService {
 	
 	@Transactional
 	// acionarSeguro
-	public AcionarSeguroResponse acionarSeguroFraude(Long id_seguro, CartaoCredito ccr, BigDecimal valor) {
+	public AcionarSeguroResponse acionarSeguroFraude(Long id_seguro, BigDecimal valor) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new SeguroNaoEncontradoException(id_seguro));
+		if (!(seguro instanceof SeguroFraude)) throw new IllegalArgumentException("O seguro precisa ser do tipo Fraude."); 
 		((SeguroFraude) seguro).setValorFraude(valor);
-		((SeguroFraude) seguro).acionarSeguro(ccr);
+		((SeguroFraude) seguro).acionarSeguro();
 		return AcionarSeguroResponse.toSeguroResponse((SeguroFraude) seguro);
 	}
 	
@@ -105,9 +118,9 @@ public class SeguroService {
 	public void debitarPremioSeguroViagem(Long id_seguro) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new SeguroNaoEncontradoException(id_seguro));
+		if (!(seguro instanceof SeguroViagem)) throw new IllegalArgumentException("O seguro precisa ser do tipo Viagem.");
 		if (seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new IllegalArgumentException("Prêmio não cobrado. O Seguro de Viagem está desativado!");
-		CartaoCredito ccr = seguro.getCartaoCredito();
-		((SeguroViagem) seguro).acionarSeguro(ccr);
+		((SeguroViagem) seguro).acionarSeguro();
 	}
 
 	public SeguroResponse toResponse(SeguroBase seguro) {

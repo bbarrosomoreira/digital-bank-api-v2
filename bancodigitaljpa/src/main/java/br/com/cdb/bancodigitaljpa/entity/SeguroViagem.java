@@ -12,7 +12,7 @@ import jakarta.persistence.Enumerated;
 
 @Entity
 @DiscriminatorValue("VIAGEM")
-public class SeguroViagem extends SeguroBase{
+public class SeguroViagem extends SeguroBase {
 	
 	@Enumerated(EnumType.STRING)
 	private Status statusSeguro;
@@ -25,6 +25,7 @@ public class SeguroViagem extends SeguroBase{
 	}
 	
 	//C
+	public SeguroViagem () {}
 	public SeguroViagem(CartaoCredito ccr) {
 		super(ccr);
 		this.statusSeguro = Status.ATIVADO;
@@ -43,11 +44,11 @@ public class SeguroViagem extends SeguroBase{
 	}
 	@Override
 	public void setarStatusSeguro(Status statusNovo) {
-		this.setarStatusSeguro(statusNovo);
+		this.setStatusSeguro(statusNovo);
 	}
 	@Override
-	public void acionarSeguro(CartaoCredito ccr) {
-		ccr.getConta().sacar(getPremioApolice());
+	public void acionarSeguro() {
+		this.getCartaoCredito().getConta().sacar(getPremioApolice());
 	}
 	
 

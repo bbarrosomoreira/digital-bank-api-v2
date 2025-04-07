@@ -8,5 +8,5 @@ public interface Seguro {
 	//ListaTodosSegurosDisponiveis
 	//CancelarApoliceSeguro
 	void setarStatusSeguro(Status statusNovo);
-	void acionarSeguro(CartaoCredito ccr);
+	void acionarSeguro();
 }

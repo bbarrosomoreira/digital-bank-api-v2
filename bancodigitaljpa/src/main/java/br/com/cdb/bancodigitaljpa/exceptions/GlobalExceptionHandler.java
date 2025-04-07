@@ -13,6 +13,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 	
 	private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleAllExceptions(Exception ex) {
+        ex.printStackTrace(); // pra sair no console/log
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Erro: " + ex.getClass().getSimpleName() + " - " + ex.getMessage());
+    }
 
 	// Tratamento para clientes não encontrados
 	@ExceptionHandler(ClienteNaoEncontradoException.class)
@@ -67,24 +74,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 	}
 	
 	
-	// Tratamento para erro inesperado
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handleAllExceptions(
-			Exception ex,
-			WebRequest request) {
-		
-		logger.error("Erro não tratado - Mensagem: {}, StackTrace: {}", ex.getMessage(), ex.toString(), ex);
-		
-		ErrorResponse response = new ErrorResponse(
-				LocalDateTime.now(),
-				HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				"Erro interno",
-				"Ocorreu um erro inesperado. Tente novamente mais tarde",
-				request.getDescription(false).replace("uri=", "")
-				);
-		
-		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+//	// Tratamento para erro inesperado
+//	@ExceptionHandler(Exception.class)
+//	public ResponseEntity<ErrorResponse> handleAllExceptions(
+//			Exception ex,
+//			WebRequest request) {
+//		
+//		logger.error("Erro não tratado - Mensagem: {}, StackTrace: {}", ex.getMessage(), ex.toString(), ex);
+//		
+//		ErrorResponse response = new ErrorResponse(
+//				LocalDateTime.now(),
+//				HttpStatus.INTERNAL_SERVER_ERROR.value(),
+//				"Erro interno",
+//				"Ocorreu um erro inesperado. Tente novamente mais tarde",
+//				request.getDescription(false).replace("uri=", "")
+//				);
+//		
+//		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//	}
 	
 	
 	// Classe auxiliar para o formato do erro

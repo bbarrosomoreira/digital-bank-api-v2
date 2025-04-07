@@ -1,6 +1,5 @@
 package br.com.cdb.bancodigitaljpa.controller;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cdb.bancodigitaljpa.dto.AjustarLimiteDTO;
 import br.com.cdb.bancodigitaljpa.dto.AlterarSenhaDTO;
 import br.com.cdb.bancodigitaljpa.dto.AlterarStatusCartaoDTO;
 import br.com.cdb.bancodigitaljpa.dto.CartaoResponse;
@@ -53,42 +53,34 @@ public class CartaoController {
 	}
 	
 	@GetMapping("/cliente/{id_cliente}")
-	public ResponseEntity<List<CartaoResponse>> listarPorCliente(
-			@PathVariable Long id_cliente ){
+	public ResponseEntity<List<CartaoResponse>> listarPorCliente(@PathVariable Long id_cliente ){
 		List<CartaoResponse> cartoes = cartaoService.listarPorCliente(id_cliente);
 		return ResponseEntity.ok(cartoes);
 	}
 	
 	@GetMapping("/conta/{id_conta}")
-	public ResponseEntity<List<CartaoResponse>> listarPorConta(
-			@PathVariable Long id_conta){
+	public ResponseEntity<List<CartaoResponse>> listarPorConta(@PathVariable Long id_conta){
 		List<CartaoResponse> cartoes = cartaoService.listarPorConta(id_conta);
 		return ResponseEntity.ok(cartoes);
 	}
 	
 //	//post pagamento
 	@PostMapping("/{id_cartao}/pagamento")
-	public ResponseEntity<PagamentoResponse> pagar(
-			@PathVariable Long id_cartao,
-			@RequestBody PagamentoDTO dto){
+	public ResponseEntity<PagamentoResponse> pagar(@PathVariable Long id_cartao, @RequestBody PagamentoDTO dto){
 		PagamentoResponse response = cartaoService.pagar(id_cartao, dto.getValor(), dto.getSenha(), dto.getDescricao());
 		return ResponseEntity.ok(response);
 	}
 	
 //	//put alterar limite
 	@PutMapping("/{id_cartao}/limite")
-	public ResponseEntity<String> alterarLimite(
-			@PathVariable Long id_cartao,
-			@RequestBody BigDecimal limiteNovo){
-		cartaoService.alterarLimite(id_cartao, limiteNovo);
-		return ResponseEntity.ok("Limite alterado com sucesso. Novo limite ajustado para: R$" + limiteNovo);
+	public ResponseEntity<String> alterarLimite(@PathVariable Long id_cartao,@RequestBody AjustarLimiteDTO dto){
+		cartaoService.alterarLimite(id_cartao, dto.getLimiteNovo());
+		return ResponseEntity.ok("Limite alterado com sucesso. Novo limite ajustado para: R$" + dto.getLimiteNovo());
 	}
 
 //	//put alterar status
 	@PutMapping("/{id_cartao}/status")
-	public ResponseEntity<String> alterarStatus(
-			@PathVariable Long id_cartao,
-			@RequestBody AlterarStatusCartaoDTO dto){
+	public ResponseEntity<String> alterarStatus(@PathVariable Long id_cartao, @RequestBody AlterarStatusCartaoDTO dto){
 		Status statusNovo = dto.getStatus();
 		cartaoService.alterarStatus(id_cartao, statusNovo);
 		return ResponseEntity.ok("O cartão " + cartaoService.getCartaoById(id_cartao).getNumCartao() + " está "+ statusNovo.toString().toLowerCase());
