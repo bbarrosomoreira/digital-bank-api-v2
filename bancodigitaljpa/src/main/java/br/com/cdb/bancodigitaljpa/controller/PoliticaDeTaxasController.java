@@ -31,7 +31,7 @@ public class PoliticaDeTaxasController {
 		}
 	}
 	
-    @GetMapping("/listAll")
+    @GetMapping
     public ResponseEntity<List<PoliticaDeTaxas>> listarTodos() {
         return ResponseEntity.ok(parametrosService.listarTodosParametros());
     }

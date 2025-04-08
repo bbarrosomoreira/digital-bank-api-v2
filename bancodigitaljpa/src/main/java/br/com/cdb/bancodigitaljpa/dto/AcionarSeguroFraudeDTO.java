@@ -2,7 +2,7 @@ package br.com.cdb.bancodigitaljpa.dto;
 
 import java.math.BigDecimal;
 
-public class AcionarSeguroDTO {
+public class AcionarSeguroFraudeDTO {
 	
 	private Long id_cartao;
 	private BigDecimal valorFraude;
@@ -21,6 +21,6 @@ public class AcionarSeguroDTO {
 		this.valorFraude = valorFraude;
 	}
 	
-	public AcionarSeguroDTO() {}
+	public AcionarSeguroFraudeDTO() {}
 	
 }

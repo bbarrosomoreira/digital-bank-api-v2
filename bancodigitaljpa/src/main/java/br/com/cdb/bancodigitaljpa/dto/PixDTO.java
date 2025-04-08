@@ -9,9 +9,9 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public class TransferenciaDTO {
+public class PixDTO {
 	
-	@NotNull(message = "ID da conta de destino é obrigatório")
+	@NotNull (message = "ID da conta de destino é obrigatório")
 	private Long id_contaDestino;
 	
 	@Positive(message = "O valor deve ser positivo")
@@ -42,7 +42,7 @@ public class TransferenciaDTO {
 	}
 	
 	//constructor
-	public TransferenciaDTO() {
+	public PixDTO() {
 	}
 	
 	

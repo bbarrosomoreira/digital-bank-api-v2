@@ -31,6 +31,8 @@ public class EnderecoCliente {
 	@NotBlank(message = "Estado é obrigatório")
     @Size(min = 2, max = 2, message = "Estado deve ter 2 caracteres (ex: SP)")
 	private String estado;
+	
+	private boolean enderecoPrincipal;
 
 	
 	//getters and setters
@@ -70,9 +72,15 @@ public class EnderecoCliente {
 	public void setCep(String cep) {
 		this.cep = cep;
 	}
-
+	public boolean isEnderecoPrincipal() {
+		return enderecoPrincipal;
+	}
+	public void setEnderecoPrincipal(boolean enderecoPrincipal) {
+		this.enderecoPrincipal = enderecoPrincipal;
+	}
+	
 	//construtor
-	public EnderecoCliente(String rua, int numero, String complemento, String cidade, String estado, String cep) {
+	public EnderecoCliente(String rua, int numero, String complemento, String cidade, String estado, String cep, boolean enderecoPrincipal) {
 		super();
 		this.rua = rua;
 		this.numero = numero;
@@ -80,6 +88,7 @@ public class EnderecoCliente {
 		this.cidade = cidade;
 		this.estado = estado;
 		this.cep = cep;
+		this.enderecoPrincipal = enderecoPrincipal;
 	}
 	public EnderecoCliente() {	
 	}

@@ -68,10 +68,10 @@ public class CartaoDebito extends CartaoBase {
 	}
 	@Override
 	public void alterarLimite(BigDecimal limiteNovo) {
-		this.setLimiteAtual(limiteNovo);
+		this.setLimiteDiario(limiteNovo);
 	}
 	
 	public void ressetarLimiteDiario() {
-		this.setLimiteAtual(limiteDiario);
+		this.setLimiteAtual(this.getLimiteDiario());
 	}
 }

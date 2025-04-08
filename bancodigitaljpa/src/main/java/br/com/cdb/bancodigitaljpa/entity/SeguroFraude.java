@@ -85,5 +85,8 @@ public class SeguroFraude extends SeguroBase {
 		this.getCartaoCredito().getConta().depositar(valorRessarcido);
 		this.setDataAcionamento(LocalDate.now());
 	}
+	public void aplicarPremio() {
+		this.getCartaoCredito().getConta().sacar(getPremioApolice());
+	}
 
 }

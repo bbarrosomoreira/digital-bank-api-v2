@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
+import br.com.cdb.bancodigitaljpa.enums.Status;
 
 public class SeguroResponse {
 	
@@ -18,9 +19,10 @@ public class SeguroResponse {
 	private BigDecimal valorApolice;
 	private String descricaoCondicoes;
 	private BigDecimal premioApolice;
+	private Status statusSeguro;
 	
 	//C
-	public SeguroResponse(String tipoSeguro, String numApolice, LocalDate dataContratacao, String numCartao, String categoriaCliente, BigDecimal valorApolice, String descricaoCondicoes, BigDecimal premioApolice) {
+	public SeguroResponse(String tipoSeguro, String numApolice, LocalDate dataContratacao, String numCartao, String categoriaCliente, BigDecimal valorApolice, String descricaoCondicoes, BigDecimal premioApolice, Status statusSeguro) {
 		this.tipoSeguro = tipoSeguro;
 		this.numApolice = numApolice;
 		this.dataContratacao = dataContratacao;
@@ -29,6 +31,7 @@ public class SeguroResponse {
 		this.valorApolice = valorApolice;
 		this.descricaoCondicoes = descricaoCondicoes;
 		this.premioApolice = premioApolice;
+		this.statusSeguro = statusSeguro;
 	}
 	
 	//G
@@ -55,8 +58,11 @@ public class SeguroResponse {
 	}
 	public BigDecimal getPremioApolice() {
 		return premioApolice;
+	}	
+	public Status getStatusSeguro() {
+		return statusSeguro;
 	}
-	
+
 	public static SeguroResponse toSeguroResponse (SeguroBase seguro) {
 		return new SeguroResponse (
 				seguro.getTipoSeguro().getNome(),
@@ -66,7 +72,8 @@ public class SeguroResponse {
 				seguro.getCartaoCredito().getConta().getCliente().getCategoria().getDescricao(),
 				seguro.getValorApolice(),
 				seguro.getDescricaoCondicoes(),
-				seguro.getPremioApolice()
+				seguro.getPremioApolice(),
+				seguro.getStatusSeguro()
 				);
 				
 	}

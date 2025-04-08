@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigitaljpa.controller;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,11 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroDTO;
-import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroResponse;
+import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroFraudeDTO;
+import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroFraudeResponse;
+import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroViagemResponse;
+import br.com.cdb.bancodigitaljpa.dto.CancelarSeguroResponse;
 import br.com.cdb.bancodigitaljpa.dto.ContratarSeguroDTO;
+import br.com.cdb.bancodigitaljpa.dto.DebitarPremioSeguroResponse;
 import br.com.cdb.bancodigitaljpa.dto.SeguroResponse;
 import br.com.cdb.bancodigitaljpa.dto.TipoSeguroResponse;
+import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
+import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
+import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
 import br.com.cdb.bancodigitaljpa.service.SeguroService;
 
@@ -73,33 +80,40 @@ public class SeguroController {
 	@GetMapping("/{id_seguro}")
 	public ResponseEntity<SeguroResponse> getSeguroById(
 			@PathVariable Long id_seguro){
-		SeguroResponse response = seguroService.getSeguroById(id_seguro);
-		return ResponseEntity.ok(response);	
+		SeguroResponse seguro = seguroService.getSeguroById(id_seguro);
+		return ResponseEntity.ok(seguro);	
 	}
 	
 	// cancelar apólice
 	@PutMapping("/{id_seguro}/cancelar")
-	public ResponseEntity<String> cancelarSeguro(
+	public ResponseEntity<CancelarSeguroResponse> cancelarSeguro(
 			@PathVariable Long id_seguro){
-		seguroService.cancelarSeguro(id_seguro);
-		return ResponseEntity.ok("Apólice de seguro cancelada com sucesso!");
+		CancelarSeguroResponse response = seguroService.cancelarSeguro(id_seguro);
+		return ResponseEntity.ok(response);
 	}
 	
 	// acionar seguro
 	@PutMapping("/fraude/{id_seguro}/acionar")
-	public ResponseEntity<AcionarSeguroResponse> acionarSeguro(
+	public ResponseEntity<AcionarSeguroFraudeResponse> acionarSeguroFraude(
 			@PathVariable Long id_seguro,
-			@RequestBody AcionarSeguroDTO dto){
-		AcionarSeguroResponse response = seguroService.acionarSeguroFraude(id_seguro, dto.getValorFraude());
-		return ResponseEntity.ok(response);
+			@RequestBody AcionarSeguroFraudeDTO dto){
+		SeguroBase seguro = seguroService.acionarSeguro(id_seguro, dto.getValorFraude());
+		return ResponseEntity.ok(AcionarSeguroFraudeResponse.toSeguroFraudeResponse((SeguroFraude) seguro));
+	}
+	
+	@PutMapping("/viagem/{id_seguro}/acionar")
+	public ResponseEntity<AcionarSeguroViagemResponse> acionarSeguroFraude(
+			@PathVariable Long id_seguro){
+		SeguroBase seguro = seguroService.acionarSeguro(id_seguro, BigDecimal.ZERO);
+		return ResponseEntity.ok(AcionarSeguroViagemResponse.toSeguroViagemResponse((SeguroViagem) seguro));
 	}
 	
 	// debitar premio seguro
 	@PostMapping("/viagem/{id_seguro}/premio")
-	public ResponseEntity<String> debitarPremioSeguroViagem(
+	public ResponseEntity<DebitarPremioSeguroResponse> debitarPremioSeguro(
 			@PathVariable Long id_seguro){
-		seguroService.debitarPremioSeguroViagem(id_seguro);
-		return ResponseEntity.ok("Prêmio do Seguro Viagem debitado com sucesso!");
+		DebitarPremioSeguroResponse response = seguroService.debitarPremioSeguro(id_seguro);
+		return ResponseEntity.ok(response);
 		
 	}
 	

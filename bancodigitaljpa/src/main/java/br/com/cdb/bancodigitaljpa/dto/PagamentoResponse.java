@@ -8,6 +8,7 @@ import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
 
 public record PagamentoResponse (
 		String numCartao,
+		String tipoCartao,
 		String descricao,
 		BigDecimal valor,
 		BigDecimal limiteAtual
@@ -15,6 +16,7 @@ public record PagamentoResponse (
 	public static PagamentoResponse toPagamentoResponse (CartaoBase cartao, BigDecimal valor, String descricao) {
 		return new PagamentoResponse(
 				cartao.getNumeroCartao(),
+				cartao.getTipo(),
 				descricao,
 				valor,
 				(cartao instanceof CartaoCredito) ? ((CartaoCredito) cartao).getLimiteAtual() :

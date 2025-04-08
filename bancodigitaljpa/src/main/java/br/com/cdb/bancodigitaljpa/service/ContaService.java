@@ -8,8 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.cdb.bancodigitaljpa.dto.AplicarTxManutencaoResponse;
+import br.com.cdb.bancodigitaljpa.dto.AplicarTxRendimentoResponse;
 import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
+import br.com.cdb.bancodigitaljpa.dto.DepositoResponse;
+import br.com.cdb.bancodigitaljpa.dto.PixResponse;
 import br.com.cdb.bancodigitaljpa.dto.SaldoResponse;
+import br.com.cdb.bancodigitaljpa.dto.SaqueResponse;
+import br.com.cdb.bancodigitaljpa.dto.TransferenciaResponse;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
@@ -94,7 +100,7 @@ public class ContaService {
 	
 	//transferencia
 	@Transactional
-	public void transferir(Long id_contaOrigem, Long id_contaDestino, BigDecimal valor) {
+	public TransferenciaResponse transferir(Long id_contaOrigem, Long id_contaDestino, BigDecimal valor) {
 		ContaBase origem = contaRepository.findById(id_contaOrigem)
 				.orElseThrow(()-> new ContaNaoEncontradaException(id_contaOrigem));
 		ContaBase destino = contaRepository.findById(id_contaDestino)
@@ -104,6 +110,8 @@ public class ContaService {
 		
 		contaRepository.save(origem);
 		contaRepository.save(destino);
+		
+		return TransferenciaResponse.toTransferenciaResponse(origem.getNumeroConta(), destino.getNumeroConta(), valor);
 		
 	    // Verificar saldo pós-operação
 //	    if (origem.getSaldo().compareTo(BigDecimal.ZERO) < 0) {
@@ -118,7 +126,7 @@ public class ContaService {
 	
 	//pix
 	@Transactional
-	public void pix(Long id_contaOrigem, Long id_contaDestino, BigDecimal valor) throws SaldoInsuficienteException {
+	public PixResponse pix(Long id_contaOrigem, Long id_contaDestino, BigDecimal valor) throws SaldoInsuficienteException {
 		ContaBase origem = contaRepository.findById(id_contaOrigem)
 				.orElseThrow(()-> new ContaNaoEncontradaException(id_contaOrigem));
 		ContaBase destino = contaRepository.findById(id_contaDestino)
@@ -128,6 +136,8 @@ public class ContaService {
 		
 		contaRepository.save(origem);
 		contaRepository.save(destino);
+		
+		return PixResponse.toPixResponse(origem.getNumeroConta(), destino.getNumeroConta(), valor);
 		
 	    // Verificar saldo pós-operação
 //	    if (origem.getSaldo().compareTo(BigDecimal.ZERO) < 0) {
@@ -143,16 +153,17 @@ public class ContaService {
 	public SaldoResponse getSaldo(Long id_conta) {
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
-		return toSaldoResponse(conta);
+		return SaldoResponse.toSaldoResponse(conta);
 	}
 	
 	//deposito
 	@Transactional
-	public void depositar(Long id_conta, BigDecimal valor) {
+	public DepositoResponse depositar(Long id_conta, BigDecimal valor) {
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
 		conta.depositar(valor);
 		contaRepository.save(conta);
+		return DepositoResponse.toDepositoResponse(conta.getNumeroConta(), valor, conta.getSaldo());
 		
 //		// Registrar a transação
 //		Transacao transacao = new Transacao(this, (ContaBase) destino, valor);
@@ -161,11 +172,13 @@ public class ContaService {
 	
 	//saque
 	@Transactional
-	public void sacar(Long id_conta, BigDecimal valor) throws SaldoInsuficienteException {
+	public SaqueResponse sacar(Long id_conta, BigDecimal valor) throws SaldoInsuficienteException {
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(()-> new ContaNaoEncontradaException(id_conta));
 		conta.sacar(valor);
 		contaRepository.save(conta);
+		
+		return SaqueResponse.toSaqueResponse(conta.getNumeroConta(), valor, conta.getSaldo());
 		
 //		// Registrar a transação
 //		Transacao transacao = new Transacao(this, (ContaBase) destino, valor);
@@ -174,7 +187,7 @@ public class ContaService {
 	
 	//txmanutencao
 	@Transactional
-	public void debitarTarifaManutencao(Long id_conta) {
+	public AplicarTxManutencaoResponse debitarTarifaManutencao(Long id_conta) {
 		ContaCorrente cc = contaRepository.findContaCorrenteById(id_conta)
 				.orElseThrow(()-> new TipoContaInvalidoException("Conta corrente não encontrada com ID: "+ id_conta));
 		BigDecimal taxaMensal = cc.getTarifaManutencao();
@@ -187,11 +200,12 @@ public class ContaService {
 			cc.setSaldo(saldoNovo);
 			contaRepository.save(cc);
 		}
+		return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), taxaMensal, saldoAtual);
 	}
 	
 	//rendimento
 	@Transactional
-	public void creditarRendimento(Long id_conta) {
+	public AplicarTxRendimentoResponse creditarRendimento(Long id_conta) {
 		ContaPoupanca cp = contaRepository.findContaPoupancaById(id_conta)
 				.orElseThrow(()-> new TipoContaInvalidoException("Conta poupança não encontrada com ID: "+ id_conta));
 		BigDecimal taxaMensal = cp.getTaxaRendimento();
@@ -200,6 +214,7 @@ public class ContaService {
 		BigDecimal saldoNovo = saldoAtual.add(rendimento);
 		cp.setSaldo(saldoNovo);
 		contaRepository.save(cp);
+		return AplicarTxRendimentoResponse.toAplicarTxRendimentoResponse(cp.getNumeroConta(), rendimento, saldoNovo);
 		
 	}
 	
@@ -214,10 +229,6 @@ public class ContaService {
 				(conta instanceof ContaCorrente) ? ((ContaCorrente) conta).getTarifaManutencao() :
 					(conta instanceof ContaPoupanca) ? ((ContaPoupanca) conta).getTaxaRendimento() : null);
 	
-	}
-	
-	public SaldoResponse toSaldoResponse(ContaBase conta) {	
-		return SaldoResponse.fromContaBase(conta);
 	}
 
 }

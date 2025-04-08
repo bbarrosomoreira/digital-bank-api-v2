@@ -9,4 +9,5 @@ public interface Seguro {
 	//CancelarApoliceSeguro
 	void setarStatusSeguro(Status statusNovo);
 	void acionarSeguro();
+	void aplicarPremio();
 }

@@ -10,6 +10,7 @@ public class EnderecoResponse {
 	    private String cidade;
 	    private String estado;
 	    private String cep;
+	    private boolean enderecoPrincipal;
 
 	    public EnderecoResponse(EnderecoCliente endereco) {
 	        this.rua = endereco.getRua();
@@ -18,6 +19,7 @@ public class EnderecoResponse {
 	        this.cidade = endereco.getCidade();
 	        this.estado = endereco.getEstado();
 	        this.cep = endereco.getCep();
+	        this.enderecoPrincipal = endereco.isEnderecoPrincipal();
 	    }
 
 	    //G
@@ -39,4 +41,8 @@ public class EnderecoResponse {
 		public String getCep() {
 			return cep;
 		}
+		public boolean isEnderecoPrincipal() {
+			return enderecoPrincipal;
+		}
+		
 }
