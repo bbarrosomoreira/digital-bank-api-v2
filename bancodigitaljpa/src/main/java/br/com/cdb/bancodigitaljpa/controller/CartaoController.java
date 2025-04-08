@@ -19,8 +19,11 @@ import br.com.cdb.bancodigitaljpa.dto.AlterarStatusCartaoDTO;
 import br.com.cdb.bancodigitaljpa.dto.CartaoResponse;
 import br.com.cdb.bancodigitaljpa.dto.EmitirCartaoDTO;
 import br.com.cdb.bancodigitaljpa.dto.FaturaResponse;
+import br.com.cdb.bancodigitaljpa.dto.LimiteResponse;
 import br.com.cdb.bancodigitaljpa.dto.PagamentoDTO;
 import br.com.cdb.bancodigitaljpa.dto.PagamentoResponse;
+import br.com.cdb.bancodigitaljpa.dto.RessetarLimiteDiarioResponse;
+import br.com.cdb.bancodigitaljpa.dto.StatusCartaoResponse;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.service.CartaoService;
 
@@ -32,10 +35,10 @@ public class CartaoController {
 	private CartaoService cartaoService;
 	
 	//post emitir novo cartao
-	@PostMapping("/add")
+	@PostMapping
 	public ResponseEntity<CartaoResponse> emitirCartao(@RequestBody EmitirCartaoDTO dto) {
-		CartaoResponse cartaoNovo = cartaoService.emitirCartao(dto.getId_conta(), dto.getTipoCartao(), dto.getSenha());
-		return ResponseEntity.status(HttpStatus.CREATED).body(cartaoNovo);
+		CartaoResponse response = cartaoService.emitirCartao(dto.getId_conta(), dto.getTipoCartao(), dto.getSenha());
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
 	//get cartao
@@ -46,7 +49,7 @@ public class CartaoController {
 	}
 
 	//outros gets
-	@GetMapping("/listAll")
+	@GetMapping
 	public ResponseEntity<List<CartaoResponse>> getCartoes(){
 		List<CartaoResponse> cartoes = cartaoService.getCartoes();
 		return ResponseEntity.ok(cartoes);
@@ -73,17 +76,17 @@ public class CartaoController {
 	
 //	//put alterar limite
 	@PutMapping("/{id_cartao}/limite")
-	public ResponseEntity<String> alterarLimite(@PathVariable Long id_cartao,@RequestBody AjustarLimiteDTO dto){
-		cartaoService.alterarLimite(id_cartao, dto.getLimiteNovo());
-		return ResponseEntity.ok("Limite alterado com sucesso. Novo limite ajustado para: R$" + dto.getLimiteNovo());
+	public ResponseEntity<LimiteResponse> alterarLimite(@PathVariable Long id_cartao,@RequestBody AjustarLimiteDTO dto){
+		LimiteResponse response = cartaoService.alterarLimite(id_cartao, dto.getLimiteNovo());
+		return ResponseEntity.ok(response);
 	}
 
 //	//put alterar status
 	@PutMapping("/{id_cartao}/status")
-	public ResponseEntity<String> alterarStatus(@PathVariable Long id_cartao, @RequestBody AlterarStatusCartaoDTO dto){
+	public ResponseEntity<StatusCartaoResponse> alterarStatus(@PathVariable Long id_cartao, @RequestBody AlterarStatusCartaoDTO dto){
 		Status statusNovo = dto.getStatus();
-		cartaoService.alterarStatus(id_cartao, statusNovo);
-		return ResponseEntity.ok("O cartão " + cartaoService.getCartaoById(id_cartao).getNumCartao() + " está "+ statusNovo.toString().toLowerCase());
+		StatusCartaoResponse response = cartaoService.alterarStatus(id_cartao, statusNovo);
+		return ResponseEntity.ok(response);
 	}
 	
 //	//put alterar senha
@@ -106,16 +109,16 @@ public class CartaoController {
 	
 //	//post pagamento fatura
 	@PostMapping("/{id_cartao}/fatura/pagamento")
-	public ResponseEntity<String> pagarFatura(@PathVariable Long id_cartao){
-		cartaoService.pagarFatura(id_cartao);
-		return ResponseEntity.ok("Fatura paga com sucesso! Seu limite para pagamentos é de R$" + cartaoService.getCartaoById(id_cartao).getLimite());
+	public ResponseEntity<FaturaResponse> pagarFatura(@PathVariable Long id_cartao){
+		FaturaResponse response = cartaoService.pagarFatura(id_cartao);
+		return ResponseEntity.ok(response);
 	}
 
 //	//put ressetar limite diario
 	@PutMapping("/{id_cartao}/limite-diario")
-	public ResponseEntity<String> ressetarDebito(@PathVariable Long id_cartao){
-		cartaoService.ressetarDebito(id_cartao);
-		return ResponseEntity.ok("Limite diário reiniciado. Seu limite para pagamentos é de R$" + cartaoService.getCartaoById(id_cartao).getLimite());
+	public ResponseEntity<RessetarLimiteDiarioResponse> ressetarDebito(@PathVariable Long id_cartao){
+		RessetarLimiteDiarioResponse response = cartaoService.ressetarDebito(id_cartao);
+		return ResponseEntity.ok(response);
 		
 	}
 

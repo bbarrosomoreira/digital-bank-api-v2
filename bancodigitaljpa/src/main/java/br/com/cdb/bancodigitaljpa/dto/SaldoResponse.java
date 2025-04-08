@@ -7,21 +7,19 @@ import br.com.cdb.bancodigitaljpa.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 
 public record SaldoResponse (
-		Long id,
 		String numConta,
 		TipoConta tipoConta,
-		Long id_cliente,
+		String nomeCliente,
 		Moeda moeda,
 		BigDecimal saldo
 		){
 	
     // Método estático para construção a partir de ContaBase
-    public static SaldoResponse fromContaBase(ContaBase conta) {
+    public static SaldoResponse toSaldoResponse(ContaBase conta) {
         return new SaldoResponse(
-            conta.getId(),
             conta.getNumeroConta(),
             conta.getTipoConta(),
-            conta.getCliente().getId(),
+            conta.getCliente().getNome(),
             conta.getMoeda(),
             conta.getSaldo()
         );

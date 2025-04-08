@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
 
-public record AcionarSeguroResponse  (
+public record AcionarSeguroFraudeResponse  (
 		String tipoSeguro,
 		String numApolice,
 		LocalDate dataAcionamento,
@@ -19,8 +19,8 @@ public record AcionarSeguroResponse  (
 		)
 {
 		
-	public static AcionarSeguroResponse toSeguroResponse (SeguroFraude seguro) {
-		return new AcionarSeguroResponse (
+	public static AcionarSeguroFraudeResponse toSeguroFraudeResponse (SeguroFraude seguro) {
+		return new AcionarSeguroFraudeResponse (
 				seguro.getTipoSeguro().getNome(),
 				seguro.getNumApolice(),
 				seguro.getDataAcionamento(),

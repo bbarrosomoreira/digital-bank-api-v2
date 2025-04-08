@@ -7,7 +7,8 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroResponse;
+import br.com.cdb.bancodigitaljpa.dto.CancelarSeguroResponse;
+import br.com.cdb.bancodigitaljpa.dto.DebitarPremioSeguroResponse;
 import br.com.cdb.bancodigitaljpa.dto.SeguroResponse;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
@@ -23,6 +24,7 @@ import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 
 @Service
 public class SeguroService {
@@ -77,11 +79,12 @@ public class SeguroService {
 
 	// CancelarApoliceSeguro
 	@Transactional
-	public void cancelarSeguro(Long id_seguro) {
+	public CancelarSeguroResponse cancelarSeguro(Long id_seguro) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new SeguroNaoEncontradoException(id_seguro));
 		seguro.setarStatusSeguro(Status.DESATIVADO);
 		seguroRepository.save(seguro);
+		return CancelarSeguroResponse.toCancelarSeguroResponse(seguro);
 	}
 
 	// get seguros
@@ -104,23 +107,26 @@ public class SeguroService {
 	
 	@Transactional
 	// acionarSeguro
-	public AcionarSeguroResponse acionarSeguroFraude(Long id_seguro, BigDecimal valor) {
+	public SeguroBase acionarSeguro(Long id_seguro, BigDecimal valor) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new SeguroNaoEncontradoException(id_seguro));
-		if (!(seguro instanceof SeguroFraude)) throw new IllegalArgumentException("O seguro precisa ser do tipo Fraude."); 
-		((SeguroFraude) seguro).setValorFraude(valor);
-		((SeguroFraude) seguro).acionarSeguro();
-		return AcionarSeguroResponse.toSeguroResponse((SeguroFraude) seguro);
+		if(seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new ValidationException("O seguro está desativado. Para acioná-lo é necessário ativar primeiro.");
+		if(seguro instanceof SeguroFraude) {
+			((SeguroFraude) seguro).setValorFraude(valor);
+		}
+		seguro.acionarSeguro();
+		seguroRepository.save(seguro);
+		return seguro;
 	}
 	
 	@Transactional
 	// debitarPremioSeguro
-	public void debitarPremioSeguroViagem(Long id_seguro) {
+	public DebitarPremioSeguroResponse debitarPremioSeguro(Long id_seguro) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new SeguroNaoEncontradoException(id_seguro));
-		if (!(seguro instanceof SeguroViagem)) throw new IllegalArgumentException("O seguro precisa ser do tipo Viagem.");
 		if (seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new IllegalArgumentException("Prêmio não cobrado. O Seguro de Viagem está desativado!");
-		((SeguroViagem) seguro).acionarSeguro();
+		seguro.aplicarPremio();
+		return DebitarPremioSeguroResponse.toDebitarPremioSeguroResponse(seguro);
 	}
 
 	public SeguroResponse toResponse(SeguroBase seguro) {

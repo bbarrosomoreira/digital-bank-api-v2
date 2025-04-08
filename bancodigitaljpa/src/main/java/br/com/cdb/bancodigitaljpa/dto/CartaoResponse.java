@@ -14,7 +14,7 @@ public class CartaoResponse {
 	private String numCartao;
 	private TipoCartao tipoCartao;
 	private Status status;
-	private Long id_conta;
+	private String numConta;
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dataVencimento;
 	private BigDecimal limite;
@@ -32,8 +32,8 @@ public class CartaoResponse {
 	public Status getStatus() {
 		return status;
 	}
-	public Long getId_conta() {
-		return id_conta;
+	public String getNumConta() {
+		return numConta;
 	}
 	public LocalDate getDataVencimento() {
 		return dataVencimento;
@@ -43,13 +43,13 @@ public class CartaoResponse {
 	}
 
 	//C
-	public CartaoResponse(Long id, String numCartao, TipoCartao tipoCartao, Status status, Long id_conta,
+	public CartaoResponse(Long id, String numCartao, TipoCartao tipoCartao, Status status, String numConta,
 			LocalDate dataVencimento, BigDecimal limite) {
 		this.id = id;
 		this.numCartao = numCartao;
 		this.tipoCartao = tipoCartao;
 		this.status = status;
-		this.id_conta = id_conta;
+		this.numConta = numConta;
 		this.dataVencimento = dataVencimento;
 		this.limite = limite;
 	}

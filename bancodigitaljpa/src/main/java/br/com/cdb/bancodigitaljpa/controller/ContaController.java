@@ -15,10 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.AbrirContaDTO;
+import br.com.cdb.bancodigitaljpa.dto.AplicarTxManutencaoResponse;
+import br.com.cdb.bancodigitaljpa.dto.AplicarTxRendimentoResponse;
 import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
-import br.com.cdb.bancodigitaljpa.dto.DepositoSaqueDTO;
+import br.com.cdb.bancodigitaljpa.dto.DepositoDTO;
+import br.com.cdb.bancodigitaljpa.dto.DepositoResponse;
+import br.com.cdb.bancodigitaljpa.dto.PixDTO;
+import br.com.cdb.bancodigitaljpa.dto.PixResponse;
 import br.com.cdb.bancodigitaljpa.dto.SaldoResponse;
+import br.com.cdb.bancodigitaljpa.dto.SaqueDTO;
+import br.com.cdb.bancodigitaljpa.dto.SaqueResponse;
 import br.com.cdb.bancodigitaljpa.dto.TransferenciaDTO;
+import br.com.cdb.bancodigitaljpa.dto.TransferenciaResponse;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.service.ContaService;
@@ -32,7 +40,7 @@ public class ContaController {
 	private ContaService contaService;
 	
 	//criar nova conta
-	@PostMapping("/add")
+	@PostMapping
 	public ResponseEntity<ContaResponse> abrirConta(@RequestBody AbrirContaDTO dto){
 		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta());
 		ContaResponse response = contaService.toResponse(contaNova);
@@ -45,7 +53,7 @@ public class ContaController {
 		return ResponseEntity.ok(Arrays.asList(TipoConta.values()));
 	}
 	
-	@GetMapping("/listAll")
+	@GetMapping
 	public ResponseEntity<List<ContaResponse>> getContas() {
 		List<ContaResponse> contas = contaService.getContas();
 		return ResponseEntity.ok(contas);
@@ -67,68 +75,67 @@ public class ContaController {
 	
 	//realizar uma transf entre contas
 	@PostMapping("/{id_contaOrigem}/transferencia")
-	public ResponseEntity<String> transferir(
+	public ResponseEntity<TransferenciaResponse> transferir(
 			@PathVariable Long id_contaOrigem, 
 			@Valid @RequestBody TransferenciaDTO dto)
 	{	
-		contaService.transferir(id_contaOrigem, dto.getId_contaDestino(), dto.getValor());
-		// Retornar infos da Transação
-		return ResponseEntity.ok("Transferência realizada com sucesso.");
+		TransferenciaResponse response = contaService.transferir(id_contaOrigem, dto.getId_contaDestino(), dto.getValor());
+		return ResponseEntity.ok(response);
 	}
 	
 	//realizar um pg pix
 	@PostMapping("/{id_contaOrigem}/pix")
-	public ResponseEntity<String> pix(
+	public ResponseEntity<PixResponse> pix(
 			@PathVariable Long id_contaOrigem, 
-			@Valid @RequestBody TransferenciaDTO dto)
+			@Valid @RequestBody PixDTO dto)
 	{	
-		contaService.pix(id_contaOrigem, dto.getId_contaDestino(), dto.getValor());
-		return ResponseEntity.ok("PIX realizado com sucesso.");
+		PixResponse response = contaService.pix(id_contaOrigem, dto.getId_contaDestino(), dto.getValor());
+		return ResponseEntity.ok(response);
 	}
 	
 	//consultar saldo da conta
 	@GetMapping("/{id_conta}/saldo")
 	public ResponseEntity<SaldoResponse> getSaldo(
 			@PathVariable Long id_conta) {
-		SaldoResponse saldoConta = contaService.getSaldo(id_conta);
-		return ResponseEntity.ok(saldoConta);
+		SaldoResponse reponse = contaService.getSaldo(id_conta);
+		return ResponseEntity.ok(reponse);
 	}
 	
 	//depositar em conta
 	@PostMapping("{id_conta}/deposito")
-	public ResponseEntity<String> depositar(
+	public ResponseEntity<DepositoResponse> depositar(
 			@PathVariable Long id_conta, 
-			@Valid @RequestBody DepositoSaqueDTO dto)
+			@Valid @RequestBody DepositoDTO dto)
 	{	
-		contaService.depositar(id_conta, dto.getValor());
-		return ResponseEntity.ok("Depósito realizado com sucesso.");
+		DepositoResponse response = contaService.depositar(id_conta, dto.getValor());
+		return ResponseEntity.ok(response);
 	}
 	
 	//sacar da conta
 	@PostMapping("/{id_conta}/saque")
-	public ResponseEntity<String> sacar(
+	public ResponseEntity<SaqueResponse> sacar(
 			@PathVariable Long id_conta, 
-			@Valid @RequestBody DepositoSaqueDTO dto)
+			@Valid @RequestBody SaqueDTO dto)
 	{	
-		contaService.sacar(id_conta, dto.getValor());
-		return ResponseEntity.ok("Saque realizado com sucesso.");
+		SaqueResponse response = contaService.sacar(id_conta, dto.getValor());
+		return ResponseEntity.ok(response);
 	}
 	
 	//debitar tx mensal manut CC
 	@PutMapping("/{id_conta}/manutencao")
-	public ResponseEntity<String> aplicarTxManutencao(
+	public ResponseEntity<AplicarTxManutencaoResponse> aplicarTxManutencao(
 			@PathVariable Long id_conta){
-		contaService.debitarTarifaManutencao(id_conta);
-		return ResponseEntity.ok("Taxa de manutenção debitada com sucesso.");
+		AplicarTxManutencaoResponse response = contaService.debitarTarifaManutencao(id_conta);
+		return ResponseEntity.ok(response);
 		
 	}
 	
 	//creditar mensal rend CP
 	@PutMapping("/{id_conta}/rendimentos")
-	public ResponseEntity<String> aplicarTxRendimento(
+	public ResponseEntity<AplicarTxRendimentoResponse> aplicarTxRendimento(
 			@PathVariable Long id_conta){
-		contaService.creditarRendimento(id_conta);
-		return ResponseEntity.ok("Rendimento creditado com sucesso.");
+		AplicarTxRendimentoResponse response = contaService.creditarRendimento(id_conta);
+		return ResponseEntity.ok(response);
 		
 	}
 	

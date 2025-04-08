@@ -34,7 +34,8 @@ public class CorreiosService {
 				enderecoCorreios.getComplemento(),
 				enderecoCorreios.getLocalidade(),
 				enderecoCorreios.getUf(),
-				enderecoCorreios.getCep()
+				enderecoCorreios.getCep(),
+				true
 				);
 	}
 

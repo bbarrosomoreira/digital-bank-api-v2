@@ -30,14 +30,13 @@ public class Cliente {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id_cliente;
 	
-	@NotBlank(message = "Nome é obrigatótio")
+	@NotBlank(message = "Nome é obrigatório")
 	@Size(min=2, max=100, message="Nome deve ter entre 2 e 100 caracteres")
 	@Pattern(regexp = "^[\\p{L} ]+$", message = "Nome deve conter apenas letras e espaços")
 	@Column(nullable = false, length = 100)
 	private String nome;
 	
-//	@ValidCPF
-	@NotBlank(message = "CPF é obrigatótio")
+	@NotBlank(message = "CPF é obrigatório")
 	@CPF
 	@Column(nullable = false, unique = true, length = 11)
 	private String cpf;
@@ -99,6 +98,7 @@ public class Cliente {
 	}
 	
 	public boolean isMaiorDeIdade() {
+		if(this.dataNascimento == null) return false;
 		return this.dataNascimento.plusYears(18).isBefore(LocalDate.now());
 	}
 	

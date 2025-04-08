@@ -18,7 +18,7 @@ public class PoliticaDeTaxasSeeder implements CommandLineRunner {
 	
 	@Override
     public void run(String... args) {
-        if (parametrosRepository.count() == 0) { // Evita duplicação de dados
+        if (parametrosRepository.count() == 0) { // Para evitar duplicação de dados
             parametrosRepository.save(new PoliticaDeTaxas(CategoriaCliente.COMUM, 
                 new BigDecimal("12.00"), new BigDecimal("0.005"), 
                 new BigDecimal("1000.00"), new BigDecimal("500.00"), new BigDecimal("50.00"), new BigDecimal("0.00")));

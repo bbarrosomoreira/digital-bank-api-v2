@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Positive;
 
-public class DepositoSaqueDTO {
+public class SaqueDTO {
 	
 	@Positive(message = "O valor deve ser positivo")
 	@DecimalMin(value = "1.00", message = "O valor mínimo é R$1,00")
@@ -20,6 +20,6 @@ public class DepositoSaqueDTO {
 	}
 	
 	//constructor
-	public DepositoSaqueDTO() {
+	public SaqueDTO() {
 	}
 }

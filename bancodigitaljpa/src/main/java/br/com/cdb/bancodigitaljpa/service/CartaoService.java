@@ -10,7 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.cdb.bancodigitaljpa.dto.CartaoResponse;
 import br.com.cdb.bancodigitaljpa.dto.FaturaResponse;
+import br.com.cdb.bancodigitaljpa.dto.LimiteResponse;
 import br.com.cdb.bancodigitaljpa.dto.PagamentoResponse;
+import br.com.cdb.bancodigitaljpa.dto.RessetarLimiteDiarioResponse;
+import br.com.cdb.bancodigitaljpa.dto.StatusCartaoResponse;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
@@ -25,6 +28,7 @@ import br.com.cdb.bancodigitaljpa.exceptions.SenhaIncorretaException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
+import jakarta.validation.ValidationException;
 
 @Service
 public class CartaoService {
@@ -49,7 +53,7 @@ public class CartaoService {
 
 		CartaoBase cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
 		cartaoRepository.save(cartaoNovo);
-		
+
 		return toResponse(cartaoNovo);
 	}
 
@@ -61,46 +65,40 @@ public class CartaoService {
 				.orElseThrow(() -> new RuntimeException("Parâmetros não encontrados para a categoria: " + categoria));
 
 		return switch (tipo) {
-			case CREDITO -> {
-				CartaoCredito ccr = new CartaoCredito(conta, senha, parametros.getLimiteCartaoCredito());
-				yield ccr;
-			}
-			case DEBITO -> {
-				CartaoDebito cdb = new CartaoDebito(conta, senha, parametros.getLimiteDiarioDebito());
-				yield cdb;
-			}
+		case CREDITO -> {
+			CartaoCredito ccr = new CartaoCredito(conta, senha, parametros.getLimiteCartaoCredito());
+			yield ccr;
+		}
+		case DEBITO -> {
+			CartaoDebito cdb = new CartaoDebito(conta, senha, parametros.getLimiteDiarioDebito());
+			yield cdb;
+		}
 		};
 
 	}
 
 	// get cartoes
-	public List<CartaoResponse> getCartoes(){
+	public List<CartaoResponse> getCartoes() {
 		List<CartaoBase> cartoes = cartaoRepository.findAll();
-		return cartoes.stream()
-				.map(this::toResponse)
-				.toList();
+		return cartoes.stream().map(this::toResponse).toList();
 	}
-	
+
 	// get cartoes por conta
-	public List<CartaoResponse> listarPorConta(Long id_conta){
+	public List<CartaoResponse> listarPorConta(Long id_conta) {
 		List<CartaoBase> cartoes = cartaoRepository.findByContaId(id_conta);
-		return cartoes.stream()
-				.map(this::toResponse)
-				.toList();
+		return cartoes.stream().map(this::toResponse).toList();
 	}
-	
+
 	// get cartao por cliente
 	public List<CartaoResponse> listarPorCliente(Long id_cliente) {
 		List<CartaoBase> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
-		return cartoes.stream()
-				.map(this::toResponse)
-				.toList();
+		return cartoes.stream().map(this::toResponse).toList();
 	}
-	
+
 	// get um cartao
 	public CartaoResponse getCartaoById(Long id_cartao) {
 		CartaoBase cartao = cartaoRepository.findById(id_cartao)
-				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+				.orElseThrow(() -> new CartaoNaoEncontradoException(id_cartao));
 		return toResponse(cartao);
 	}
 
@@ -108,39 +106,49 @@ public class CartaoService {
 	@Transactional
 	public PagamentoResponse pagar(Long id_cartao, BigDecimal valor, String senha, String descricao) {
 		CartaoBase cartao = cartaoRepository.findById(id_cartao)
-				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+				.orElseThrow(() -> new CartaoNaoEncontradoException(id_cartao));
 		if (!senha.equals(cartao.getSenha())) {
 			throw new SenhaIncorretaException("Compra não finalizda. Senha incorreta!");
 		}
+		if (cartao.getStatus().equals(Status.DESATIVADO)) throw new ValidationException("O cartão está desativado. Para realizar um pagamento, primeiro ative o cartão.");
 		cartao.realizarPagamento(valor);
 		cartaoRepository.save(cartao);
 		return PagamentoResponse.toPagamentoResponse(cartao, valor, descricao);
 	}
-	
 
 	// alter limite
 	@Transactional
-	public void alterarLimite(Long id_cartao, BigDecimal valor) {
+	public LimiteResponse alterarLimite(Long id_cartao, BigDecimal valor) {
 		CartaoBase cartao = cartaoRepository.findById(id_cartao)
-				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+				.orElseThrow(() -> new CartaoNaoEncontradoException(id_cartao));
+		if (cartao.getStatus().equals(Status.DESATIVADO)) throw new ValidationException("O cartão está desativado. Para alterar o limite, primeiro ative o cartão.");
 		cartao.alterarLimite(valor);
 		cartaoRepository.save(cartao);
+		return LimiteResponse.toLimiteResponse(cartao, valor);
 	}
 
 	// alter status cartao
 	@Transactional
-	public void alterarStatus(Long id_cartao, Status statusNovo) {
+	public StatusCartaoResponse alterarStatus(Long id_cartao, Status statusNovo) {
 		CartaoBase cartao = cartaoRepository.findById(id_cartao)
-				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+				.orElseThrow(() -> new CartaoNaoEncontradoException(id_cartao));
+		if (statusNovo.equals(Status.DESATIVADO)) {
+			if (cartao instanceof CartaoCredito) {
+				if (((CartaoCredito) cartao).getTotalFatura().compareTo(BigDecimal.ZERO) > 0)
+					throw new ValidationException("Cartão não pode ser desativado com fatura em aberto.");
+			}
+		}
 		cartao.alterarStatus(statusNovo);
 		cartaoRepository.save(cartao);
+		return StatusCartaoResponse.toStatusCartaoResponse(cartao, statusNovo);
 	}
 
 	// alter senha
 	@Transactional
 	public void alterarSenha(Long id_cartao, String senhaAntiga, String senhaNova) {
 		CartaoBase cartao = cartaoRepository.findById(id_cartao)
-				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+				.orElseThrow(() -> new CartaoNaoEncontradoException(id_cartao));
+		if (cartao.getStatus().equals(Status.DESATIVADO)) throw new ValidationException("O cartão está desativado. Para alterar a senha, primeiro ative o cartão.");
 		cartao.alterarSenha(senhaAntiga, senhaNova);
 		cartaoRepository.save(cartao);
 	}
@@ -148,39 +156,38 @@ public class CartaoService {
 	// get fatura
 	public FaturaResponse getFatura(Long id_cartao) {
 		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartao)
-				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
-		return FaturaResponse.fromCartaoCredito(ccr);
+				.orElseThrow(() -> new CartaoNaoEncontradoException(id_cartao));
+		if (ccr.getStatus().equals(Status.DESATIVADO)) throw new ValidationException("O cartão está desativado. Ative-o primeiro.");
+		return FaturaResponse.toFaturaResponse(ccr);
 	}
 
 	// ressetar limite credito
 	@Transactional
-	public void pagarFatura(Long id_cartao) {
+	public FaturaResponse pagarFatura(Long id_cartao) {
 		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartao)
-				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+				.orElseThrow(() -> new CartaoNaoEncontradoException(id_cartao));
+		if (ccr.getStatus().equals(Status.DESATIVADO)) throw new ValidationException("O cartão está desativado. Ative-o primeiro.");
 		ccr.pagarFatura();
 		cartaoRepository.save(ccr);
+		return FaturaResponse.toFaturaResponse(ccr);
 	}
 
 	// ressetar limite diario
 	@Transactional
-	public void ressetarDebito(Long id_cartao) {
+	public RessetarLimiteDiarioResponse ressetarDebito(Long id_cartao) {
 		CartaoDebito cdb = cartaoRepository.findCartaoDebitoById(id_cartao)
-				.orElseThrow(()-> new CartaoNaoEncontradoException(id_cartao));
+				.orElseThrow(() -> new CartaoNaoEncontradoException(id_cartao));
+		if (cdb.getStatus().equals(Status.DESATIVADO)) throw new ValidationException("O cartão está desativado. Ative-o primeiro.");
 		cdb.ressetarLimiteDiario();
 		cartaoRepository.save(cdb);
+		return RessetarLimiteDiarioResponse.toRessetarLimiteDiarioResponse(cdb);
 	}
-	
 
-	//M
+	// M
 	public CartaoResponse toResponse(CartaoBase cartao) {
-		return new CartaoResponse(
-				cartao.getId_cartao(),
-				cartao.getNumeroCartao(),
-				cartao.getTipoCartao(),
-				cartao.getStatus(),
-				cartao.getConta().getId(),
-				cartao.getDataVencimento(),
-				(cartao instanceof CartaoCredito) ? ((CartaoCredito) cartao).getLimiteCredito() :
-					(cartao instanceof CartaoDebito) ? ((CartaoDebito) cartao).getLimiteDiario() : null);
+		return new CartaoResponse(cartao.getId_cartao(), cartao.getNumeroCartao(), cartao.getTipoCartao(),
+				cartao.getStatus(), cartao.getConta().getNumeroConta(), cartao.getDataVencimento(),
+				(cartao instanceof CartaoCredito) ? ((CartaoCredito) cartao).getLimiteCredito()
+						: (cartao instanceof CartaoDebito) ? ((CartaoDebito) cartao).getLimiteDiario() : null);
 	}
 }
