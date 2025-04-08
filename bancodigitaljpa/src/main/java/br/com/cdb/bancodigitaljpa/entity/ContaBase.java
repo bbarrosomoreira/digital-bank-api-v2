@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigitaljpa.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
-import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -96,13 +95,14 @@ public abstract class ContaBase implements Conta {
 	}
 
 	@Override
-	public void transferir(Conta destino, BigDecimal valor) throws SaldoInsuficienteException {
+	public void transferir(Conta destino, BigDecimal valor)
+	{
 		this.sacar(valor);
 		destino.depositar(valor);
 	}
 	
 	@Override
-	public void pix(Conta destino, BigDecimal valor) throws SaldoInsuficienteException {
+	public void pix(Conta destino, BigDecimal valor) {
 		this.transferir(destino, valor);
 	}
 	

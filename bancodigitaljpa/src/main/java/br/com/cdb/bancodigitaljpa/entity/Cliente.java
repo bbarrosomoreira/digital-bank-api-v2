@@ -37,7 +37,7 @@ public class Cliente {
 	private String nome;
 	
 	@NotBlank(message = "CPF é obrigatório")
-	@CPF
+	@CPF(message = "CPF inválido")
 	@Column(nullable = false, unique = true, length = 11)
 	private String cpf;
 	

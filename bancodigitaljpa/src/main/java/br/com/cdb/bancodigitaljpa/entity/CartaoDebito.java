@@ -4,8 +4,6 @@ import java.beans.Transient;
 import java.math.BigDecimal;
 
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
-import br.com.cdb.bancodigitaljpa.exceptions.LimiteInsuficienteException;
-import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -53,18 +51,11 @@ public class CartaoDebito extends CartaoBase {
 		return TipoCartao.DEBITO.getDescricao();
 	}
 	@Override
-	public void realizarPagamento(BigDecimal valor) throws LimiteInsuficienteException, SaldoInsuficienteException {
-		if(valor.compareTo(limiteAtual)>0) {
-			throw new LimiteInsuficienteException(this.getId_cartao(), this.getNumeroCartao(), this.getLimiteAtual());
-		}
-		if(valor.compareTo(this.getConta().getSaldo())>0) {
-			throw new SaldoInsuficienteException(this.getConta().getId(), this.getConta().getNumeroConta(), this.getConta().getSaldo());
-		}
+	public void realizarPagamento(BigDecimal valor) {	
 		BigDecimal limiteAtualizado = this.limiteAtual.subtract(valor);
 		this.setLimiteAtual(limiteAtualizado);
 		BigDecimal saldoAtualizado = this.getConta().getSaldo().subtract(valor);
-		this.getConta().setSaldo(saldoAtualizado);
-		
+		this.getConta().setSaldo(saldoAtualizado);		
 	}
 	@Override
 	public void alterarLimite(BigDecimal limiteNovo) {

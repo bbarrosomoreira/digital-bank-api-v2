@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
-import br.com.cdb.bancodigitaljpa.exceptions.SenhaIncorretaException;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -24,6 +23,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
+import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -113,6 +113,7 @@ public abstract class CartaoBase implements Cartao {
 	//M
 	public abstract void realizarPagamento(BigDecimal valor);
 	public abstract void alterarLimite(BigDecimal valor);
+	public abstract BigDecimal getLimiteAtual();
 	
 	@Transient
 	public abstract TipoCartao getTipoCartao();
@@ -148,9 +149,9 @@ public abstract class CartaoBase implements Cartao {
 	}
 	
 	@Override
-	public void alterarSenha(String senhaAntiga, String senhaNova) throws SenhaIncorretaException {
+	public void alterarSenha(String senhaAntiga, String senhaNova) {
 		if (!this.senha.equals(senhaAntiga)) {
-			throw new SenhaIncorretaException("Senha atual incorreta!");
+			throw new ValidationException("A senha informada está incorreta!");
 		}
 		definirSenha(senhaNova);
 	}

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
+import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 
 @Service
@@ -18,7 +19,7 @@ public class PoliticaDeTaxasService {
 
 	public PoliticaDeTaxas buscarParametosPorCategoria(CategoriaCliente categoria) {
 		return parametrosRepository.findByCategoria(categoria)
-				.orElseThrow(()-> new RuntimeException("Parâmetros não encontrados para a categoria: " + categoria));
+				.orElseThrow(()-> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
 	}
 	
 	public List<PoliticaDeTaxas> listarTodosParametros(){

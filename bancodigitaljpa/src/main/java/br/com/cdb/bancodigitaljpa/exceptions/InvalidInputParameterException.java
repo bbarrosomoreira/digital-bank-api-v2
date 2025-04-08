@@ -7,6 +7,6 @@ public class InvalidInputParameterException extends ApiException {
 	private static final long serialVersionUID = 1L;
 
 	public InvalidInputParameterException(String message) {
-        super(message, HttpStatus.BAD_REQUEST);
+        super(message, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }

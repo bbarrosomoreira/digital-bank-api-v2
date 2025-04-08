@@ -22,34 +22,38 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-	
-//	@ExceptionHandler(ApiException.class)
-//	public ResponseEntity<Object> globalExceptionHandler(ApiException ex, WebRequest request) {
-//		return Objects.requireNonNull(handleExceptionInternal(ex, body:null, ex.getHeaders(), ex.getStatusCode(), request));
-//	}
 
 	private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 	// Trata exceções customizadas da hierarquia ApiException
 	@ExceptionHandler(ApiException.class)
 	public ResponseEntity<ErrorResponse> handleApiException(ApiException ex, WebRequest request) {
-		ErrorResponse response = new ErrorResponse(LocalDateTime.now(), ex.getStatus().value(),
-				ex.getStatus().getReasonPhrase(), ex.getMessage(), request.getDescription(false).replace("uri=", ""));
+		ErrorResponse response = new ErrorResponse(
+				LocalDateTime.now(), 
+				ex.getStatus().value(),
+				ex.getStatus().getReasonPhrase(), 
+				ex.getMessage(), 
+				request.getDescription(false).replace("uri=", ""));
 
 		return new ResponseEntity<>(response, ex.getStatus());
 	}
 
 	// Trata erros de validação
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-			HttpHeaders headers, HttpStatus status, WebRequest request) {
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(
+			MethodArgumentNotValidException ex,
+			HttpHeaders headers, 
+			HttpStatus status, 
+			WebRequest request) {
 
-		Map<String, String> fieldErrors = new HashMap<>();
+		Map<String, String> errors = new HashMap<>();
 		ex.getBindingResult().getFieldErrors()
-				.forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
+				.forEach(error -> errors.put(
+						error.getObjectName() + " - " + error.getField(), 
+						error.getDefaultMessage()));
 
 		ValidationErrorResponse response = new ValidationErrorResponse(LocalDateTime.now(),
 				HttpStatus.BAD_REQUEST.value(), "Erro de validação", "Campos inválidos na requisição",
-				request.getDescription(false).replace("uri=", ""), fieldErrors);
+				request.getDescription(false).replace("uri=", ""), errors);
 
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}

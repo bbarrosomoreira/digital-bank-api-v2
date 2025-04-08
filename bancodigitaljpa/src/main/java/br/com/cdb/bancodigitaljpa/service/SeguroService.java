@@ -18,13 +18,12 @@ import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
-import br.com.cdb.bancodigitaljpa.exceptions.CartaoNaoEncontradoException;
-import br.com.cdb.bancodigitaljpa.exceptions.SeguroNaoEncontradoException;
+import br.com.cdb.bancodigitaljpa.exceptions.InvalidInputParameterException;
+import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ValidationException;
 
 @Service
 public class SeguroService {
@@ -43,7 +42,7 @@ public class SeguroService {
 	public SeguroResponse contratarSeguro(Long id_cartaoCredito, TipoSeguro tipo) {
 		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
 		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartaoCredito)
-				.orElseThrow(() -> new CartaoNaoEncontradoException(id_cartaoCredito));
+				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartaoCredito + " não encontrado."));
 		SeguroBase seguroNovo = contratarSeguroPorTipo(tipo, ccr);
 		seguroRepository.save(seguroNovo);
 		return toResponse(seguroNovo);
@@ -54,7 +53,7 @@ public class SeguroService {
 		CategoriaCliente categoria = ccr.getConta().getCliente().getCategoria();
 
 		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
-				.orElseThrow(() -> new RuntimeException("Parâmetros não encontrados para a categoria: " + categoria));
+				.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
 
 		return switch (tipo) {
 		case FRAUDE -> {
@@ -73,7 +72,7 @@ public class SeguroService {
 	// obtemDetalhesApolice
 	public SeguroResponse getSeguroById(Long id_seguro) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
-				.orElseThrow(() -> new SeguroNaoEncontradoException(id_seguro));
+				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
 		return SeguroResponse.toSeguroResponse(seguro);
 	}
 
@@ -81,7 +80,7 @@ public class SeguroService {
 	@Transactional
 	public CancelarSeguroResponse cancelarSeguro(Long id_seguro) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
-				.orElseThrow(() -> new SeguroNaoEncontradoException(id_seguro));
+				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
 		seguro.setarStatusSeguro(Status.DESATIVADO);
 		seguroRepository.save(seguro);
 		return CancelarSeguroResponse.toCancelarSeguroResponse(seguro);
@@ -109,8 +108,8 @@ public class SeguroService {
 	// acionarSeguro
 	public SeguroBase acionarSeguro(Long id_seguro, BigDecimal valor) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
-				.orElseThrow(() -> new SeguroNaoEncontradoException(id_seguro));
-		if(seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new ValidationException("O seguro está desativado. Para acioná-lo é necessário ativar primeiro.");
+				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
+		if(seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
 		if(seguro instanceof SeguroFraude) {
 			((SeguroFraude) seguro).setValorFraude(valor);
 		}
@@ -123,8 +122,9 @@ public class SeguroService {
 	// debitarPremioSeguro
 	public DebitarPremioSeguroResponse debitarPremioSeguro(Long id_seguro) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
-				.orElseThrow(() -> new SeguroNaoEncontradoException(id_seguro));
-		if (seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new IllegalArgumentException("Prêmio não cobrado. O Seguro de Viagem está desativado!");
+				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
+		if (seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
+		if (seguro.getPremioApolice().compareTo(seguro.getCartaoCredito().getConta().getSaldo())>0) throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
 		seguro.aplicarPremio();
 		return DebitarPremioSeguroResponse.toDebitarPremioSeguroResponse(seguro);
 	}
