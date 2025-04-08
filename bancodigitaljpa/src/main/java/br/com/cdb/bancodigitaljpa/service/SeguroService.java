@@ -7,9 +7,6 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigitaljpa.dto.CancelarSeguroResponse;
-import br.com.cdb.bancodigitaljpa.dto.DebitarPremioSeguroResponse;
-import br.com.cdb.bancodigitaljpa.dto.SeguroResponse;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
@@ -18,11 +15,14 @@ import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
-import br.com.cdb.bancodigitaljpa.exceptions.InvalidInputParameterException;
-import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
+import br.com.cdb.bancodigitaljpa.response.CancelarSeguroResponse;
+import br.com.cdb.bancodigitaljpa.response.DebitarPremioSeguroResponse;
+import br.com.cdb.bancodigitaljpa.response.SeguroResponse;
 import jakarta.transaction.Transactional;
 
 @Service

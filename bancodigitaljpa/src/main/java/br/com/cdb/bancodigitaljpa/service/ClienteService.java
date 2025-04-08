@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.cdb.bancodigitaljpa.dto.ClienteResponse;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
@@ -27,15 +26,16 @@ import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
 import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
-import br.com.cdb.bancodigitaljpa.exceptions.InvalidInputParameterException;
-import br.com.cdb.bancodigitaljpa.exceptions.ResourceAlreadyExistsException;
-import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
-import br.com.cdb.bancodigitaljpa.exceptions.ValidationException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceAlreadyExistsException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
+import br.com.cdb.bancodigitaljpa.response.ClienteResponse;
 
 @Service
 public class ClienteService {

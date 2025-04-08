@@ -8,12 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.cdb.bancodigitaljpa.dto.CartaoResponse;
-import br.com.cdb.bancodigitaljpa.dto.FaturaResponse;
-import br.com.cdb.bancodigitaljpa.dto.LimiteResponse;
-import br.com.cdb.bancodigitaljpa.dto.PagamentoResponse;
-import br.com.cdb.bancodigitaljpa.dto.RessetarLimiteDiarioResponse;
-import br.com.cdb.bancodigitaljpa.dto.StatusCartaoResponse;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
@@ -22,12 +16,18 @@ import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
-import br.com.cdb.bancodigitaljpa.exceptions.InvalidInputParameterException;
-import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
-import br.com.cdb.bancodigitaljpa.exceptions.ValidationException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
+import br.com.cdb.bancodigitaljpa.response.CartaoResponse;
+import br.com.cdb.bancodigitaljpa.response.FaturaResponse;
+import br.com.cdb.bancodigitaljpa.response.LimiteResponse;
+import br.com.cdb.bancodigitaljpa.response.PagamentoResponse;
+import br.com.cdb.bancodigitaljpa.response.RessetarLimiteDiarioResponse;
+import br.com.cdb.bancodigitaljpa.response.StatusCartaoResponse;
 
 @Service
 public class CartaoService {

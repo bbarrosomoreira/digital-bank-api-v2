@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.AtualizarCategoriaClienteDTO;
-import br.com.cdb.bancodigitaljpa.dto.ClienteResponse;
 import br.com.cdb.bancodigitaljpa.dto.CriarClienteDTO;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
+import br.com.cdb.bancodigitaljpa.response.ClienteResponse;
 import br.com.cdb.bancodigitaljpa.service.ClienteService;
 import jakarta.validation.Valid;
 

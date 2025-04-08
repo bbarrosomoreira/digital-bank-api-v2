@@ -8,14 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.cdb.bancodigitaljpa.dto.AplicarTxManutencaoResponse;
-import br.com.cdb.bancodigitaljpa.dto.AplicarTxRendimentoResponse;
-import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
-import br.com.cdb.bancodigitaljpa.dto.DepositoResponse;
-import br.com.cdb.bancodigitaljpa.dto.PixResponse;
-import br.com.cdb.bancodigitaljpa.dto.SaldoResponse;
-import br.com.cdb.bancodigitaljpa.dto.SaqueResponse;
-import br.com.cdb.bancodigitaljpa.dto.TransferenciaResponse;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
@@ -23,11 +15,19 @@ import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
-import br.com.cdb.bancodigitaljpa.exceptions.InvalidInputParameterException;
-import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
+import br.com.cdb.bancodigitaljpa.response.AplicarTxManutencaoResponse;
+import br.com.cdb.bancodigitaljpa.response.AplicarTxRendimentoResponse;
+import br.com.cdb.bancodigitaljpa.response.ContaResponse;
+import br.com.cdb.bancodigitaljpa.response.DepositoResponse;
+import br.com.cdb.bancodigitaljpa.response.PixResponse;
+import br.com.cdb.bancodigitaljpa.response.SaldoResponse;
+import br.com.cdb.bancodigitaljpa.response.SaqueResponse;
+import br.com.cdb.bancodigitaljpa.response.TransferenciaResponse;
 
 @Service
 public class ContaService {

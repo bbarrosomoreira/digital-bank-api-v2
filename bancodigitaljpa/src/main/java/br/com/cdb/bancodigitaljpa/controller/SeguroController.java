@@ -16,17 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroFraudeDTO;
-import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroFraudeResponse;
-import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroViagemResponse;
-import br.com.cdb.bancodigitaljpa.dto.CancelarSeguroResponse;
 import br.com.cdb.bancodigitaljpa.dto.ContratarSeguroDTO;
-import br.com.cdb.bancodigitaljpa.dto.DebitarPremioSeguroResponse;
-import br.com.cdb.bancodigitaljpa.dto.SeguroResponse;
-import br.com.cdb.bancodigitaljpa.dto.TipoSeguroResponse;
 import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
 import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
 import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
+import br.com.cdb.bancodigitaljpa.response.AcionarSeguroFraudeResponse;
+import br.com.cdb.bancodigitaljpa.response.AcionarSeguroViagemResponse;
+import br.com.cdb.bancodigitaljpa.response.CancelarSeguroResponse;
+import br.com.cdb.bancodigitaljpa.response.DebitarPremioSeguroResponse;
+import br.com.cdb.bancodigitaljpa.response.SeguroResponse;
+import br.com.cdb.bancodigitaljpa.response.TipoSeguroResponse;
 import br.com.cdb.bancodigitaljpa.service.SeguroService;
 
 @RestController

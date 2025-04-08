@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.cdb.bancodigitaljpa.dto.AjustarLimiteDTO;
 import br.com.cdb.bancodigitaljpa.dto.AlterarSenhaDTO;
 import br.com.cdb.bancodigitaljpa.dto.AlterarStatusCartaoDTO;
-import br.com.cdb.bancodigitaljpa.dto.CartaoResponse;
 import br.com.cdb.bancodigitaljpa.dto.EmitirCartaoDTO;
-import br.com.cdb.bancodigitaljpa.dto.FaturaResponse;
-import br.com.cdb.bancodigitaljpa.dto.LimiteResponse;
 import br.com.cdb.bancodigitaljpa.dto.PagamentoDTO;
-import br.com.cdb.bancodigitaljpa.dto.PagamentoResponse;
-import br.com.cdb.bancodigitaljpa.dto.RessetarLimiteDiarioResponse;
-import br.com.cdb.bancodigitaljpa.dto.StatusCartaoResponse;
 import br.com.cdb.bancodigitaljpa.enums.Status;
+import br.com.cdb.bancodigitaljpa.response.CartaoResponse;
+import br.com.cdb.bancodigitaljpa.response.FaturaResponse;
+import br.com.cdb.bancodigitaljpa.response.LimiteResponse;
+import br.com.cdb.bancodigitaljpa.response.PagamentoResponse;
+import br.com.cdb.bancodigitaljpa.response.RessetarLimiteDiarioResponse;
+import br.com.cdb.bancodigitaljpa.response.StatusCartaoResponse;
 import br.com.cdb.bancodigitaljpa.service.CartaoService;
 
 @RestController
