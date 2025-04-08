@@ -30,12 +30,12 @@ import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
 import br.com.cdb.bancodigitaljpa.exceptions.InvalidInputParameterException;
 import br.com.cdb.bancodigitaljpa.exceptions.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
+import br.com.cdb.bancodigitaljpa.exceptions.ValidationException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
-import jakarta.validation.ValidationException;
 
 @Service
 public class ClienteService {

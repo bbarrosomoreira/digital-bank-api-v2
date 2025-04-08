@@ -24,10 +24,10 @@ import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
 import br.com.cdb.bancodigitaljpa.exceptions.InvalidInputParameterException;
 import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
+import br.com.cdb.bancodigitaljpa.exceptions.ValidationException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
-import jakarta.validation.ValidationException;
 
 @Service
 public class CartaoService {

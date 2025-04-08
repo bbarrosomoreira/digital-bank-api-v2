@@ -22,11 +22,9 @@ import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
-import br.com.cdb.bancodigitaljpa.exceptions.ContaNaoEncontradaException;
 import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
 import br.com.cdb.bancodigitaljpa.exceptions.InvalidInputParameterException;
 import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
-import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
@@ -85,6 +83,8 @@ public class ContaService {
 
 	// get conta por cliente
 	public List<ContaResponse> listarPorCliente(Long id_cliente) {
+		clienteRepository.findById(id_cliente)
+		.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
 		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
 		return contas.stream().map(this::toResponse).toList();
 	}
@@ -92,7 +92,7 @@ public class ContaService {
 	// get uma conta
 	public ContaResponse getContaById(Long id_conta) {
 		ContaBase conta = contaRepository.findById(id_conta)
-				.orElseThrow(() -> new ContaNaoEncontradaException(id_conta));
+				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
 		return toResponse(conta);
 	}
 
@@ -119,8 +119,7 @@ public class ContaService {
 
 	// pix
 	@Transactional
-	public PixResponse pix(Long id_contaOrigem, Long id_contaDestino, BigDecimal valor)
-			throws SaldoInsuficienteException {
+	public PixResponse pix(Long id_contaOrigem, Long id_contaDestino, BigDecimal valor) {
 		ContaBase origem = contaRepository.findById(id_contaOrigem).orElseThrow(
 				() -> new ResourceNotFoundException("Conta com ID " + id_contaOrigem + " não encontrada."));
 		ContaBase destino = contaRepository.findById(id_contaDestino).orElseThrow(

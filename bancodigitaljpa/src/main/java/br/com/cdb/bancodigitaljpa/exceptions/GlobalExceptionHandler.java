@@ -1,8 +1,8 @@
 package br.com.cdb.bancodigitaljpa.exceptions;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import br.com.cdb.bancodigitaljpa.dto.ErrorResponse;
 import br.com.cdb.bancodigitaljpa.dto.ValidationErrorResponse;
@@ -11,8 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,21 +40,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	// Trata erros de validação
+	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
 			MethodArgumentNotValidException ex,
 			HttpHeaders headers, 
-			HttpStatus status, 
+			HttpStatusCode status, 
 			WebRequest request) {
 
-		Map<String, String> errors = new HashMap<>();
-		ex.getBindingResult().getFieldErrors()
-				.forEach(error -> errors.put(
-						error.getObjectName() + " - " + error.getField(), 
-						error.getDefaultMessage()));
+		Map<String, String> fieldErrors = ex.getBindingResult().getFieldErrors()
+				.stream()
+				.collect(Collectors.toMap(
+						FieldError::getField,
+		                FieldError::getDefaultMessage
+						));
 
-		ValidationErrorResponse response = new ValidationErrorResponse(LocalDateTime.now(),
-				HttpStatus.BAD_REQUEST.value(), "Erro de validação", "Campos inválidos na requisição",
-				request.getDescription(false).replace("uri=", ""), errors);
+		ValidationErrorResponse response = new ValidationErrorResponse(
+				LocalDateTime.now(),
+				HttpStatus.BAD_REQUEST.value(), 
+				"Erro de validação", 
+				request.getDescription(false).replace("uri=", ""), 
+				fieldErrors);
 
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
@@ -63,8 +69,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleUnhandledExceptions(Exception ex, WebRequest request) {
 		logger.error("Erro não tratado", ex);
 
-		ErrorResponse response = new ErrorResponse(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				"Erro interno", "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+		ErrorResponse response = new ErrorResponse(
+				LocalDateTime.now(), 
+				HttpStatus.INTERNAL_SERVER_ERROR.value(),
+				"Erro interno", 
+				"Ocorreu um erro inesperado. Tente novamente mais tarde.",
 				request.getDescription(false).replace("uri=", ""));
 
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

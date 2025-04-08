@@ -4,7 +4,6 @@ import java.beans.Transient;
 import java.math.BigDecimal;
 
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
-import br.com.cdb.bancodigitaljpa.exceptions.SaldoInsuficienteException;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -55,10 +54,7 @@ public class ContaCorrente extends ContaBase{
 	}
 	
 	@Override
-	public void sacar(BigDecimal valor) throws SaldoInsuficienteException {
-		if (valor.compareTo(this.getSaldo()) > 0) {
-			throw new SaldoInsuficienteException(this.getId(), this.numeroConta, this.getSaldo());
-		}
+	public void sacar(BigDecimal valor) {
 		BigDecimal novoSaldo = this.getSaldo().subtract(valor);
 		this.setSaldo(novoSaldo);
 	}
