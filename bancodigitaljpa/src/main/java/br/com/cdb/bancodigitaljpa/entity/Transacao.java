@@ -3,7 +3,13 @@ package br.com.cdb.bancodigitaljpa.entity;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import br.com.cdb.bancodigitaljpa.enums.TipoTransacao;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,11 +28,14 @@ public class Transacao {
 	@ManyToOne
 	private ContaBase contaDestino;
 	
+	@Column(nullable = false, precision = 19, scale = 2)
 	private BigDecimal valor;
 	
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalTime data;
 	
-	private String tipo; //SAQUE, DEPOSITO, etc
+	@Enumerated(EnumType.STRING)
+	private TipoTransacao tipo; //SAQUE, DEPOSITO, etc
 	
 	private String descricao;
 	
@@ -61,10 +70,10 @@ public class Transacao {
 	public void setData(LocalTime data) {
 		this.data = data;
 	}
-	public String getTipo() {
+	public TipoTransacao getTipo() {
 		return tipo;
 	}
-	public void setTipo(String tipo) {
+	public void setTipo(TipoTransacao tipo) {
 		this.tipo = tipo;
 	}
 	public String getDescricao() {
