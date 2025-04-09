@@ -57,9 +57,15 @@ public class ClienteService {
 
 	@Autowired
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
+	
+	@Autowired
+	private ReceitaCpfService receitaCpfService;
 
 	// Cadastrar cliente
 	public ClienteResponse addCliente(Cliente cliente) {
+		
+		if(!receitaCpfService.isCpfValidoEAtivo(cliente.getCpf())) throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
+		
 		validarCpfUnico(cliente.getCpf());
 		validarMaiorIdade(cliente);
 
