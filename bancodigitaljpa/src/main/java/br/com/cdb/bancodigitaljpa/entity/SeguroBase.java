@@ -1,6 +1,5 @@
 package br.com.cdb.bancodigitaljpa.entity;
 
-import java.beans.Transient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -93,15 +92,11 @@ public abstract class SeguroBase implements Seguro {
 	}
 	public SeguroBase() {}
 
-	//tipoSeguro
 	//M
 	private String gerarNumeroApolice() {
 		return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 	}
-	
-	@Transient
 	public abstract TipoSeguro getTipoSeguro();
-	
 	public abstract Status getStatusSeguro();
 	
 }

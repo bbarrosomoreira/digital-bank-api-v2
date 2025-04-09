@@ -23,7 +23,6 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -135,7 +134,7 @@ public abstract class CartaoBase implements Cartao {
 	    Random random = new Random();
 	    StringBuilder numeroCartao = new StringBuilder();
 
-	    // Define o primeiro dígito (Visa = 4, Mastercard = 5, etc.)
+	    // Define o primeiro dígito (Visa = 4, Mastercard = 5)
 	    int primeiroDigito = random.nextBoolean() ? 4 : 5; 
 	    numeroCartao.append(primeiroDigito);
 
@@ -150,9 +149,6 @@ public abstract class CartaoBase implements Cartao {
 	
 	@Override
 	public void alterarSenha(String senhaAntiga, String senhaNova) {
-		if (!this.senha.equals(senhaAntiga)) {
-			throw new ValidationException("A senha informada está incorreta!");
-		}
 		definirSenha(senhaNova);
 	}
 	

@@ -1,6 +1,5 @@
 package br.com.cdb.bancodigitaljpa.entity;
 
-import java.beans.Transient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -50,10 +49,9 @@ public abstract class ContaBase implements Conta {
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dataCriacao = LocalDate.now();
 
-	@Transient
 	public abstract TipoConta getTipoConta();
 	
-	// Construtor protegido
+	// Construtor
 	protected ContaBase() {}
 	
 	protected ContaBase(Cliente cliente) {
@@ -88,15 +86,14 @@ public abstract class ContaBase implements Conta {
 		return dataCriacao;
 	}
 
-	// Implementações comuns
+	//M 
 	@Override
 	public void depositar(BigDecimal valor) {
 		this.saldo = this.saldo.add(valor);
 	}
 
 	@Override
-	public void transferir(Conta destino, BigDecimal valor)
-	{
+	public void transferir(Conta destino, BigDecimal valor) {
 		this.sacar(valor);
 		destino.depositar(valor);
 	}

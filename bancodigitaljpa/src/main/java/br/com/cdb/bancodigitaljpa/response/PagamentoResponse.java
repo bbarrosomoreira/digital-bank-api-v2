@@ -16,7 +16,7 @@ public record PagamentoResponse (
 	public static PagamentoResponse toPagamentoResponse (CartaoBase cartao, BigDecimal valor, String descricao) {
 		return new PagamentoResponse(
 				cartao.getNumeroCartao(),
-				cartao.getTipo(),
+				cartao.getDescricaoTipoCartao(),
 				descricao,
 				valor,
 				(cartao instanceof CartaoCredito) ? ((CartaoCredito) cartao).getLimiteAtual() :

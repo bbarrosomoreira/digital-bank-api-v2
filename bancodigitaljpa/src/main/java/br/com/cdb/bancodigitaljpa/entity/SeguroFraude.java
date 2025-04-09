@@ -60,7 +60,7 @@ public class SeguroFraude extends SeguroBase {
 	public TipoSeguro getTipoSeguro() {
 		return TipoSeguro.FRAUDE;
 	}
-	public String getTipo() {
+	public String getDescricaoTipoSeguro() {
 		return TipoSeguro.FRAUDE.getDescricao();
 	}
 	@Override
@@ -80,9 +80,7 @@ public class SeguroFraude extends SeguroBase {
 
 	@Override
 	public void acionarSeguro() {
-		if(valorFraude == null) throw new IllegalArgumentException("Valor da fraude é obrigatório!");
-		BigDecimal valorRessarcido = getValorRessarcido();
-		this.getCartaoCredito().getConta().depositar(valorRessarcido);
+		this.getCartaoCredito().getConta().depositar(getValorRessarcido());
 		this.setDataAcionamento(LocalDate.now());
 	}
 	public void aplicarPremio() {

@@ -17,10 +17,21 @@ public class ContaPoupanca extends ContaBase {
 	@Column(name = "taxa_rendimento", precision = 5, scale = 4)
 	private BigDecimal taxaRendimento;
 	
+	//constructor
+	public ContaPoupanca() {}
+	public ContaPoupanca(Cliente cliente) {
+		super(cliente);
+	}
+	
 	//getters & setters
 	@Override
-	public String getTipo() {
+	public String getDescricaoTipoConta() {
 		return TipoConta.POUPANCA.getDescricao();
+	}
+	@Override
+	@Transient
+	public TipoConta getTipoConta() {
+		return TipoConta.POUPANCA;
 	}
 	public BigDecimal getTaxaRendimento() {
 		return taxaRendimento;
@@ -32,20 +43,7 @@ public class ContaPoupanca extends ContaBase {
 		this.setTaxaRendimento(taxaRendimento);
 	}
 	
-	//constructor
-	public ContaPoupanca() {}
-	
-	public ContaPoupanca(Cliente cliente) {
-		super(cliente);
-	}
-	
-	//metodos
-	@Override
-	@Transient
-	public TipoConta getTipoConta() {
-		return TipoConta.POUPANCA;
-	}
-	
+	//metodos	
 	@PrePersist
 	private void init() {
 		gerarNumeroConta();

@@ -20,6 +20,7 @@ import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
+import br.com.cdb.bancodigitaljpa.entity.EnderecoCliente;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
 import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
@@ -88,10 +89,8 @@ public class ClienteService {
 		boolean temCartoes = !cartaoRepository.findByContaClienteId(id_cliente).isEmpty();
 		boolean temSeguros = !seguroRepository.findByClienteId(id_cliente).isEmpty();
 
-		if (temContas || temCartoes || temSeguros) {
-			throw new ValidationException(
+		if (temContas || temCartoes || temSeguros) throw new ValidationException(
 					"Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.");
-		}
 
 		clienteRepository.delete(cliente);
 		log.info("Cliente ID {} deletado com sucesso", id_cliente);
@@ -113,15 +112,19 @@ public class ClienteService {
 				break;
 			case "cpf":
 				if (valor != null) {
-					// validar cpf
-					String novoCpf = (String) valor;
-					cliente.setCpf(novoCpf);
+					cliente.setCpf((String) valor);
 				}
 				break;
 			case "dataNascimento":
 				if (valor != null) {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 					cliente.setDataNascimento(LocalDate.parse((String) valor, formatter));
+				}
+				break;
+			case "endereco":
+				if (valor != null) {
+					EnderecoCliente endereco = (EnderecoCliente) valor;
+					cliente.setEndereco(endereco);
 				}
 				break;
 			case "categoria":
@@ -131,6 +134,7 @@ public class ClienteService {
 				break;
 			}
 		});
+		
 		clienteRepository.save(cliente);
 		return toResponse(cliente);
 	}
@@ -144,12 +148,13 @@ public class ClienteService {
 		cliente.setNome(clienteAtualizado.getNome());
 		cliente.setCpf(clienteAtualizado.getCpf());
 		cliente.setDataNascimento(clienteAtualizado.getDataNascimento());
+		cliente.setEndereco(clienteAtualizado.getEndereco());
 		cliente.setCategoria(clienteAtualizado.getCategoria());
+		
 		clienteRepository.save(cliente);
 		return toResponse(cliente);
 	}
 
-	// CRIAR CLIENTE RESPONSE
 	@Transactional
 	public ClienteResponse updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) {
 		Cliente cliente = clienteRepository.findById(id_cliente)
@@ -160,18 +165,10 @@ public class ClienteService {
 					+ novaCategoria + ". Nenhuma atualização necessária.");
 
 		cliente.setCategoria(novaCategoria);
-		clienteRepository.save(cliente);
 
-		Cliente clienteAtualizado = clienteRepository.findById(id_cliente)
-				.orElseThrow(() -> new IllegalStateException("Falha ao recuperar cliente atualizado"));
+		atualizarTaxasDasContasECartoesESeguros(id_cliente, novaCategoria);
 
-		if (clienteAtualizado.getCategoria() != novaCategoria) {
-			throw new IllegalStateException("Erro: Categoria do cliente não foi atualizada no banco!");
-		}
-
-		atualizarTaxasDasContasECartoesESeguros(id_cliente, cliente.getCategoria());
-
-		return toResponse(clienteAtualizado);
+		return toResponse(cliente);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -206,6 +203,8 @@ public class ClienteService {
 					cdb.setLimiteDiario(parametros.getLimiteDiarioDebito());
 				}
 			});
+			
+			cartaoRepository.saveAll(cartoes);
 
 			List<SeguroBase> seguros = seguroRepository.findByClienteId(id_cliente);
 
@@ -219,6 +218,8 @@ public class ClienteService {
 					sv.setPremioApolice(parametros.getTarifaSeguroViagem());
 				}
 			});
+			
+			seguroRepository.saveAll(seguros);
 
 		} catch (Exception e) {
 			log.error("Falha ao atualizar Política de Taxas do cliente ID {}", id_cliente, e);

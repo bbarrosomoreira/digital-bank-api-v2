@@ -47,7 +47,7 @@ public class CartaoDebito extends CartaoBase {
 		return TipoCartao.DEBITO;
 	}
 	@Override
-	public String getTipo() {
+	public String getDescricaoTipoCartao() {
 		return TipoCartao.DEBITO.getDescricao();
 	}
 	@Override

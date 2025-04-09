@@ -41,7 +41,7 @@ public class ContaController {
 	
 	//criar nova conta
 	@PostMapping
-	public ResponseEntity<ContaResponse> abrirConta(@RequestBody AbrirContaDTO dto){
+	public ResponseEntity<ContaResponse> abrirConta(@Valid @RequestBody AbrirContaDTO dto){
 		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta());
 		ContaResponse response = contaService.toResponse(contaNova);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);

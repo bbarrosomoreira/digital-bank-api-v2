@@ -150,6 +150,7 @@ public class ContaService {
 	public DepositoResponse depositar(Long id_conta, BigDecimal valor) {
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
+		
 		conta.depositar(valor);
 		contaRepository.save(conta);
 		return DepositoResponse.toDepositoResponse(conta.getNumeroConta(), valor, conta.getSaldo());
@@ -180,16 +181,14 @@ public class ContaService {
 	public AplicarTxManutencaoResponse debitarTarifaManutencao(Long id_conta) {
 		ContaCorrente cc = contaRepository.findContaCorrenteById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
-		BigDecimal taxaMensal = cc.getTarifaManutencao();
-		BigDecimal saldoAtual = cc.getSaldo();
-		if (taxaMensal.compareTo(saldoAtual) > 0)
+		
+		if (cc.getTarifaManutencao().compareTo(cc.getSaldo()) > 0)
 			throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
 
-		BigDecimal saldoNovo = saldoAtual.subtract(taxaMensal);
-		cc.setSaldo(saldoNovo);
+		cc.aplicarTxManutencao();	
 		contaRepository.save(cc);
 
-		return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), taxaMensal, saldoAtual);
+		return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), cc.getTarifaManutencao(), cc.getSaldo());
 	}
 
 	// rendimento
@@ -198,13 +197,10 @@ public class ContaService {
 		ContaPoupanca cp = contaRepository.findContaPoupancaById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
 		
-		BigDecimal taxaMensal = cp.getTaxaRendimento();
-		BigDecimal saldoAtual = cp.getSaldo();
-		BigDecimal rendimento = saldoAtual.multiply(taxaMensal);
-		BigDecimal saldoNovo = saldoAtual.add(rendimento);
-		cp.setSaldo(saldoNovo);
+		cp.aplicarRendimento();
 		contaRepository.save(cp);
-		return AplicarTxRendimentoResponse.toAplicarTxRendimentoResponse(cp.getNumeroConta(), rendimento, saldoNovo);
+		
+		return AplicarTxRendimentoResponse.toAplicarTxRendimentoResponse(cp.getNumeroConta(), cp.getTaxaRendimento(), cp.getSaldo());
 
 	}
 

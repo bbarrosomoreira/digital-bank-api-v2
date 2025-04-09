@@ -51,7 +51,7 @@ public class SeguroViagem extends SeguroBase {
 	public TipoSeguro getTipoSeguro() {
 		return TipoSeguro.VIAGEM;
 	}
-	public String getTipo() {
+	public String getDescricaoTipoSeguro() {
 		return TipoSeguro.VIAGEM.getDescricao();
 	}
 	@Override

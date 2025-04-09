@@ -43,6 +43,7 @@ public class SeguroService {
 		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
 		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartaoCredito)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartaoCredito + " não encontrado."));
+		
 		SeguroBase seguroNovo = contratarSeguroPorTipo(tipo, ccr);
 		seguroRepository.save(seguroNovo);
 		return toResponse(seguroNovo);
@@ -109,10 +110,12 @@ public class SeguroService {
 	public SeguroBase acionarSeguro(Long id_seguro, BigDecimal valor) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
+		
 		if(seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
 		if(seguro instanceof SeguroFraude) {
 			((SeguroFraude) seguro).setValorFraude(valor);
 		}
+		
 		seguro.acionarSeguro();
 		seguroRepository.save(seguro);
 		return seguro;
@@ -123,8 +126,10 @@ public class SeguroService {
 	public DebitarPremioSeguroResponse debitarPremioSeguro(Long id_seguro) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
+		
 		if (seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
 		if (seguro.getPremioApolice().compareTo(seguro.getCartaoCredito().getConta().getSaldo())>0) throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
+		
 		seguro.aplicarPremio();
 		return DebitarPremioSeguroResponse.toDebitarPremioSeguroResponse(seguro);
 	}

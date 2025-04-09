@@ -28,6 +28,7 @@ import br.com.cdb.bancodigitaljpa.response.DebitarPremioSeguroResponse;
 import br.com.cdb.bancodigitaljpa.response.SeguroResponse;
 import br.com.cdb.bancodigitaljpa.response.TipoSeguroResponse;
 import br.com.cdb.bancodigitaljpa.service.SeguroService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/seguros")
@@ -38,7 +39,7 @@ public class SeguroController {
 	
 	//contratar seguro
 	@PostMapping
-	public ResponseEntity<SeguroResponse> contratarSeguro (@RequestBody ContratarSeguroDTO dto) {
+	public ResponseEntity<SeguroResponse> contratarSeguro (@Valid @RequestBody ContratarSeguroDTO dto) {
 		SeguroResponse response = seguroService.contratarSeguro(dto.getId_cartao(), dto.getTipo());
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 		
@@ -96,7 +97,7 @@ public class SeguroController {
 	@PutMapping("/fraude/{id_seguro}/acionar")
 	public ResponseEntity<AcionarSeguroFraudeResponse> acionarSeguroFraude(
 			@PathVariable Long id_seguro,
-			@RequestBody AcionarSeguroFraudeDTO dto){
+			@Valid @RequestBody AcionarSeguroFraudeDTO dto){
 		SeguroBase seguro = seguroService.acionarSeguro(id_seguro, dto.getValorFraude());
 		return ResponseEntity.ok(AcionarSeguroFraudeResponse.toSeguroFraudeResponse((SeguroFraude) seguro));
 	}

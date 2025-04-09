@@ -26,6 +26,7 @@ import br.com.cdb.bancodigitaljpa.response.PagamentoResponse;
 import br.com.cdb.bancodigitaljpa.response.RessetarLimiteDiarioResponse;
 import br.com.cdb.bancodigitaljpa.response.StatusCartaoResponse;
 import br.com.cdb.bancodigitaljpa.service.CartaoService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/cartoes")
@@ -36,7 +37,7 @@ public class CartaoController {
 	
 	//post emitir novo cartao
 	@PostMapping
-	public ResponseEntity<CartaoResponse> emitirCartao(@RequestBody EmitirCartaoDTO dto) {
+	public ResponseEntity<CartaoResponse> emitirCartao(@Valid @RequestBody EmitirCartaoDTO dto) {
 		CartaoResponse response = cartaoService.emitirCartao(dto.getId_conta(), dto.getTipoCartao(), dto.getSenha());
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
@@ -69,21 +70,21 @@ public class CartaoController {
 	
 //	//post pagamento
 	@PostMapping("/{id_cartao}/pagamento")
-	public ResponseEntity<PagamentoResponse> pagar(@PathVariable Long id_cartao, @RequestBody PagamentoDTO dto){
+	public ResponseEntity<PagamentoResponse> pagar(@PathVariable Long id_cartao, @Valid @RequestBody PagamentoDTO dto){
 		PagamentoResponse response = cartaoService.pagar(id_cartao, dto.getValor(), dto.getSenha(), dto.getDescricao());
 		return ResponseEntity.ok(response);
 	}
 	
 //	//put alterar limite
 	@PutMapping("/{id_cartao}/limite")
-	public ResponseEntity<LimiteResponse> alterarLimite(@PathVariable Long id_cartao,@RequestBody AjustarLimiteDTO dto){
+	public ResponseEntity<LimiteResponse> alterarLimite(@PathVariable Long id_cartao,@Valid @RequestBody AjustarLimiteDTO dto){
 		LimiteResponse response = cartaoService.alterarLimite(id_cartao, dto.getLimiteNovo());
 		return ResponseEntity.ok(response);
 	}
 
 //	//put alterar status
 	@PutMapping("/{id_cartao}/status")
-	public ResponseEntity<StatusCartaoResponse> alterarStatus(@PathVariable Long id_cartao, @RequestBody AlterarStatusCartaoDTO dto){
+	public ResponseEntity<StatusCartaoResponse> alterarStatus(@PathVariable Long id_cartao, @Valid @RequestBody AlterarStatusCartaoDTO dto){
 		Status statusNovo = dto.getStatus();
 		StatusCartaoResponse response = cartaoService.alterarStatus(id_cartao, statusNovo);
 		return ResponseEntity.ok(response);
@@ -93,7 +94,7 @@ public class CartaoController {
 	@PutMapping("/{id_cartao}/senha")
 	public ResponseEntity<String> alterarSenha(
 			@PathVariable Long id_cartao,
-			@RequestBody AlterarSenhaDTO dto){
+			@Valid @RequestBody AlterarSenhaDTO dto){
 		cartaoService.alterarSenha(id_cartao, dto.getSenhaAntiga(), dto.getSenhaNova());
 		return ResponseEntity.ok("Senha alterada com sucesso.");
 	}
