@@ -8,14 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.cdb.bancodigitaljpa.dto.AplicarTxManutencaoResponse;
-import br.com.cdb.bancodigitaljpa.dto.AplicarTxRendimentoResponse;
-import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
-import br.com.cdb.bancodigitaljpa.dto.DepositoResponse;
-import br.com.cdb.bancodigitaljpa.dto.PixResponse;
-import br.com.cdb.bancodigitaljpa.dto.SaldoResponse;
-import br.com.cdb.bancodigitaljpa.dto.SaqueResponse;
-import br.com.cdb.bancodigitaljpa.dto.TransferenciaResponse;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
@@ -23,11 +15,19 @@ import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
-import br.com.cdb.bancodigitaljpa.exceptions.InvalidInputParameterException;
-import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
+import br.com.cdb.bancodigitaljpa.response.AplicarTxManutencaoResponse;
+import br.com.cdb.bancodigitaljpa.response.AplicarTxRendimentoResponse;
+import br.com.cdb.bancodigitaljpa.response.ContaResponse;
+import br.com.cdb.bancodigitaljpa.response.DepositoResponse;
+import br.com.cdb.bancodigitaljpa.response.PixResponse;
+import br.com.cdb.bancodigitaljpa.response.SaldoResponse;
+import br.com.cdb.bancodigitaljpa.response.SaqueResponse;
+import br.com.cdb.bancodigitaljpa.response.TransferenciaResponse;
 
 @Service
 public class ContaService {
@@ -150,6 +150,7 @@ public class ContaService {
 	public DepositoResponse depositar(Long id_conta, BigDecimal valor) {
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
+		
 		conta.depositar(valor);
 		contaRepository.save(conta);
 		return DepositoResponse.toDepositoResponse(conta.getNumeroConta(), valor, conta.getSaldo());
@@ -180,16 +181,14 @@ public class ContaService {
 	public AplicarTxManutencaoResponse debitarTarifaManutencao(Long id_conta) {
 		ContaCorrente cc = contaRepository.findContaCorrenteById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
-		BigDecimal taxaMensal = cc.getTarifaManutencao();
-		BigDecimal saldoAtual = cc.getSaldo();
-		if (taxaMensal.compareTo(saldoAtual) > 0)
+		
+		if (cc.getTarifaManutencao().compareTo(cc.getSaldo()) > 0)
 			throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
 
-		BigDecimal saldoNovo = saldoAtual.subtract(taxaMensal);
-		cc.setSaldo(saldoNovo);
+		cc.aplicarTxManutencao();	
 		contaRepository.save(cc);
 
-		return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), taxaMensal, saldoAtual);
+		return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), cc.getTarifaManutencao(), cc.getSaldo());
 	}
 
 	// rendimento
@@ -198,13 +197,10 @@ public class ContaService {
 		ContaPoupanca cp = contaRepository.findContaPoupancaById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
 		
-		BigDecimal taxaMensal = cp.getTaxaRendimento();
-		BigDecimal saldoAtual = cp.getSaldo();
-		BigDecimal rendimento = saldoAtual.multiply(taxaMensal);
-		BigDecimal saldoNovo = saldoAtual.add(rendimento);
-		cp.setSaldo(saldoNovo);
+		cp.aplicarRendimento();
 		contaRepository.save(cp);
-		return AplicarTxRendimentoResponse.toAplicarTxRendimentoResponse(cp.getNumeroConta(), rendimento, saldoNovo);
+		
+		return AplicarTxRendimentoResponse.toAplicarTxRendimentoResponse(cp.getNumeroConta(), cp.getTaxaRendimento(), cp.getSaldo());
 
 	}
 

@@ -7,9 +7,6 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigitaljpa.dto.CancelarSeguroResponse;
-import br.com.cdb.bancodigitaljpa.dto.DebitarPremioSeguroResponse;
-import br.com.cdb.bancodigitaljpa.dto.SeguroResponse;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
@@ -18,11 +15,14 @@ import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
-import br.com.cdb.bancodigitaljpa.exceptions.InvalidInputParameterException;
-import br.com.cdb.bancodigitaljpa.exceptions.ResourceNotFoundException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
+import br.com.cdb.bancodigitaljpa.response.CancelarSeguroResponse;
+import br.com.cdb.bancodigitaljpa.response.DebitarPremioSeguroResponse;
+import br.com.cdb.bancodigitaljpa.response.SeguroResponse;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -43,6 +43,7 @@ public class SeguroService {
 		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
 		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartaoCredito)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartaoCredito + " não encontrado."));
+		
 		SeguroBase seguroNovo = contratarSeguroPorTipo(tipo, ccr);
 		seguroRepository.save(seguroNovo);
 		return toResponse(seguroNovo);
@@ -109,10 +110,12 @@ public class SeguroService {
 	public SeguroBase acionarSeguro(Long id_seguro, BigDecimal valor) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
+		
 		if(seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
 		if(seguro instanceof SeguroFraude) {
 			((SeguroFraude) seguro).setValorFraude(valor);
 		}
+		
 		seguro.acionarSeguro();
 		seguroRepository.save(seguro);
 		return seguro;
@@ -123,8 +126,10 @@ public class SeguroService {
 	public DebitarPremioSeguroResponse debitarPremioSeguro(Long id_seguro) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
+		
 		if (seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
 		if (seguro.getPremioApolice().compareTo(seguro.getCartaoCredito().getConta().getSaldo())>0) throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
+		
 		seguro.aplicarPremio();
 		return DebitarPremioSeguroResponse.toDebitarPremioSeguroResponse(seguro);
 	}

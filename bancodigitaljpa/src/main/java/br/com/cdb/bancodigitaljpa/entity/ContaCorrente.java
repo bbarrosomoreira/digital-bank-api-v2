@@ -19,18 +19,20 @@ public class ContaCorrente extends ContaBase{
 	
 	// construtor
 	public ContaCorrente() {}
-	
 	public ContaCorrente(Cliente cliente) {
 		super(cliente);
 	}
 	
 	//getters & setters
 	@Override
-	public String getTipo() {
+	public String getDescricaoTipoConta() {
 		return TipoConta.CORRENTE.getDescricao();
 	}
-	
-	// virá dos parâmetros
+	@Override
+	@Transient
+	public TipoConta getTipoConta() {
+		return TipoConta.CORRENTE;
+	}
 	public BigDecimal getTarifaManutencao() {
 		return tarifaManutencao;
 	}
@@ -42,17 +44,10 @@ public class ContaCorrente extends ContaBase{
 	}
 	
 	//metodos
-	@Override
-	@Transient
-	public TipoConta getTipoConta() {
-		return TipoConta.CORRENTE;
-	}
-	
 	@PrePersist
 	private void init() {
 		gerarNumeroConta();
 	}
-	
 	@Override
 	public void sacar(BigDecimal valor) {
 		BigDecimal novoSaldo = this.getSaldo().subtract(valor);

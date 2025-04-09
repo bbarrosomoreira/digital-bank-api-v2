@@ -2,18 +2,14 @@ package br.com.cdb.bancodigitaljpa.dto;
 
 import java.math.BigDecimal;
 
+import jakarta.validation.constraints.NotNull;
+
 public class AcionarSeguroFraudeDTO {
 	
-	private Long id_cartao;
+	@NotNull(message = "Valor da fraude é obrigatório")
 	private BigDecimal valorFraude;
 	
 	//G&S
-	public Long getId_cartao() {
-		return id_cartao;
-	}
-	public void setId_cartao(Long id_cartao) {
-		this.id_cartao = id_cartao;
-	}
 	public BigDecimal getValorFraude() {
 		return valorFraude;
 	}

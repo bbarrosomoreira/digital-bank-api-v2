@@ -9,7 +9,7 @@ public class AbrirContaDTO {
 	
 	private Long id_cliente;
 	
-	@NotNull
+	@NotNull(message = "Tipo de conta é obrigatório")
 	@Enumerated(EnumType.STRING)
 	private TipoConta tipoConta;
 	

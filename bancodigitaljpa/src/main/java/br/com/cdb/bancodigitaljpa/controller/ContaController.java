@@ -15,20 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.AbrirContaDTO;
-import br.com.cdb.bancodigitaljpa.dto.AplicarTxManutencaoResponse;
-import br.com.cdb.bancodigitaljpa.dto.AplicarTxRendimentoResponse;
-import br.com.cdb.bancodigitaljpa.dto.ContaResponse;
 import br.com.cdb.bancodigitaljpa.dto.DepositoDTO;
-import br.com.cdb.bancodigitaljpa.dto.DepositoResponse;
 import br.com.cdb.bancodigitaljpa.dto.PixDTO;
-import br.com.cdb.bancodigitaljpa.dto.PixResponse;
-import br.com.cdb.bancodigitaljpa.dto.SaldoResponse;
 import br.com.cdb.bancodigitaljpa.dto.SaqueDTO;
-import br.com.cdb.bancodigitaljpa.dto.SaqueResponse;
 import br.com.cdb.bancodigitaljpa.dto.TransferenciaDTO;
-import br.com.cdb.bancodigitaljpa.dto.TransferenciaResponse;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
+import br.com.cdb.bancodigitaljpa.response.AplicarTxManutencaoResponse;
+import br.com.cdb.bancodigitaljpa.response.AplicarTxRendimentoResponse;
+import br.com.cdb.bancodigitaljpa.response.ContaResponse;
+import br.com.cdb.bancodigitaljpa.response.DepositoResponse;
+import br.com.cdb.bancodigitaljpa.response.PixResponse;
+import br.com.cdb.bancodigitaljpa.response.SaldoResponse;
+import br.com.cdb.bancodigitaljpa.response.SaqueResponse;
+import br.com.cdb.bancodigitaljpa.response.TransferenciaResponse;
 import br.com.cdb.bancodigitaljpa.service.ContaService;
 import jakarta.validation.Valid;
 
@@ -41,7 +41,7 @@ public class ContaController {
 	
 	//criar nova conta
 	@PostMapping
-	public ResponseEntity<ContaResponse> abrirConta(@RequestBody AbrirContaDTO dto){
+	public ResponseEntity<ContaResponse> abrirConta(@Valid @RequestBody AbrirContaDTO dto){
 		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta());
 		ContaResponse response = contaService.toResponse(contaNova);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
