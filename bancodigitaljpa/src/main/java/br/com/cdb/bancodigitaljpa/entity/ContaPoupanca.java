@@ -2,6 +2,7 @@ package br.com.cdb.bancodigitaljpa.entity;
 
 import java.beans.Transient;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import jakarta.persistence.Column;
@@ -56,7 +57,7 @@ public class ContaPoupanca extends ContaBase {
 	}
 	
 	public void aplicarRendimento() {
-		BigDecimal rendimento = this.getSaldo().multiply(taxaRendimento);
+		BigDecimal rendimento = this.getSaldo().multiply(taxaRendimento).setScale(2, RoundingMode.HALF_UP);
 		BigDecimal novoSaldo = this.getSaldo().add(rendimento);
 		this.setSaldo(novoSaldo);
 	}

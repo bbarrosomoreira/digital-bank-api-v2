@@ -11,8 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
+import br.com.cdb.bancodigitaljpa.entity.ContaInternacional;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigitaljpa.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
@@ -40,22 +42,25 @@ public class ContaService {
 
 	@Autowired
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
+	
+	@Autowired
+	private ConversorMoedasService conversorMoedasService;	
 
 	// addConta de forma genérica
 	@Transactional
-	public ContaBase abrirConta(Long id_cliente, TipoConta tipo) {
+	public ContaBase abrirConta(Long id_cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito) {
 
 		Objects.requireNonNull(tipo, "Tipo de conta não pode ser nulo");
 
 		Cliente cliente = clienteRepository.findById(id_cliente)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
 
-		ContaBase contaNova = criarContaPorTipo(tipo, cliente);
+		ContaBase contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
 
 		return contaRepository.save(contaNova);
 	}
 
-	private ContaBase criarContaPorTipo(TipoConta tipo, Cliente cliente) {
+	private ContaBase criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
 
 		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(cliente.getCategoria())
 				.orElseThrow(() -> new ResourceNotFoundException(
@@ -63,16 +68,35 @@ public class ContaService {
 
 		return switch (tipo) {
 		case CORRENTE -> {
-			ContaCorrente cc = new ContaCorrente(cliente);
-			cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
-			yield cc; // retorno de valor
+			yield criarContaCorrente(cliente, parametros);
 		}
 		case POUPANCA -> {
-			ContaPoupanca cp = new ContaPoupanca(cliente);
-			cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
-			yield cp;
+			yield criarContaPoupanca(cliente, parametros);
+		}
+		case INTERNACIONAL -> {	
+			yield criarContaInternacional(cliente, moeda, valorDeposito, parametros);
 		}
 		};
+	}
+	
+	private ContaCorrente criarContaCorrente(Cliente cliente, PoliticaDeTaxas parametros) {
+		ContaCorrente cc = new ContaCorrente(cliente);
+		cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
+		return cc;
+	}
+	
+	private ContaPoupanca criarContaPoupanca(Cliente cliente, PoliticaDeTaxas parametros) {
+		ContaPoupanca cp = new ContaPoupanca(cliente);
+		cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
+		return cp;
+	}
+	
+	private ContaInternacional criarContaInternacional(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
+		ContaInternacional ci = new ContaInternacional(cliente, moeda, valorDeposito);
+		ci.setTarifaManutencao(parametros.getTarifaManutencaoContaInternacional());
+		BigDecimal saldoEmReais = conversorMoedasService.converterParaBrl(ci.getMoeda(), ci.getSaldo());
+		ci.setSaldoEmReais(saldoEmReais);
+		return ci;
 	}
 
 	// get contas
@@ -205,10 +229,17 @@ public class ContaService {
 	}
 
 	public ContaResponse toResponse(ContaBase conta) {
-		return new ContaResponse(conta.getId(), conta.getNumeroConta(), conta.getTipoConta(),
-				conta.getCliente().getId(), conta.getMoeda(), conta.getDataCriacao(),
+		ContaResponse response = new ContaResponse(conta.getId(), conta.getNumeroConta(), conta.getTipoConta(),
+				conta.getCliente().getId(), conta.getMoeda(), conta.getSaldo(), conta.getDataCriacao(),
 				(conta instanceof ContaCorrente) ? ((ContaCorrente) conta).getTarifaManutencao()
-						: (conta instanceof ContaPoupanca) ? ((ContaPoupanca) conta).getTaxaRendimento() : null);
+						: (conta instanceof ContaPoupanca) ? ((ContaPoupanca) conta).getTaxaRendimento() 
+								: (conta instanceof ContaInternacional) ? ((ContaInternacional) conta).getTarifaManutencao() : null);
+		if (conta instanceof ContaInternacional) {
+			ContaInternacional contaInt = (ContaInternacional) conta;
+			response.setSaldoEmReais(contaInt.getSaldoEmReais());
+		}
+		
+		return response;
 
 	}
 

@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigitaljpa.controller;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import br.com.cdb.bancodigitaljpa.dto.AbrirContaDTO;
 import br.com.cdb.bancodigitaljpa.dto.DepositoDTO;
 import br.com.cdb.bancodigitaljpa.dto.PixDTO;
 import br.com.cdb.bancodigitaljpa.dto.SaqueDTO;
+import br.com.cdb.bancodigitaljpa.dto.TesteConversorMoedasDTO;
 import br.com.cdb.bancodigitaljpa.dto.TransferenciaDTO;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
@@ -28,8 +30,10 @@ import br.com.cdb.bancodigitaljpa.response.DepositoResponse;
 import br.com.cdb.bancodigitaljpa.response.PixResponse;
 import br.com.cdb.bancodigitaljpa.response.SaldoResponse;
 import br.com.cdb.bancodigitaljpa.response.SaqueResponse;
+import br.com.cdb.bancodigitaljpa.response.TesteConversorMoedasResponse;
 import br.com.cdb.bancodigitaljpa.response.TransferenciaResponse;
 import br.com.cdb.bancodigitaljpa.service.ContaService;
+import br.com.cdb.bancodigitaljpa.service.ConversorMoedasService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -39,13 +43,26 @@ public class ContaController {
 	@Autowired
 	private ContaService contaService;
 	
+	@Autowired
+	private ConversorMoedasService conversorMoedasService;
+	
+	@GetMapping("/internacional/conversor-moedas")
+	public ResponseEntity<TesteConversorMoedasResponse> calcularCambio(
+			@RequestBody TesteConversorMoedasDTO dto){
+		BigDecimal valorConvertido = conversorMoedasService.converterParaBrl(dto.getMoeda(), dto.getValor());
+		TesteConversorMoedasResponse response = new TesteConversorMoedasResponse();
+		response.setMoeda(dto.getMoeda());
+		response.setValorOriginal(dto.getValor());
+		response.setValorConvertido(valorConvertido);
+		return ResponseEntity.ok(response);
+	}
+	
 	//criar nova conta
 	@PostMapping
 	public ResponseEntity<ContaResponse> abrirConta(@Valid @RequestBody AbrirContaDTO dto){
-		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta());
+		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta(), dto.getMoeda(), dto.getValorDeposito());
 		ContaResponse response = contaService.toResponse(contaNova);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-		
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);	
 	}
 	
 	@GetMapping("/tipos")
