@@ -15,6 +15,8 @@ import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
 @Repository
 public interface ContaRepository extends JpaRepository<ContaBase, Long> {
 	
+	boolean existsByClienteId(Long id_cliente);
+	
 	List<ContaBase> findByClienteId(Long id_cliente);
 	
 	@Query("SELECT cc FROM ContaCorrente cc WHERE cc.cliente.id = :clienteId")

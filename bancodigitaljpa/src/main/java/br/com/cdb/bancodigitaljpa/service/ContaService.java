@@ -24,6 +24,7 @@ import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ValidationException;
+import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
@@ -46,6 +47,9 @@ public class ContaService {
 
 	@Autowired
 	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private CartaoRepository cartaoRepository;
 
 	@Autowired
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
@@ -130,11 +134,12 @@ public class ContaService {
 	public void deleteContasByCliente(Long id_cliente) {
 		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
 		if (contas.isEmpty()) {
-			log.info("Cliente Id {} não possui cartões.", id_cliente);
+			log.info("Cliente Id {} não possui contas.", id_cliente);
 			return;
 		}
 		for (ContaBase conta : contas) {
 			try {
+				verificarCartoesVinculados(conta);
 				verificaSaldoRemanescente(conta);
 				Long id = conta.getId();
 				contaRepository.delete(conta);
@@ -264,6 +269,9 @@ public class ContaService {
 	}
 	public void verificaSaldoRemanescente(ContaBase conta) {
 		if(conta.getSaldo() != null && conta.getSaldo().compareTo(BigDecimal.ZERO)>0) throw new InvalidInputParameterException("Não é possivel excluir uma conta com saldo remanescente.");	
+	}
+	public void verificarCartoesVinculados(ContaBase conta) {
+		if(!cartaoRepository.existsByContaId(conta.getId())) throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
 	}
 	public ContaBase verificarContaExitente(Long id_conta) {
 		ContaBase conta = contaRepository.findById(id_conta)

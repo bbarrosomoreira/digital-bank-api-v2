@@ -12,6 +12,10 @@ import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
 @Repository
 public interface SeguroRepository extends JpaRepository<SeguroBase, Long>{
 	
+	boolean existsByCartaoCreditoId(Long cartaoId);
+	
+	boolean existsByClienteId(Long clienteId);
+	
 	//Listar seguros por cartao de credito
 	@Query("SELECT seguro FROM SeguroBase seguro WHERE seguro.cartaoCredito.id = :cartaoCreditoId")
 	List<SeguroBase> findByCartaoCreditoId (@Param("cartaoCreditoId") Long cartaoCreditoId);

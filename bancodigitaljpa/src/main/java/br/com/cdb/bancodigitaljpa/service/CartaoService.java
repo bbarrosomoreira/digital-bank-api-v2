@@ -25,6 +25,7 @@ import br.com.cdb.bancodigitaljpa.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
+import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
 import br.com.cdb.bancodigitaljpa.response.CartaoResponse;
 import br.com.cdb.bancodigitaljpa.response.FaturaResponse;
 import br.com.cdb.bancodigitaljpa.response.LimiteResponse;
@@ -42,6 +43,9 @@ public class CartaoService {
 
 	@Autowired
 	private ContaRepository contaRepository;
+	
+	@Autowired
+	private SeguroRepository seguroRepository;
 
 	@Autowired
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
@@ -113,6 +117,7 @@ public class CartaoService {
 		} 
 		for (CartaoBase cartao : cartoes) {
 			try {
+				verificarSegurosVinculados(cartao);
 				verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
 				Long id = cartao.getId_cartao();
 				cartaoRepository.delete(cartao);
@@ -235,6 +240,12 @@ public class CartaoService {
 		if (cartao instanceof CartaoCredito) {
 			if (((CartaoCredito) cartao).getTotalFatura().compareTo(BigDecimal.ZERO) > 0)
 				throw new InvalidInputParameterException("Cartão não pode ser desativado com fatura em aberto.");
+		}
+	}
+	public void verificarSegurosVinculados(CartaoBase cartao) {
+		if (cartao instanceof CartaoCredito) {
+			if (!seguroRepository.existsByCartaoCreditoId(((CartaoCredito) cartao).getId_cartao()))
+				throw new InvalidInputParameterException("Cartão não pode ser excluído com seguros vinculados.");
 		}
 	}
 	public ContaBase verificarContaExitente(Long id_conta) {
