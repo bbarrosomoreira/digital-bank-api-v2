@@ -8,26 +8,36 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 
-public class TesteConversorMoedasDTO {
+public class ConversorMoedasDTO {
 	@NotNull(message = "Moeda da conta é obrigatório")
 	@Enumerated(EnumType.STRING)
-	private Moeda moeda;
+	private Moeda moedaOrigem;
+	
+	@NotNull(message = "Moeda da conta é obrigatório")
+	@Enumerated(EnumType.STRING)
+	private Moeda moedaDestino;
 	
 	@Digits(integer = 19, fraction = 2)
 	private BigDecimal valor;
 	
 	//C
-	public TesteConversorMoedasDTO(){}
+	public ConversorMoedasDTO(){}
 
 	//G&S
-	public Moeda getMoeda() {
-		return moeda;
-	}
-	public void setMoeda(Moeda moeda) {
-		this.moeda = moeda;
-	}
 	public BigDecimal getValor() {
 		return valor;
+	}
+	public Moeda getMoedaOrigem() {
+		return moedaOrigem;
+	}
+	public void setMoedaOrigem(Moeda moedaOrigem) {
+		this.moedaOrigem = moedaOrigem;
+	}
+	public Moeda getMoedaDestino() {
+		return moedaDestino;
+	}
+	public void setMoedaDestino(Moeda moedaDestino) {
+		this.moedaDestino = moedaDestino;
 	}
 	public void setValor(BigDecimal valor) {
 		this.valor = valor;

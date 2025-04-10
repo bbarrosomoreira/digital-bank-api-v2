@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,8 @@ import br.com.cdb.bancodigitaljpa.response.StatusCartaoResponse;
 
 @Service
 public class CartaoService {
+	
+	private static final Logger log = LoggerFactory.getLogger(CartaoService.class);
 
 	@Autowired
 	private CartaoRepository cartaoRepository;
@@ -47,9 +52,7 @@ public class CartaoService {
 		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
 		Objects.requireNonNull(senha, "A senha do cartão não pode ser nula");
 
-		ContaBase conta = contaRepository.findById(id_conta)
-				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID "+id_conta+" não encontrada."));
-
+		ContaBase conta = verificarContaExitente(id_conta);
 		CartaoBase cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
 		cartaoRepository.save(cartaoNovo);
 
@@ -60,9 +63,8 @@ public class CartaoService {
 
 		CategoriaCliente categoria = conta.getCliente().getCategoria();
 
-		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
-				.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
-
+		PoliticaDeTaxas parametros = verificarPolitiaExitente(categoria);
+		
 		return switch (tipo) {
 		case CREDITO -> {
 			CartaoCredito ccr = new CartaoCredito(conta, senha, parametros.getLimiteCartaoCredito());
@@ -84,6 +86,7 @@ public class CartaoService {
 
 	// get cartoes por conta
 	public List<CartaoResponse> listarPorConta(Long id_conta) {
+		verificarContaExitente(id_conta);
 		List<CartaoBase> cartoes = cartaoRepository.findByContaId(id_conta);
 		return cartoes.stream().map(this::toResponse).toList();
 	}
@@ -96,16 +99,36 @@ public class CartaoService {
 
 	// get um cartao
 	public CartaoResponse getCartaoById(Long id_cartao) {
-		CartaoBase cartao = cartaoRepository.findById(id_cartao)
-				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+		CartaoBase cartao = verificarCartaoExistente(id_cartao);
 		return toResponse(cartao);
+	}
+	
+	// deletar cartoes de cliente
+	@Transactional
+	public void deleteCartoesByCliente(Long id_cliente) {
+		List<CartaoBase> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
+		if (cartoes.isEmpty()) {
+			log.info("Cliente Id {} não possui cartões.", id_cliente);
+			return;
+		} 
+		for (CartaoBase cartao : cartoes) {
+			try {
+				verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
+				Long id = cartao.getId_cartao();
+				cartaoRepository.delete(cartao);
+				log.info("Cartão ID {} deletado com sucesso", id);
+				
+			} catch (DataIntegrityViolationException e) {
+	            log.error("Falha ao deletar cartão ID {}", cartao.getId_cartao(), e);
+	            throw new ValidationException("Erro ao deletar cartão: " + e.getMessage());
+	        }
+		}
 	}
 
 	// pagar
 	@Transactional
 	public PagamentoResponse pagar(Long id_cartao, BigDecimal valor, String senha, String descricao) {
-		CartaoBase cartao = cartaoRepository.findById(id_cartao)
-				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+		CartaoBase cartao = verificarCartaoExistente(id_cartao);
 		
 		if (cartao.getStatus().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
 		if (!senha.equals(cartao.getSenha())) throw new ValidationException("Compra não finalizada. A senha informada está incorreta!");
@@ -122,8 +145,7 @@ public class CartaoService {
 	// alter limite
 	@Transactional
 	public LimiteResponse alterarLimite(Long id_cartao, BigDecimal valor) {
-		CartaoBase cartao = cartaoRepository.findById(id_cartao)
-				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+		CartaoBase cartao = verificarCartaoExistente(id_cartao);
 		
 		if (cartao.getStatus().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
 		if (cartao instanceof CartaoDebito) {
@@ -142,14 +164,10 @@ public class CartaoService {
 	// alter status cartao
 	@Transactional
 	public StatusCartaoResponse alterarStatus(Long id_cartao, Status statusNovo) {
-		CartaoBase cartao = cartaoRepository.findById(id_cartao)
-				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+		CartaoBase cartao = verificarCartaoExistente(id_cartao);
 		
 		if (statusNovo.equals(Status.DESATIVADO)) {
-			if (cartao instanceof CartaoCredito) {
-				if (((CartaoCredito) cartao).getTotalFatura().compareTo(BigDecimal.ZERO) > 0)
-					throw new InvalidInputParameterException("Cartão não pode ser desativado com fatura em aberto.");
-			}
+			verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
 		}
 		
 		cartao.alterarStatus(statusNovo);
@@ -160,8 +178,7 @@ public class CartaoService {
 	// alter senha
 	@Transactional
 	public void alterarSenha(Long id_cartao, String senhaAntiga, String senhaNova) {
-		CartaoBase cartao = cartaoRepository.findById(id_cartao)
-				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+		CartaoBase cartao = verificarCartaoExistente(id_cartao);
 		
 		if (cartao.getStatus().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
 		if (!cartao.getSenha().equals(senhaAntiga)) throw new ValidationException("A senha informada está incorreta!");
@@ -213,5 +230,26 @@ public class CartaoService {
 				cartao.getStatus(), cartao.getConta().getNumeroConta(), cartao.getDataVencimento(),
 				(cartao instanceof CartaoCredito) ? ((CartaoCredito) cartao).getLimiteCredito()
 						: (cartao instanceof CartaoDebito) ? ((CartaoDebito) cartao).getLimiteDiario() : null);
+	}
+	public void verificaSeTemFaturaAbertaDeCartaoCredito (CartaoBase cartao) {
+		if (cartao instanceof CartaoCredito) {
+			if (((CartaoCredito) cartao).getTotalFatura().compareTo(BigDecimal.ZERO) > 0)
+				throw new InvalidInputParameterException("Cartão não pode ser desativado com fatura em aberto.");
+		}
+	}
+	public ContaBase verificarContaExitente(Long id_conta) {
+		ContaBase conta = contaRepository.findById(id_conta)
+				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID "+id_conta+" não encontrada."));
+		return conta;
+	}
+	public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
+		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
+		.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
+		return parametros;
+	}
+	public CartaoBase verificarCartaoExistente(Long id_cartao) {
+		CartaoBase cartao = cartaoRepository.findById(id_cartao)
+				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+		return cartao;
 	}
 }

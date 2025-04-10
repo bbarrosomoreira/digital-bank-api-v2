@@ -1,12 +1,12 @@
 package br.com.cdb.bancodigitaljpa.controller;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +19,6 @@ import br.com.cdb.bancodigitaljpa.dto.AbrirContaDTO;
 import br.com.cdb.bancodigitaljpa.dto.DepositoDTO;
 import br.com.cdb.bancodigitaljpa.dto.PixDTO;
 import br.com.cdb.bancodigitaljpa.dto.SaqueDTO;
-import br.com.cdb.bancodigitaljpa.dto.TesteConversorMoedasDTO;
 import br.com.cdb.bancodigitaljpa.dto.TransferenciaDTO;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
@@ -30,10 +29,8 @@ import br.com.cdb.bancodigitaljpa.response.DepositoResponse;
 import br.com.cdb.bancodigitaljpa.response.PixResponse;
 import br.com.cdb.bancodigitaljpa.response.SaldoResponse;
 import br.com.cdb.bancodigitaljpa.response.SaqueResponse;
-import br.com.cdb.bancodigitaljpa.response.TesteConversorMoedasResponse;
 import br.com.cdb.bancodigitaljpa.response.TransferenciaResponse;
 import br.com.cdb.bancodigitaljpa.service.ContaService;
-import br.com.cdb.bancodigitaljpa.service.ConversorMoedasService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -42,20 +39,6 @@ public class ContaController {
 
 	@Autowired
 	private ContaService contaService;
-	
-	@Autowired
-	private ConversorMoedasService conversorMoedasService;
-	
-	@GetMapping("/internacional/conversor-moedas")
-	public ResponseEntity<TesteConversorMoedasResponse> calcularCambio(
-			@RequestBody TesteConversorMoedasDTO dto){
-		BigDecimal valorConvertido = conversorMoedasService.converterParaBrl(dto.getMoeda(), dto.getValor());
-		TesteConversorMoedasResponse response = new TesteConversorMoedasResponse();
-		response.setMoeda(dto.getMoeda());
-		response.setValorOriginal(dto.getValor());
-		response.setValorConvertido(valorConvertido);
-		return ResponseEntity.ok(response);
-	}
 	
 	//criar nova conta
 	@PostMapping
@@ -88,6 +71,14 @@ public class ContaController {
 			@PathVariable Long id_conta) {
 		ContaResponse conta = contaService.getContaById(id_conta);
 		return ResponseEntity.ok(conta);
+	}
+	
+	@DeleteMapping("/cliente/{id_cliente}")
+	public ResponseEntity<Void> deleteContasByCliente(
+			@PathVariable Long id_cliente) {
+		contaService.deleteContasByCliente(id_cliente);
+		return ResponseEntity.noContent().build();
+		
 	}
 	
 	//realizar uma transf entre contas
@@ -152,8 +143,7 @@ public class ContaController {
 	public ResponseEntity<AplicarTxRendimentoResponse> aplicarTxRendimento(
 			@PathVariable Long id_conta){
 		AplicarTxRendimentoResponse response = contaService.creditarRendimento(id_conta);
-		return ResponseEntity.ok(response);
-		
+		return ResponseEntity.ok(response);	
 	}
 	
 	

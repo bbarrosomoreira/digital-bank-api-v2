@@ -25,7 +25,7 @@ public class ContaInternacional extends ContaBase {
 		public ContaInternacional(Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
 			super(cliente);
 			this.setMoeda(moeda);
-			this.setSaldo(valorDeposito);
+			this.setSaldoEmReais(valorDeposito);
 		}
 		
 		//getters & setters

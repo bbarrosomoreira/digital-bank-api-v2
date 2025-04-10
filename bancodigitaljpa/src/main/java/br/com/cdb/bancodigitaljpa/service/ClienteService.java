@@ -80,17 +80,15 @@ public class ClienteService {
 	}
 
 	public ClienteResponse getClienteById(Long id_cliente) {
-		Cliente cliente = clienteRepository.findById(id_cliente)
-				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
+		Cliente cliente = verificarClienteExistente(id_cliente);
 		return toResponse(cliente);
 	}
 
-	// Excluir cadastro de cliente
+	// deletar cadastro de cliente
 	@Transactional
 	public void deleteCliente(Long id_cliente) {
-		Cliente cliente = clienteRepository.findById(id_cliente)
-				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-
+		Cliente cliente = verificarClienteExistente(id_cliente);
+		
 		boolean temContas = !contaRepository.findByClienteId(id_cliente).isEmpty();
 		boolean temCartoes = !cartaoRepository.findByContaClienteId(id_cliente).isEmpty();
 		boolean temSeguros = !seguroRepository.findByClienteId(id_cliente).isEmpty();
@@ -105,9 +103,8 @@ public class ClienteService {
 	// Atualizações de cliente
 	@Transactional
 	public ClienteResponse updateParcial(Long id_cliente, Map<String, Object> camposAtualizados) {
-		Cliente cliente = clienteRepository.findById(id_cliente)
-				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-
+		Cliente cliente = verificarClienteExistente(id_cliente);
+		
 		// atualizando apenas campos não nulos
 		camposAtualizados.forEach((campo, valor) -> {
 			switch (campo) {
@@ -147,9 +144,8 @@ public class ClienteService {
 
 	@Transactional
 	public ClienteResponse updateCliente(Long id_cliente, Cliente clienteAtualizado) {
-		Cliente cliente = clienteRepository.findById(id_cliente)
-				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-
+		Cliente cliente = verificarClienteExistente(id_cliente);
+		
 		// atualiza todos os campos
 		cliente.setNome(clienteAtualizado.getNome());
 		cliente.setCpf(clienteAtualizado.getCpf());
@@ -163,69 +159,26 @@ public class ClienteService {
 
 	@Transactional
 	public ClienteResponse updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) {
-		Cliente cliente = clienteRepository.findById(id_cliente)
-				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-
+		Cliente cliente = verificarClienteExistente(id_cliente);
 		if (cliente.getCategoria().equals(novaCategoria))
 			throw new InvalidInputParameterException("Cliente ID " + id_cliente + " já está na categoria "
 					+ novaCategoria + ". Nenhuma atualização necessária.");
 
 		cliente.setCategoria(novaCategoria);
 
-		atualizarTaxasDasContasECartoesESeguros(id_cliente, novaCategoria);
+		atualizarTaxasDoCliente(id_cliente, novaCategoria);
 
 		return toResponse(cliente);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void atualizarTaxasDasContasECartoesESeguros(Long id_cliente, CategoriaCliente novaCategoria) {
+	public void atualizarTaxasDoCliente(Long id_cliente, CategoriaCliente novaCategoria) {
 		try {
-			PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(novaCategoria)
-					.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + novaCategoria));
-
-			List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
-
-			if (contas.isEmpty())
-				throw new InvalidInputParameterException("Cliente ID " + id_cliente + " não possui contas.");
-			contas.forEach(conta -> {
-				if (conta instanceof ContaCorrente cc) {
-					cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
-				} else if (conta instanceof ContaPoupanca cp) {
-					cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
-				}
-			});
-
-			contaRepository.saveAll(contas);
-
-			List<CartaoBase> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
-
-			if (cartoes.isEmpty())
-				throw new InvalidInputParameterException("Cliente ID " + id_cliente + " não possui cartões.");
-
-			cartoes.forEach(cartao -> {
-				if (cartao instanceof CartaoCredito ccr) {
-					ccr.setLimiteCredito(parametros.getLimiteCartaoCredito());
-				} else if (cartao instanceof CartaoDebito cdb) {
-					cdb.setLimiteDiario(parametros.getLimiteDiarioDebito());
-				}
-			});
+			PoliticaDeTaxas parametros = verificarPolitiaExitente(novaCategoria);
 			
-			cartaoRepository.saveAll(cartoes);
-
-			List<SeguroBase> seguros = seguroRepository.findByClienteId(id_cliente);
-
-			if (seguros.isEmpty())
-				throw new InvalidInputParameterException("Cliente ID " + id_cliente + " não possui seguros.");
-
-			seguros.forEach(seguro -> {
-				if (seguro instanceof SeguroFraude sf) {
-					sf.setPremioApolice(parametros.getTarifaSeguroFraude());
-				} else if (seguro instanceof SeguroViagem sv) {
-					sv.setPremioApolice(parametros.getTarifaSeguroViagem());
-				}
-			});
-			
-			seguroRepository.saveAll(seguros);
+			atualizarTaxasDasContas(id_cliente, parametros);
+			atualizarTaxasDosCartoes(id_cliente, parametros);
+			atualizarTaxasDosSeguros(id_cliente, parametros);
 
 		} catch (Exception e) {
 			log.error("Falha ao atualizar Política de Taxas do cliente ID {}", id_cliente, e);
@@ -237,15 +190,75 @@ public class ClienteService {
 	public ClienteResponse toResponse(Cliente cliente) {
 		return new ClienteResponse(cliente);
 	}
-
 	private void validarCpfUnico(String cpf) {
 		if (clienteRepository.existsByCpf(cpf))
 			throw new ResourceAlreadyExistsException("CPF já cadastrado no sistema.");
 	}
-
 	private void validarMaiorIdade(Cliente cliente) {
 		if (!cliente.isMaiorDeIdade())
 			throw new ValidationException("Cliente deve ser maior de 18 anos para se cadastrar.");
+	}
+	public void atualizarTaxasDasContas(Long id_cliente, PoliticaDeTaxas parametros) {
+		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
+
+		if (contas.isEmpty()) {
+			log.info("Cliente ID {} não possui contas.", id_cliente);
+			return;
+		} else {
+			contas.forEach(conta -> {
+				if (conta instanceof ContaCorrente cc) {
+					cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
+				} else if (conta instanceof ContaPoupanca cp) {
+					cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
+				}
+			});
+			contaRepository.saveAll(contas);		
+		}
+	}
+	public void atualizarTaxasDosCartoes(Long id_cliente, PoliticaDeTaxas parametros) {
+		List<CartaoBase> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
+
+		if (cartoes.isEmpty()) {
+			log.info("Cliente Id {} não possui cartões.", id_cliente);
+			return;
+		} else {
+			cartoes.forEach(cartao -> {
+				if (cartao instanceof CartaoCredito ccr) {
+					ccr.setLimiteCredito(parametros.getLimiteCartaoCredito());
+				} else if (cartao instanceof CartaoDebito cdb) {
+					cdb.setLimiteDiario(parametros.getLimiteDiarioDebito());
+				}
+			});
+			cartaoRepository.saveAll(cartoes);
+		}
+	}
+	public void atualizarTaxasDosSeguros(Long id_cliente, PoliticaDeTaxas parametros) {
+		List<SeguroBase> seguros = seguroRepository.findByClienteId(id_cliente);
+
+		if (seguros.isEmpty()) {
+			log.info("Cliente Id {} não possui seguros.", id_cliente);
+			return;
+		} else {
+			seguros.forEach(seguro -> {
+				if (seguro instanceof SeguroFraude sf) {
+					sf.setPremioApolice(parametros.getTarifaSeguroFraude());
+				} else if (seguro instanceof SeguroViagem sv) {
+					sv.setPremioApolice(parametros.getTarifaSeguroViagem());
+				}
+			});		
+			seguroRepository.saveAll(seguros);	
+		}
+	}
+	
+	public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
+		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
+		.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
+		return parametros;
+	}
+	public Cliente verificarClienteExistente(Long id_cliente) {
+		Cliente cliente = clienteRepository.findById(id_cliente)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
+		return cliente;
 	}
 
 }

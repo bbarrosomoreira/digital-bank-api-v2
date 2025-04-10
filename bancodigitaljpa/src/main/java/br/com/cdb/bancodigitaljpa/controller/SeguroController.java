@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -91,6 +92,14 @@ public class SeguroController {
 			@PathVariable Long id_seguro){
 		CancelarSeguroResponse response = seguroService.cancelarSeguro(id_seguro);
 		return ResponseEntity.ok(response);
+	}
+	
+	// deletar seguros by cliente
+	@DeleteMapping("/cliente/{id_cliente}")
+	public ResponseEntity<Void> deleteSegurosByCliente(
+			@PathVariable Long id_cliente){
+		seguroService.deleteSegurosByCliente(id_cliente);
+		return ResponseEntity.noContent().build();
 	}
 	
 	// acionar seguro

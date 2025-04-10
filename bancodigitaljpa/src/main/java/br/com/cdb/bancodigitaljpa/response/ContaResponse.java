@@ -15,7 +15,6 @@ public class ContaResponse {
 	private Long id;
 	private String numConta;
 	private TipoConta tipoConta;
-	private Long id_cliente;
 	private Moeda moeda;
 	private BigDecimal saldo;
 	@JsonFormat(pattern = "dd-MM-yyyy")
@@ -35,9 +34,6 @@ public class ContaResponse {
 	}
 	public TipoConta getTipoConta() {
 		return tipoConta;
-	}
-	public Long getId_cliente() {
-		return id_cliente;
 	}
 	public Moeda getMoeda() {
 		return moeda;
@@ -59,11 +55,10 @@ public class ContaResponse {
 	}
 	//C
     public ContaResponse(Long id, String numConta, TipoConta tipoConta, 
-                          Long id_cliente, Moeda moeda, BigDecimal saldo, LocalDate dataCriacao, BigDecimal taxa) {
+                    Moeda moeda, BigDecimal saldo, LocalDate dataCriacao, BigDecimal taxa) {
         this.id = id;
         this.numConta = numConta;
         this.tipoConta = tipoConta;
-        this.id_cliente = id_cliente;
         this.moeda = moeda;
         this.saldo = saldo;
         this.dataCriacao = dataCriacao;

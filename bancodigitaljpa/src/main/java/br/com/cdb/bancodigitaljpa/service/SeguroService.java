@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
@@ -17,6 +20,7 @@ import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
+import br.com.cdb.bancodigitaljpa.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
@@ -27,6 +31,8 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class SeguroService {
+	
+	private static final Logger log = LoggerFactory.getLogger(SeguroService.class);
 
 	@Autowired
 	private SeguroRepository seguroRepository;
@@ -77,7 +83,7 @@ public class SeguroService {
 		return SeguroResponse.toSeguroResponse(seguro);
 	}
 
-	// CancelarApoliceSeguro
+	// cancelar apolice seguro
 	@Transactional
 	public CancelarSeguroResponse cancelarSeguro(Long id_seguro) {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
@@ -85,6 +91,27 @@ public class SeguroService {
 		seguro.setarStatusSeguro(Status.DESATIVADO);
 		seguroRepository.save(seguro);
 		return CancelarSeguroResponse.toCancelarSeguroResponse(seguro);
+	}
+	
+	// deletar seguros de cliente
+	@Transactional
+	public void deleteSegurosByCliente(Long id_cliente) {
+		List<SeguroBase> seguros = seguroRepository.findByClienteId(id_cliente);
+		if (seguros.isEmpty()) {
+			log.info("Cliente Id {} não possui seguros.", id_cliente);
+			return;
+		} 
+		for (SeguroBase seguro : seguros) {
+			try {
+				Long id = seguro.getId_seguro();
+				seguroRepository.delete(seguro);
+				log.info("Seguro ID {} deletado com sucesso", id);
+				
+			} catch (DataIntegrityViolationException e) {
+	            log.error("Falha ao deletar seguro ID {}", seguro.getId_seguro(), e);
+	            throw new ValidationException("Erro ao deletar seguro: " + e.getMessage());
+	        }
+		}
 	}
 
 	// get seguros
