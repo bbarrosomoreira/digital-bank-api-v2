@@ -68,10 +68,10 @@ public class ContaService {
 
 		return switch (tipo) {
 		case CORRENTE -> {
-			yield criarContaCorrente(cliente, parametros);
+			yield criarContaCorrente(cliente, moeda, valorDeposito, parametros);
 		}
 		case POUPANCA -> {
-			yield criarContaPoupanca(cliente, parametros);
+			yield criarContaPoupanca(cliente, moeda, valorDeposito, parametros);
 		}
 		case INTERNACIONAL -> {	
 			yield criarContaInternacional(cliente, moeda, valorDeposito, parametros);
@@ -79,15 +79,19 @@ public class ContaService {
 		};
 	}
 	
-	private ContaCorrente criarContaCorrente(Cliente cliente, PoliticaDeTaxas parametros) {
+	private ContaCorrente criarContaCorrente(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
 		ContaCorrente cc = new ContaCorrente(cliente);
 		cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
+		cc.setMoeda(moeda);
+		cc.setSaldo(valorDeposito);
 		return cc;
 	}
 	
-	private ContaPoupanca criarContaPoupanca(Cliente cliente, PoliticaDeTaxas parametros) {
+	private ContaPoupanca criarContaPoupanca(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
 		ContaPoupanca cp = new ContaPoupanca(cliente);
 		cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
+		cp.setMoeda(moeda);
+		cp.setSaldo(valorDeposito);
 		return cp;
 	}
 	
