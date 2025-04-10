@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,10 +43,9 @@ public class ContaController {
 	//criar nova conta
 	@PostMapping
 	public ResponseEntity<ContaResponse> abrirConta(@Valid @RequestBody AbrirContaDTO dto){
-		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta());
+		ContaBase contaNova = contaService.abrirConta(dto.getId_cliente(), dto.getTipoConta(), dto.getMoeda(), dto.getValorDeposito());
 		ContaResponse response = contaService.toResponse(contaNova);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-		
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);	
 	}
 	
 	@GetMapping("/tipos")
@@ -71,6 +71,14 @@ public class ContaController {
 			@PathVariable Long id_conta) {
 		ContaResponse conta = contaService.getContaById(id_conta);
 		return ResponseEntity.ok(conta);
+	}
+	
+	@DeleteMapping("/cliente/{id_cliente}")
+	public ResponseEntity<Void> deleteContasByCliente(
+			@PathVariable Long id_cliente) {
+		contaService.deleteContasByCliente(id_cliente);
+		return ResponseEntity.noContent().build();
+		
 	}
 	
 	//realizar uma transf entre contas
@@ -135,8 +143,7 @@ public class ContaController {
 	public ResponseEntity<AplicarTxRendimentoResponse> aplicarTxRendimento(
 			@PathVariable Long id_conta){
 		AplicarTxRendimentoResponse response = contaService.creditarRendimento(id_conta);
-		return ResponseEntity.ok(response);
-		
+		return ResponseEntity.ok(response);	
 	}
 	
 	

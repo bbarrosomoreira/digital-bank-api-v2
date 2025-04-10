@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum TipoConta {
 	CORRENTE ("Conta Corrente"),
-	POUPANCA ("Conta Poupanca");
+	POUPANCA ("Conta Poupanca"),
+	INTERNACIONAL ("Conta Internacional");
 	
 	private final String descricao;
 	
