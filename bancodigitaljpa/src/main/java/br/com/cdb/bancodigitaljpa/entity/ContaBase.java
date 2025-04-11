@@ -29,7 +29,7 @@ public abstract class ContaBase implements Conta {
 	//atributos
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id_conta;
+	private Long id;
 	
 	@Column(unique = true)
 	protected String numeroConta;
@@ -42,7 +42,7 @@ public abstract class ContaBase implements Conta {
 	private Moeda moeda;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_cliente", nullable = false, updatable = false)
+	@JoinColumn(name = "clienteId", nullable = false, updatable = false)
 	private Cliente cliente;
 	
 	@Column(name = "data_criacao", nullable = false, updatable = false)
@@ -61,7 +61,7 @@ public abstract class ContaBase implements Conta {
 	
 	//Getters & Setters
 	public Long getId() {
-		return id_conta;
+		return id;
 	}
 	public String getNumeroConta() {
 		return numeroConta;

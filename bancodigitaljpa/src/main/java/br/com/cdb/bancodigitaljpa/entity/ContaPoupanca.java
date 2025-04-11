@@ -40,9 +40,6 @@ public class ContaPoupanca extends ContaBase {
 	public void setTaxaRendimento(BigDecimal taxaRendimento) {
 		this.taxaRendimento = taxaRendimento;
 	}
-	public void setarTarifa(BigDecimal taxaRendimento) {
-		this.setTaxaRendimento(taxaRendimento);
-	}
 	
 	//metodos	
 	@PrePersist
@@ -52,7 +49,8 @@ public class ContaPoupanca extends ContaBase {
 	
 	@Override
 	public void sacar(BigDecimal valor){
-		BigDecimal novoSaldo = this.getSaldo().subtract(valor);
+		BigDecimal valorSaque = valor.add(BigDecimal.ONE);
+		BigDecimal novoSaldo = this.getSaldo().subtract(valorSaque);
 		this.setSaldo(novoSaldo);
 	}
 	

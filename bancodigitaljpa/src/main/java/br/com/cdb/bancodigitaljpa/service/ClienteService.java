@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.cdb.bancodigitaljpa.dto.ClienteDTO;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
@@ -62,7 +63,9 @@ public class ClienteService {
 	private ReceitaCpfService receitaCpfService;
 
 	// Cadastrar cliente
-	public ClienteResponse addCliente(Cliente cliente) {
+	public ClienteResponse addCliente(ClienteDTO  dto) {
+		
+		Cliente cliente = dto.transformaParaObjeto();
 		
 		if(!receitaCpfService.isCpfValidoEAtivo(cliente.getCpf())) throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
 		
@@ -89,9 +92,9 @@ public class ClienteService {
 	public void deleteCliente(Long id_cliente) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		
-		boolean temContas = !contaRepository.findByClienteId(id_cliente).isEmpty();
-		boolean temCartoes = !cartaoRepository.findByContaClienteId(id_cliente).isEmpty();
-		boolean temSeguros = !seguroRepository.findByClienteId(id_cliente).isEmpty();
+		boolean temContas = !contaRepository.existsByClienteId(id_cliente);
+		boolean temCartoes = !cartaoRepository.existsByContaClienteId(id_cliente);
+		boolean temSeguros = !seguroRepository.existsByCartaoCreditoContaClienteId(id_cliente);
 
 		if (temContas || temCartoes || temSeguros) throw new ValidationException(
 					"Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.");
@@ -130,11 +133,6 @@ public class ClienteService {
 					cliente.setEndereco(endereco);
 				}
 				break;
-			case "categoria":
-				if (valor != null) {
-					cliente.setCategoria(CategoriaCliente.valueOf(((String) valor).toUpperCase()));
-				}
-				break;
 			}
 		});
 		
@@ -143,7 +141,7 @@ public class ClienteService {
 	}
 
 	@Transactional
-	public ClienteResponse updateCliente(Long id_cliente, Cliente clienteAtualizado) {
+	public ClienteResponse updateCliente(Long id_cliente, ClienteDTO clienteAtualizado) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		
 		// atualiza todos os campos
@@ -151,7 +149,6 @@ public class ClienteService {
 		cliente.setCpf(clienteAtualizado.getCpf());
 		cliente.setDataNascimento(clienteAtualizado.getDataNascimento());
 		cliente.setEndereco(clienteAtualizado.getEndereco());
-		cliente.setCategoria(clienteAtualizado.getCategoria());
 		
 		clienteRepository.save(cliente);
 		return toResponse(cliente);

@@ -39,9 +39,6 @@ public class ContaCorrente extends ContaBase{
 	public void setTarifaManutencao(BigDecimal tarifaManutencao) {
 		this.tarifaManutencao = tarifaManutencao;
 	}
-	public void setarTarifa(BigDecimal tarifaManutencao) {
-		this.setTarifaManutencao(tarifaManutencao);
-	}
 	
 	//metodos
 	@PrePersist

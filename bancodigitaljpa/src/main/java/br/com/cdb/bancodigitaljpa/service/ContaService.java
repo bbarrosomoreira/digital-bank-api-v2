@@ -24,6 +24,7 @@ import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ValidationException;
+import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
@@ -46,6 +47,9 @@ public class ContaService {
 
 	@Autowired
 	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private CartaoRepository cartaoRepository;
 
 	@Autowired
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
@@ -56,7 +60,6 @@ public class ContaService {
 	// addConta de forma genérica
 	@Transactional
 	public ContaBase abrirConta(Long id_cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito) {
-
 		Objects.requireNonNull(tipo, "Tipo de conta não pode ser nulo");
 
 		Cliente cliente = verificarClienteExistente(id_cliente);
@@ -66,7 +69,6 @@ public class ContaService {
 	}
 
 	private ContaBase criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
-
 		PoliticaDeTaxas parametros = verificarPolitiaExitente(cliente.getCategoria());
 
 		return switch (tipo) {
@@ -130,11 +132,12 @@ public class ContaService {
 	public void deleteContasByCliente(Long id_cliente) {
 		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
 		if (contas.isEmpty()) {
-			log.info("Cliente Id {} não possui cartões.", id_cliente);
+			log.info("Cliente Id {} não possui contas.", id_cliente);
 			return;
 		}
 		for (ContaBase conta : contas) {
 			try {
+				verificarCartoesVinculados(conta);
 				verificaSaldoRemanescente(conta);
 				Long id = conta.getId();
 				contaRepository.delete(conta);
@@ -143,10 +146,8 @@ public class ContaService {
 			} catch (DataIntegrityViolationException e) {
 	            log.error("Falha ao deletar conta ID {}", conta.getId(), e);
 	            throw new ValidationException("Erro ao deletar cartão: " + e.getMessage());
-	        }
-			
-		}
-		
+	        }		
+		}	
 	}
 
 	// transferencia
@@ -154,15 +155,11 @@ public class ContaService {
 	public TransferenciaResponse transferir(Long id_contaOrigem, Long id_contaDestino, BigDecimal valor) {
 		ContaBase origem = verificarContaExitente(id_contaOrigem);
 		ContaBase destino = verificarContaExitente(id_contaDestino);
-
-		if (valor.compareTo(origem.getSaldo()) > 0)
-			throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
-
+		
+		verificaSaldoSuficiente(valor, origem.getSaldo());
 		origem.transferir(destino, valor);
-
 		contaRepository.save(origem);
 		contaRepository.save(destino);
-
 		return TransferenciaResponse.toTransferenciaResponse(origem.getNumeroConta(), destino.getNumeroConta(), valor);
 
 		// Registrar a transação
@@ -174,14 +171,10 @@ public class ContaService {
 		ContaBase origem = verificarContaExitente(id_contaOrigem);
 		ContaBase destino = verificarContaExitente(id_contaDestino);
 
-		if (valor.compareTo(origem.getSaldo()) > 0)
-			throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
-
+		verificaSaldoSuficiente(valor, origem.getSaldo());
 		origem.pix(destino, valor);
-
 		contaRepository.save(origem);
 		contaRepository.save(destino);
-
 		return PixResponse.toPixResponse(origem.getNumeroConta(), destino.getNumeroConta(), valor);
 
 //		// Registrar a transação
@@ -210,12 +203,9 @@ public class ContaService {
 	public SaqueResponse sacar(Long id_conta, BigDecimal valor) {
 		ContaBase conta = verificarContaExitente(id_conta);
 
-		if (valor.compareTo(conta.getSaldo()) > 0)
-			throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
-
+		verificaSaldoSuficiente(valor, conta.getSaldo());
 		conta.sacar(valor);
 		contaRepository.save(conta);
-
 		return SaqueResponse.toSaqueResponse(conta.getNumeroConta(), valor, conta.getSaldo());
 
 //		// Registrar a transação
@@ -226,13 +216,10 @@ public class ContaService {
 	public AplicarTxManutencaoResponse debitarTarifaManutencao(Long id_conta) {
 		ContaCorrente cc = contaRepository.findContaCorrenteById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
-		
-		if (cc.getTarifaManutencao().compareTo(cc.getSaldo()) > 0)
-			throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
-
+			
+		verificaSaldoSuficiente(cc.getTarifaManutencao(), cc.getSaldo());
 		cc.aplicarTxManutencao();	
 		contaRepository.save(cc);
-
 		return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), cc.getTarifaManutencao(), cc.getSaldo());
 	}
 
@@ -244,7 +231,6 @@ public class ContaService {
 		
 		cp.aplicarRendimento();
 		contaRepository.save(cp);
-		
 		return AplicarTxRendimentoResponse.toAplicarTxRendimentoResponse(cp.getNumeroConta(), cp.getTaxaRendimento(), cp.getSaldo());
 
 	}
@@ -265,6 +251,9 @@ public class ContaService {
 	public void verificaSaldoRemanescente(ContaBase conta) {
 		if(conta.getSaldo() != null && conta.getSaldo().compareTo(BigDecimal.ZERO)>0) throw new InvalidInputParameterException("Não é possivel excluir uma conta com saldo remanescente.");	
 	}
+	public void verificarCartoesVinculados(ContaBase conta) {
+		if(!cartaoRepository.existsByContaId(conta.getId())) throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
+	}
 	public ContaBase verificarContaExitente(Long id_conta) {
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID "+id_conta+" não encontrada."));
@@ -279,6 +268,10 @@ public class ContaService {
 		Cliente cliente = clienteRepository.findById(id_cliente)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
 		return cliente;
+	}
+	public void verificaSaldoSuficiente(BigDecimal valor, BigDecimal saldo) {
+		if (valor.compareTo(saldo) > 0)
+			throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
 	}
 
 }

@@ -17,13 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.AtualizarCategoriaClienteDTO;
-import br.com.cdb.bancodigitaljpa.dto.CriarClienteDTO;
-import br.com.cdb.bancodigitaljpa.entity.Cliente;
+import br.com.cdb.bancodigitaljpa.dto.ClienteDTO;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.response.ClienteResponse;
-import br.com.cdb.bancodigitaljpa.response.CpfValidationResponse;
 import br.com.cdb.bancodigitaljpa.service.ClienteService;
-import br.com.cdb.bancodigitaljpa.service.ReceitaCpfService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -32,19 +29,10 @@ public class ClienteController {
 
 	@Autowired
 	private ClienteService clienteService;
-	
-	@Autowired
-	private ReceitaCpfService cpfValidationService;
-	
-	@GetMapping("/consultar-cpf/{cpf}")
-	public ResponseEntity<CpfValidationResponse> consultarCpf(@PathVariable String cpf) {
-		CpfValidationResponse response = cpfValidationService.consultarCpf(cpf);
-		return ResponseEntity.ok(response);
-	}
 
 	@PostMapping
-	public ResponseEntity<ClienteResponse> addCliente(@Valid @RequestBody CriarClienteDTO dto) {
-		ClienteResponse response = clienteService.addCliente(dto.transformaParaObjeto());
+	public ResponseEntity<ClienteResponse> addCliente(@Valid @RequestBody ClienteDTO dto) {
+		ClienteResponse response = clienteService.addCliente(dto);
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
@@ -69,7 +57,7 @@ public class ClienteController {
 	@PutMapping("/{id_cliente}")
 	public ResponseEntity<ClienteResponse> updateCliente(
 			@PathVariable Long id_cliente, 
-			@Valid @RequestBody Cliente clienteAtualizado){
+			@Valid @RequestBody ClienteDTO clienteAtualizado){
 		
 		ClienteResponse atualizado = clienteService.updateCliente(id_cliente, clienteAtualizado);
 			return ResponseEntity.ok(atualizado);

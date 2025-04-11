@@ -25,6 +25,7 @@ import br.com.cdb.bancodigitaljpa.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
+import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
 import br.com.cdb.bancodigitaljpa.response.CartaoResponse;
 import br.com.cdb.bancodigitaljpa.response.FaturaResponse;
 import br.com.cdb.bancodigitaljpa.response.LimiteResponse;
@@ -42,6 +43,9 @@ public class CartaoService {
 
 	@Autowired
 	private ContaRepository contaRepository;
+	
+	@Autowired
+	private SeguroRepository seguroRepository;
 
 	@Autowired
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
@@ -62,7 +66,6 @@ public class CartaoService {
 	public CartaoBase criarCartaoPorTipo(TipoCartao tipo, ContaBase conta, String senha) {
 
 		CategoriaCliente categoria = conta.getCliente().getCategoria();
-
 		PoliticaDeTaxas parametros = verificarPolitiaExitente(categoria);
 		
 		return switch (tipo) {
@@ -113,13 +116,14 @@ public class CartaoService {
 		} 
 		for (CartaoBase cartao : cartoes) {
 			try {
+				verificarSegurosVinculados(cartao);
 				verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
-				Long id = cartao.getId_cartao();
+				Long id = cartao.getId();
 				cartaoRepository.delete(cartao);
 				log.info("Cartão ID {} deletado com sucesso", id);
 				
 			} catch (DataIntegrityViolationException e) {
-	            log.error("Falha ao deletar cartão ID {}", cartao.getId_cartao(), e);
+	            log.error("Falha ao deletar cartão ID {}", cartao.getId(), e);
 	            throw new ValidationException("Erro ao deletar cartão: " + e.getMessage());
 	        }
 		}
@@ -129,10 +133,10 @@ public class CartaoService {
 	@Transactional
 	public PagamentoResponse pagar(Long id_cartao, BigDecimal valor, String senha, String descricao) {
 		CartaoBase cartao = verificarCartaoExistente(id_cartao);
+		verificarCartaoAtivo(cartao.getStatus());
+		verificarSenhaCorreta(senha, cartao.getSenha());
+		verificarLimiteSuficiente(valor, cartao.getLimiteAtual());
 		
-		if (cartao.getStatus().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
-		if (!senha.equals(cartao.getSenha())) throw new ValidationException("Compra não finalizada. A senha informada está incorreta!");
-		if(valor.compareTo(cartao.getLimiteAtual())>0) throw new InvalidInputParameterException("Limite insuficiente para esta transação. Limite atual: "+(cartao.getLimiteAtual()));
 		if (cartao instanceof CartaoDebito) {
 			if(valor.compareTo(((CartaoDebito) cartao).getConta().getSaldo())>0) throw new InvalidInputParameterException("Saldo insuficiente para esta transação. Saldo atual: "+((CartaoDebito) cartao).getConta().getSaldo());	
 		}
@@ -146,8 +150,8 @@ public class CartaoService {
 	@Transactional
 	public LimiteResponse alterarLimite(Long id_cartao, BigDecimal valor) {
 		CartaoBase cartao = verificarCartaoExistente(id_cartao);
+		verificarCartaoAtivo(cartao.getStatus());
 		
-		if (cartao.getStatus().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
 		if (cartao instanceof CartaoDebito) {
 			BigDecimal limiteConsumido = ((CartaoDebito) cartao).getLimiteDiario().subtract(((CartaoDebito) cartao).getLimiteAtual());
 			if (valor.compareTo(limiteConsumido)<0) throw new InvalidInputParameterException("Limite não pode ser alterado, pois o limite consumido é maior do que o novo valor de limite.");
@@ -180,8 +184,8 @@ public class CartaoService {
 	public void alterarSenha(Long id_cartao, String senhaAntiga, String senhaNova) {
 		CartaoBase cartao = verificarCartaoExistente(id_cartao);
 		
-		if (cartao.getStatus().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
-		if (!cartao.getSenha().equals(senhaAntiga)) throw new ValidationException("A senha informada está incorreta!");
+		verificarCartaoAtivo(cartao.getStatus());
+		verificarSenhaCorreta(senhaAntiga, cartao.getSenha());
 		
 		cartao.alterarSenha(senhaAntiga, senhaNova);
 		cartaoRepository.save(cartao);
@@ -192,7 +196,7 @@ public class CartaoService {
 		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartao)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 		
-		if (ccr.getStatus().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
+		verificarCartaoAtivo(ccr.getStatus());
 		
 		return FaturaResponse.toFaturaResponse(ccr);
 	}
@@ -203,7 +207,7 @@ public class CartaoService {
 		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartao)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 		
-		if (ccr.getStatus().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
+		verificarCartaoAtivo(ccr.getStatus());
 		if(ccr.getTotalFatura().compareTo(ccr.getConta().getSaldo())>0) throw new InvalidInputParameterException("Saldo insuficiente para esta transação. Saldo atual: "+(ccr.getConta().getSaldo()));
 		
 		ccr.pagarFatura();
@@ -217,7 +221,7 @@ public class CartaoService {
 		CartaoDebito cdb = cartaoRepository.findCartaoDebitoById(id_cartao)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 		
-		if (cdb.getStatus().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
+		verificarCartaoAtivo(cdb.getStatus());
 		
 		cdb.ressetarLimiteDiario();
 		cartaoRepository.save(cdb);
@@ -226,7 +230,7 @@ public class CartaoService {
 
 	// M
 	public CartaoResponse toResponse(CartaoBase cartao) {
-		return new CartaoResponse(cartao.getId_cartao(), cartao.getNumeroCartao(), cartao.getTipoCartao(),
+		return new CartaoResponse(cartao.getId(), cartao.getNumeroCartao(), cartao.getTipoCartao(),
 				cartao.getStatus(), cartao.getConta().getNumeroConta(), cartao.getDataVencimento(),
 				(cartao instanceof CartaoCredito) ? ((CartaoCredito) cartao).getLimiteCredito()
 						: (cartao instanceof CartaoDebito) ? ((CartaoDebito) cartao).getLimiteDiario() : null);
@@ -235,6 +239,12 @@ public class CartaoService {
 		if (cartao instanceof CartaoCredito) {
 			if (((CartaoCredito) cartao).getTotalFatura().compareTo(BigDecimal.ZERO) > 0)
 				throw new InvalidInputParameterException("Cartão não pode ser desativado com fatura em aberto.");
+		}
+	}
+	public void verificarSegurosVinculados(CartaoBase cartao) {
+		if (cartao instanceof CartaoCredito) {
+			if (!seguroRepository.existsByCartaoCreditoId(((CartaoCredito) cartao).getId()))
+				throw new InvalidInputParameterException("Cartão não pode ser excluído com seguros vinculados.");
 		}
 	}
 	public ContaBase verificarContaExitente(Long id_conta) {
@@ -251,5 +261,14 @@ public class CartaoService {
 		CartaoBase cartao = cartaoRepository.findById(id_cartao)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 		return cartao;
+	}
+	public void verificarCartaoAtivo(Status status) {
+		if (status.equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
+	}
+	public void verificarSenhaCorreta(String senhaDigitada, String senhaCartao) {
+		if (!senhaDigitada.equals(senhaCartao)) throw new ValidationException("A senha informada está incorreta!");
+	}
+	public void verificarLimiteSuficiente(BigDecimal valor, BigDecimal limiteAtual) {
+		if(valor.compareTo(limiteAtual)>0) throw new InvalidInputParameterException("Limite insuficiente para esta transação. Limite atual: "+(limiteAtual));
 	}
 }
