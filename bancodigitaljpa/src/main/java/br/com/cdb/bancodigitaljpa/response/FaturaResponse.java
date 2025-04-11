@@ -6,7 +6,7 @@ import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 
 public record FaturaResponse (
 		String numCartao,
-		BigDecimal totalFatura,
+		BigDecimal totalFaturaPaga,
 		BigDecimal limiteAtual,
 		BigDecimal limiteCredito
 		) {
@@ -14,7 +14,7 @@ public record FaturaResponse (
 	public static FaturaResponse toFaturaResponse (CartaoCredito ccr) {
 		return new FaturaResponse(
 				ccr.getNumeroCartao(),
-				ccr.getTotalFatura(),
+				ccr.getTotalFaturaPaga(),
 				ccr.getLimiteAtual(),
 				ccr.getLimiteCredito()
 				);

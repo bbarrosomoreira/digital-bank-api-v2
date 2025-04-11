@@ -21,6 +21,9 @@ public class CartaoCredito extends CartaoBase {
 	@Column(precision = 19, scale = 2)
 	private BigDecimal totalFatura;
 	
+	@Column(precision = 19, scale = 2)
+	private BigDecimal totalFaturaPaga;
+	
 	//C
 	public CartaoCredito() {}
 	public CartaoCredito(ContaBase conta, String senha, BigDecimal limiteCredito) {
@@ -50,7 +53,12 @@ public class CartaoCredito extends CartaoBase {
 	public void setTotalFatura(BigDecimal totalFatura) {
 		this.totalFatura = totalFatura;
 	}
-	
+	public BigDecimal getTotalFaturaPaga() {
+		return totalFaturaPaga;
+	}
+	public void setTotalFaturaPaga(BigDecimal totalFaturaPaga) {
+		this.totalFaturaPaga = totalFaturaPaga;
+	}
 	//M
 	@Override
 	@Transient
@@ -75,6 +83,7 @@ public class CartaoCredito extends CartaoBase {
 	
 	//pagarFatura()
 	public void pagarFatura() {
+		this.setTotalFaturaPaga(this.totalFatura);
 		BigDecimal saldoAtualizado = this.getConta().getSaldo().subtract(this.totalFatura);
 		this.getConta().setSaldo(saldoAtualizado);
 		this.setLimiteAtual(limiteCredito);
