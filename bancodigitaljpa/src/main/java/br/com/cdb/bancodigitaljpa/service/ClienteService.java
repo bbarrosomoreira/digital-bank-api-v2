@@ -93,8 +93,8 @@ public class ClienteService {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		
 		boolean temContas = !contaRepository.existsByClienteId(id_cliente);
-		boolean temCartoes = !cartaoRepository.existsByClienteId(id_cliente);
-		boolean temSeguros = !seguroRepository.existsByClienteId(id_cliente);
+		boolean temCartoes = !cartaoRepository.existsByContaClienteId(id_cliente);
+		boolean temSeguros = !seguroRepository.existsByCartaoCreditoContaClienteId(id_cliente);
 
 		if (temContas || temCartoes || temSeguros) throw new ValidationException(
 					"Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.");

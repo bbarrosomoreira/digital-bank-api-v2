@@ -20,9 +20,7 @@ import br.com.cdb.bancodigitaljpa.dto.AtualizarCategoriaClienteDTO;
 import br.com.cdb.bancodigitaljpa.dto.ClienteDTO;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.response.ClienteResponse;
-import br.com.cdb.bancodigitaljpa.response.CpfValidationResponse;
 import br.com.cdb.bancodigitaljpa.service.ClienteService;
-import br.com.cdb.bancodigitaljpa.service.ReceitaCpfService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -31,15 +29,6 @@ public class ClienteController {
 
 	@Autowired
 	private ClienteService clienteService;
-	
-	@Autowired
-	private ReceitaCpfService cpfValidationService;
-	
-	@GetMapping("/consultar-cpf/{cpf}")
-	public ResponseEntity<CpfValidationResponse> consultarCpf(@PathVariable String cpf) {
-		CpfValidationResponse response = cpfValidationService.consultarCpf(cpf);
-		return ResponseEntity.ok(response);
-	}
 
 	@PostMapping
 	public ResponseEntity<ClienteResponse> addCliente(@Valid @RequestBody ClienteDTO dto) {

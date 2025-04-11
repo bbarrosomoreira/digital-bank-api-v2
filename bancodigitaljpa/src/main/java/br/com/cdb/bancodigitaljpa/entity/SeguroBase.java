@@ -35,7 +35,7 @@ public abstract class SeguroBase implements Seguro {
 	private String numApolice;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_cartao", nullable = false, updatable = false)
+	@JoinColumn(name = "cartaoCreditoId", nullable = false, updatable = false)
 	private CartaoCredito cartaoCredito;
 	
 	@Column(name = "data_contratacao", nullable = false, updatable = false)
@@ -52,7 +52,7 @@ public abstract class SeguroBase implements Seguro {
 	private BigDecimal premioApolice;
 
 	//G&S
-	public Long getId_seguro() {
+	public Long getId() {
 		return id_seguro;
 	}
 	public String getNumApolice() {

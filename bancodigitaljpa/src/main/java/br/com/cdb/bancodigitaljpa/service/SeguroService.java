@@ -103,12 +103,12 @@ public class SeguroService {
 		} 
 		for (SeguroBase seguro : seguros) {
 			try {
-				Long id = seguro.getId_seguro();
+				Long id = seguro.getId();
 				seguroRepository.delete(seguro);
 				log.info("Seguro ID {} deletado com sucesso", id);
 				
 			} catch (DataIntegrityViolationException e) {
-	            log.error("Falha ao deletar seguro ID {}", seguro.getId_seguro(), e);
+	            log.error("Falha ao deletar seguro ID {}", seguro.getId(), e);
 	            throw new ValidationException("Erro ao deletar seguro: " + e.getMessage());
 	        }
 		}

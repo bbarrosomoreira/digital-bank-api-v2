@@ -14,7 +14,7 @@ public interface SeguroRepository extends JpaRepository<SeguroBase, Long>{
 	
 	boolean existsByCartaoCreditoId(Long cartaoId);
 	
-	boolean existsByClienteId(Long clienteId);
+	boolean existsByCartaoCreditoContaClienteId(@Param("clienteId") Long clienteId);
 	
 	//Listar seguros por cartao de credito
 	@Query("SELECT seguro FROM SeguroBase seguro WHERE seguro.cartaoCredito.id = :cartaoCreditoId")

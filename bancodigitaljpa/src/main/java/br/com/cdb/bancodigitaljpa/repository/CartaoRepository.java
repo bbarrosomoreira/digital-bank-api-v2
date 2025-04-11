@@ -15,16 +15,16 @@ import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
 @Repository
 public interface CartaoRepository extends JpaRepository<CartaoBase, Long> {
 	
-	boolean existsByContaId(Long id_conta);
+	boolean existsByContaId(Long contaId);
 	
-	boolean existsByClienteId(Long clienteId);
+	boolean existsByContaClienteId(Long clienteId);
 	
 	boolean existsByNumeroCartao(String numeroCartao);
 	
 	//QUERY PARA PEGAR POR CLIENTE QUE SERIA UM JOIN DA TABELA CONTA
 	List<CartaoBase> findByContaClienteId(Long clienteId);
 
-	List<CartaoBase> findByContaId(Long id_conta);
+	List<CartaoBase> findByContaId(Long contaId);
 	
 	@Query("SELECT ccr FROM CartaoCredito ccr WHERE ccr.conta.id = :contaId")
 	List<CartaoCredito> findCartaoCreditoByContaId(@Param("contaId") Long contaId);

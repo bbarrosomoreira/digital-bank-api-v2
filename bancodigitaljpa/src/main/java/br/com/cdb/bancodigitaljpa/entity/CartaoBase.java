@@ -39,7 +39,7 @@ public abstract class CartaoBase implements Cartao {
 	protected String numeroCartao;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_conta", nullable = false, updatable = false)
+	@JoinColumn(name = "contaId", nullable = false, updatable = false)
 	private ContaBase conta;
 	
 	@Enumerated(EnumType.STRING)
@@ -75,7 +75,7 @@ public abstract class CartaoBase implements Cartao {
 	}
 
 	//G&S
-	public Long getId_cartao() {
+	public Long getId() {
 		return id_cartao;
 	}
 	public String getNumeroCartao() {

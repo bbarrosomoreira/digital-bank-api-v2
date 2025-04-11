@@ -9,5 +9,4 @@ public interface Conta {
 	void pix(Conta destino, BigDecimal valor);
 	void depositar(BigDecimal valor);
 	void sacar(BigDecimal valor);
-	void setarTarifa(BigDecimal valor);
 }

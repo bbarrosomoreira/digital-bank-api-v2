@@ -28,7 +28,7 @@ public class Cliente {
 	//atributos
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id_cliente;
+	private Long id;
 	
 	@NotBlank(message = "Nome é obrigatório")
 	@Size(min=2, max=100, message="Nome deve ter entre 2 e 100 caracteres")
@@ -55,10 +55,10 @@ public class Cliente {
 	
 	//getters and setters
 	public Long getId() {
-		return id_cliente;
+		return id;
 	}
-	public void setId(Long id_cliente) {
-		this.id_cliente = id_cliente;
+	public void setId(Long id) {
+		this.id = id;
 	}
 	public String getNome() {
 		return nome;
@@ -104,7 +104,7 @@ public class Cliente {
 	
 	@Override
 	public String toString() {
-		return "Cliente [id= " + id_cliente + " , nome= " + nome + " , categoria= " + categoria + " ]";
+		return "Cliente [id= " + id + " , nome= " + nome + " , categoria= " + categoria + " ]";
 	}
 	
 	//constructor

@@ -44,9 +44,6 @@ public class ContaInternacional extends ContaBase {
 		public void setTarifaManutencao(BigDecimal tarifaManutencao) {
 			this.tarifaManutencao = tarifaManutencao;
 		}
-		public void setarTarifa(BigDecimal tarifaManutencao) {
-			this.setTarifaManutencao(tarifaManutencao);
-		}
 		public BigDecimal getSaldoEmReais() {
 			return saldoEmReais;
 		}
