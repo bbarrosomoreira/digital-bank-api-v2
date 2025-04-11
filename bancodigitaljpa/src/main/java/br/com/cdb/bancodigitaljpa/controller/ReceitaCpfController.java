@@ -21,13 +21,14 @@ public class ReceitaCpfController {
 	@GetMapping("/consultar-cpf/{cpf}")
 	public ResponseEntity<CpfValidationResponse> consultarCpf(@PathVariable String cpf) {
 		CpfValidationResponse response = receitaCpfService.consultarCpf(cpf);
-
-		if(response.getValid().equals(Boolean.FALSE)) {
-			return ResponseEntity.badRequest().body(response);
-		} 
-		else if (response == null || response.getValid() == null) {
+		
+		if (response == null || Boolean.FALSE.equals(response.isSuccess())) {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
 		}
+		
+		if (Boolean.FALSE.equals(response.isValid())) {
+			return ResponseEntity.badRequest().body(response);
+		} 
 		
 		return ResponseEntity.ok(response);
 	}

@@ -23,7 +23,7 @@ public class CpfValidationResponse {
 	public void setCpf(String cpf) {
 		this.cpf = cpf;
 	}
-	public Boolean getValid() {
+	public Boolean isValid() {
 		return valid;
 	}
 	public void setValid(Boolean valid) {

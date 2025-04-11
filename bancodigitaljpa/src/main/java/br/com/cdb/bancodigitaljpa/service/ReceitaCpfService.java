@@ -49,7 +49,7 @@ public class ReceitaCpfService {
 	
 	public boolean isCpfValidoEAtivo(String cpf) {
 		CpfValidationResponse response = consultarCpf(cpf);
-		return response.getValid().equals(Boolean.TRUE) && response.getStatus().equals("ATIVO");
+		return response.isValid().equals(Boolean.TRUE) && response.getStatus().equals("ATIVO");
 	}
 	
 	private CpfValidationResponse extrairCorpoDaMensagem(String json) {
