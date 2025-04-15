@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -64,6 +65,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				fieldErrors);
 
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorResponse> handleSpringAccessDenied(AccessDeniedException ex, WebRequest request) {
+		ErrorResponse response = new ErrorResponse(
+				LocalDateTime.now(), 
+				HttpStatus.FORBIDDEN.value(), 
+				"Acesso negado", 
+				"Você não tem permissão para acessar este recurso.",
+				request.getDescription(false).replace("uri=", "")
+		);
+		
+		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
 	}
 
 	// Fallback genérico

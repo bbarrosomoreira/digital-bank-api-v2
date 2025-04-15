@@ -15,6 +15,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.NotBlank;
@@ -53,6 +55,11 @@ public class Cliente {
 	@Embedded
 	private EnderecoCliente endereco;
 	
+	@OneToOne 
+	@JoinColumn(name = "usuario_id", nullable = false, unique = true)
+	private Usuario usuario;
+
+	
 	//getters and setters
 	public Long getId() {
 		return id;
@@ -89,6 +96,12 @@ public class Cliente {
 	}
 	public void setEndereco(EnderecoCliente endereco) {
 		this.endereco = endereco;
+	}
+	public Usuario getUsuario() {
+	    return usuario;
+	}
+	public void setUsuario(Usuario usuario) {
+	    this.usuario = usuario;
 	}
 	
 	//metodos
