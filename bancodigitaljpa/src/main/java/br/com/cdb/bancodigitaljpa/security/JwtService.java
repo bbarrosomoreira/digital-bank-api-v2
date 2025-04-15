@@ -49,7 +49,7 @@ public class JwtService {
 	}
 	public boolean tokenValido(String token, UserDetails userDetails) {
 		final String username = extrairUsername(token);
-		return (username.equals(userDetails.getUsername()) && !tokenExpirado(token));
+		return (username != null && username.equals(userDetails.getUsername()) && !tokenExpirado(token));
 	}
 	public boolean tokenExpirado(String token) {
 		return extrairExpiracao(token).before(new Date());

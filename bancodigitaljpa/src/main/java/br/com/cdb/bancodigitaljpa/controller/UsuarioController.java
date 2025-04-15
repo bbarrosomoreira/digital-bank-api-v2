@@ -1,6 +1,7 @@
 package br.com.cdb.bancodigitaljpa.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,4 +20,8 @@ public class UsuarioController {
 	    return ResponseEntity.ok(dto);
 	}
 
+	@GetMapping("/me-teste")
+	public String getMe(Authentication authentication) {
+	    return authentication != null ? authentication.getName() : "usuario null";
+	}
 }

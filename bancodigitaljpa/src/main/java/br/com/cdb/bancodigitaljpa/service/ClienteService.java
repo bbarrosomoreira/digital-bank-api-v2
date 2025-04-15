@@ -26,6 +26,7 @@ import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
 import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
 import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
+import br.com.cdb.bancodigitaljpa.entity.Usuario;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
@@ -61,11 +62,15 @@ public class ClienteService {
 	
 	@Autowired
 	private ReceitaCpfService receitaCpfService;
+	
+	@Autowired
+	private SecurityService securityService;
 
 	// Cadastrar cliente
-	public ClienteResponse addCliente(ClienteDTO  dto) {
+	public ClienteResponse cadastrarCliente(ClienteDTO  dto, Usuario usuario) {
 		
 		Cliente cliente = dto.transformaParaObjeto();
+		cliente.setUsuario(usuario);
 		
 		if(!receitaCpfService.isCpfValidoEAtivo(cliente.getCpf())) throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
 		
@@ -85,6 +90,11 @@ public class ClienteService {
 	public ClienteResponse getClienteById(Long id_cliente) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		return toResponse(cliente);
+	}
+	public ClienteResponse buscarClienteDoUsuario(Usuario usuario) {
+	    Cliente cliente = clienteRepository.findByUsuario(usuario)
+	        .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado para o usuário logado."));
+	    return toResponse(cliente);
 	}
 
 	// deletar cadastro de cliente
@@ -141,14 +151,16 @@ public class ClienteService {
 	}
 
 	@Transactional
-	public ClienteResponse updateCliente(Long id_cliente, ClienteDTO clienteAtualizado) {
+	public ClienteResponse updateCliente(Long id_cliente, ClienteDTO dto, Usuario usuarioLogado) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		
+		securityService.validateAccess(usuarioLogado, cliente);
+		
 		// atualiza todos os campos
-		cliente.setNome(clienteAtualizado.getNome());
-		cliente.setCpf(clienteAtualizado.getCpf());
-		cliente.setDataNascimento(clienteAtualizado.getDataNascimento());
-		cliente.setEndereco(clienteAtualizado.getEndereco());
+		cliente.setNome(dto.getNome());
+		cliente.setCpf(dto.getCpf());
+		cliente.setDataNascimento(dto.getDataNascimento());
+		cliente.setEndereco(dto.getEndereco());
 		
 		clienteRepository.save(cliente);
 		return toResponse(cliente);
