@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,8 @@ public class PoliticaDeTaxasController {
 	@Autowired
 	private PoliticaDeTaxasService parametrosService;
 	
+	// só admin pode verificar essas políticas
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{categoria}")
 	public ResponseEntity<PoliticaDeTaxas> buscarPorCategoria(
 			@PathVariable String categoria){
@@ -31,6 +34,8 @@ public class PoliticaDeTaxasController {
 		}
 	}
 	
+	// só admin pode verificar essas políticas
+	@PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<PoliticaDeTaxas>> listarTodos() {
         return ResponseEntity.ok(parametrosService.listarTodosParametros());

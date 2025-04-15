@@ -35,8 +35,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { //configura as rotas que precisam de login
         http
         	.csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
         	.authorizeHttpRequests(auth -> auth
         			.requestMatchers(HttpMethod.POST, "/auth/**").permitAll() //libera login/cadastro
+                    .requestMatchers("/h2-console/**").permitAll() // libera console H2
         			.anyRequest().authenticated() // exige autenticação nos outros
         			)
         			.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

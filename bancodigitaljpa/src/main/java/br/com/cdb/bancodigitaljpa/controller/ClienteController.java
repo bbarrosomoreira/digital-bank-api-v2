@@ -33,7 +33,8 @@ public class ClienteController {
 	@Autowired
 	private ClienteService clienteService;
 
-	// admin e cliente podem cadastrar, porém aqui só cliente 
+	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login
+	@PreAuthorize("hasRole('CLIENTE')")
 	@PostMapping
 	public ResponseEntity<ClienteResponse> cadastrarCliente(
 			@Valid @RequestBody ClienteDTO dto,
@@ -43,7 +44,7 @@ public class ClienteController {
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 	
-	// só faz sentido do cliente neste caso
+	// para usuário logado ver suas informações (cliente)
 	@GetMapping("/me")
 	public ResponseEntity<ClienteResponse> buscarClienteDoUsuario(
 			Authentication authentication) {
@@ -60,15 +61,17 @@ public class ClienteController {
 		return ResponseEntity.ok(clientes);
 	}
 
-	// o cliente e admin poderiam ver, mas o ideal é que o cliente pegue o id direto do usuario logado apenas ne? entao esse get fica mais pro admin
-	@PreAuthorize("hasRole('ADMIN')")
+	// admin tem acesso ao id, cliente só pode ver se for dele
 	@GetMapping("/{id_cliente}")
-	public ResponseEntity<ClienteResponse> getClienteById(@PathVariable Long id_cliente) {
-		ClienteResponse cliente = clienteService.getClienteById(id_cliente);
+	public ResponseEntity<ClienteResponse> getClienteById(
+			@PathVariable Long id_cliente,
+			Authentication authentication) {
+		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+		ClienteResponse cliente = clienteService.getClienteById(id_cliente, usuarioLogado);
 		return ResponseEntity.ok(cliente);
 	}
 	
-	// aqui só o admin deveria poder confirmar essa exclusão, mas o cliente deveria poder solicitar a exclusão da sua conta
+	// só o admin pode confirmar a exclusão de cadastro de cliente
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id_cliente}")
 	public ResponseEntity<Void> deleteCliente(@PathVariable Long id_cliente){		
@@ -76,7 +79,7 @@ public class ClienteController {
 		return ResponseEntity.noContent().build();
 	}
 	
-	// aqui o cliente e admin podem atualizar dados cadastrais
+	// admin podem atualizar dados cadastrais, cliente só se for dele
 	@PutMapping("/{id_cliente}")
 	public ResponseEntity<ClienteResponse> updateCliente(
 			@PathVariable Long id_cliente, 
@@ -87,22 +90,23 @@ public class ClienteController {
 			return ResponseEntity.ok(atualizado);
 	}
 	
-	// aqui o cliente e admin podem atualizar dados cadastrais
+	// admin podem atualizar dados cadastrais, cliente só se for dele
 	@PatchMapping("/{id_cliente}")
 	public ResponseEntity<ClienteResponse> updateParcial(
 			@PathVariable Long id_cliente, 
-			@Valid @RequestBody Map<String, Object> camposAtualizados){
-		
-		ClienteResponse atualizado = clienteService.updateParcial(id_cliente, camposAtualizados);
+			@Valid @RequestBody Map<String, Object> camposAtualizados,
+			Authentication authentication){
+		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+		ClienteResponse atualizado = clienteService.updateParcial(id_cliente, camposAtualizados, usuarioLogado);
 			return ResponseEntity.ok(atualizado);
 	}
 	
-	// aqui só admin pode alterar
+	// só admin pode alterar a categoria do cliente
 	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id_cliente}/categoria")
 	public ResponseEntity<ClienteResponse> updateCategoriaCliente(
 			@PathVariable Long id_cliente, 
-			@Valid @RequestBody AtualizarCategoriaClienteDTO dto){
+			@Valid @RequestBody AtualizarCategoriaClienteDTO dto) {
 		
 		CategoriaCliente novaCategoria = dto.getCategoriaCliente();
 		ClienteResponse atualizado = clienteService.updateCategoriaCliente(id_cliente, novaCategoria);

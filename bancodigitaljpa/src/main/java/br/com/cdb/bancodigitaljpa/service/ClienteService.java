@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,13 +83,14 @@ public class ClienteService {
 	}
 
 	// Ver cliente(s)
-	public List<ClienteResponse> getClientes() {
+	public List<ClienteResponse> getClientes() throws AccessDeniedException { //só admin
 		List<Cliente> clientes = clienteRepository.findAll();
 		return clientes.stream().map(this::toResponse).toList();
-	}
+	} 
 
-	public ClienteResponse getClienteById(Long id_cliente) {
+	public ClienteResponse getClienteById(Long id_cliente, Usuario usuarioLogado) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
+		securityService.validateAccess(usuarioLogado, cliente);
 		return toResponse(cliente);
 	}
 	public ClienteResponse buscarClienteDoUsuario(Usuario usuario) {
@@ -99,7 +101,7 @@ public class ClienteService {
 
 	// deletar cadastro de cliente
 	@Transactional
-	public void deleteCliente(Long id_cliente) {
+	public void deleteCliente(Long id_cliente) throws AccessDeniedException { //só admin
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		
 		boolean temContas = !contaRepository.existsByClienteId(id_cliente);
@@ -115,8 +117,10 @@ public class ClienteService {
 
 	// Atualizações de cliente
 	@Transactional
-	public ClienteResponse updateParcial(Long id_cliente, Map<String, Object> camposAtualizados) {
+	public ClienteResponse updateParcial(Long id_cliente, Map<String, Object> camposAtualizados, Usuario usuarioLogado) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
+		
+		securityService.validateAccess(usuarioLogado, cliente);
 		
 		// atualizando apenas campos não nulos
 		camposAtualizados.forEach((campo, valor) -> {
@@ -158,6 +162,9 @@ public class ClienteService {
 		
 		// atualiza todos os campos
 		cliente.setNome(dto.getNome());
+		if (!cliente.getCpf().equals(dto.getCpf())) {
+			validarCpfUnico(dto.getCpf());
+		}
 		cliente.setCpf(dto.getCpf());
 		cliente.setDataNascimento(dto.getDataNascimento());
 		cliente.setEndereco(dto.getEndereco());
@@ -167,7 +174,7 @@ public class ClienteService {
 	}
 
 	@Transactional
-	public ClienteResponse updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) {
+	public ClienteResponse updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) throws AccessDeniedException { // só admin
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		if (cliente.getCategoria().equals(novaCategoria))
 			throw new InvalidInputParameterException("Cliente ID " + id_cliente + " já está na categoria "

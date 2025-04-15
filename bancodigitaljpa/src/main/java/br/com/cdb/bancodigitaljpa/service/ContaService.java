@@ -17,6 +17,7 @@ import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaInternacional;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigitaljpa.entity.Usuario;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
@@ -56,16 +57,21 @@ public class ContaService {
 	
 	@Autowired
 	private ConversorMoedasService conversorMoedasService;	
+	
+	@Autowired
+	private SecurityService securityService;
 
 	// addConta de forma genérica
 	@Transactional
-	public ContaBase abrirConta(Long id_cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito) {
+	public ContaResponse abrirConta(Long id_cliente, Usuario usuarioLogado, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito) {
 		Objects.requireNonNull(tipo, "Tipo de conta não pode ser nulo");
 
 		Cliente cliente = verificarClienteExistente(id_cliente);
+		securityService.validateAccess(usuarioLogado, cliente);
 		ContaBase contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
-
-		return contaRepository.save(contaNova);
+		contaRepository.save(contaNova);
+		
+		return toResponse(contaNova);
 	}
 
 	private ContaBase criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
@@ -114,16 +120,25 @@ public class ContaService {
 		return contas.stream().map(this::toResponse).toList();
 	}
 
+	// get conta por usuário
+	public List<ContaResponse> listarPorUsuario(Usuario usuarioLogado) {
+		List<ContaBase> contas = contaRepository.findByClienteUsuario(usuarioLogado);
+		return contas.stream().map(this::toResponse).toList();
+	}
+	
 	// get conta por cliente
-	public List<ContaResponse> listarPorCliente(Long id_cliente) {
-		verificarClienteExistente(id_cliente);
+	public List<ContaResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
+		Cliente cliente = verificarClienteExistente(id_cliente);
+		securityService.validateAccess(usuarioLogado, cliente);
 		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
 		return contas.stream().map(this::toResponse).toList();
 	}
 
 	// get uma conta
-	public ContaResponse getContaById(Long id_conta) {
+	public ContaResponse getContaById(Long id_conta, Usuario usuarioLogado) {
 		ContaBase conta = verificarContaExitente(id_conta);
+		Cliente cliente = conta.getCliente();
+		securityService.validateAccess(usuarioLogado, cliente);
 		return toResponse(conta);
 	}
 	
@@ -152,10 +167,11 @@ public class ContaService {
 
 	// transferencia
 	@Transactional
-	public TransferenciaResponse transferir(Long id_contaOrigem, Long id_contaDestino, BigDecimal valor) {
+	public TransferenciaResponse transferir(Long id_contaOrigem, Usuario usuarioLogado, Long id_contaDestino, BigDecimal valor) {
 		ContaBase origem = verificarContaExitente(id_contaOrigem);
 		ContaBase destino = verificarContaExitente(id_contaDestino);
-		
+		Cliente cliente = origem.getCliente();
+		securityService.validateAccess(usuarioLogado, cliente);
 		verificaSaldoSuficiente(valor, origem.getSaldo());
 		origem.transferir(destino, valor);
 		contaRepository.save(origem);
@@ -167,10 +183,11 @@ public class ContaService {
 
 	// pix
 	@Transactional
-	public PixResponse pix(Long id_contaOrigem, Long id_contaDestino, BigDecimal valor) {
+	public PixResponse pix(Long id_contaOrigem, Usuario usuarioLogado, Long id_contaDestino, BigDecimal valor) {
 		ContaBase origem = verificarContaExitente(id_contaOrigem);
 		ContaBase destino = verificarContaExitente(id_contaDestino);
-
+		Cliente cliente = origem.getCliente();
+		securityService.validateAccess(usuarioLogado, cliente);
 		verificaSaldoSuficiente(valor, origem.getSaldo());
 		origem.pix(destino, valor);
 		contaRepository.save(origem);
@@ -181,8 +198,10 @@ public class ContaService {
 	}
 
 	// get saldo
-	public SaldoResponse getSaldo(Long id_conta) {
+	public SaldoResponse getSaldo(Long id_conta, Usuario usuarioLogado) {
 		ContaBase conta = verificarContaExitente(id_conta);
+		Cliente cliente = conta.getCliente();
+		securityService.validateAccess(usuarioLogado, cliente);
 		return SaldoResponse.toSaldoResponse(conta);
 	}
 
@@ -200,9 +219,10 @@ public class ContaService {
 
 	// saque
 	@Transactional
-	public SaqueResponse sacar(Long id_conta, BigDecimal valor) {
+	public SaqueResponse sacar(Long id_conta, Usuario usuarioLogado, BigDecimal valor) {
 		ContaBase conta = verificarContaExitente(id_conta);
-
+		Cliente cliente = conta.getCliente();
+		securityService.validateAccess(usuarioLogado, cliente);
 		verificaSaldoSuficiente(valor, conta.getSaldo());
 		conta.sacar(valor);
 		contaRepository.save(conta);

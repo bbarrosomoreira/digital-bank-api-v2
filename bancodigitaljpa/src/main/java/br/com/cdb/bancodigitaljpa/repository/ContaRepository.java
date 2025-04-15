@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
 import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
+import br.com.cdb.bancodigitaljpa.entity.Usuario;
 
 @Repository
 public interface ContaRepository extends JpaRepository<ContaBase, Long> {
@@ -18,6 +19,7 @@ public interface ContaRepository extends JpaRepository<ContaBase, Long> {
 	boolean existsByClienteId(Long clienteId);
 	
 	List<ContaBase> findByClienteId(Long clienteId);
+	List<ContaBase> findByClienteUsuario(Usuario usuario);
 	
 	@Query("SELECT cc FROM ContaCorrente cc WHERE cc.cliente.id = :clienteId")
 	List<ContaCorrente> findContasCorrenteByClienteId(@Param("clienteId") Long clienteId);
