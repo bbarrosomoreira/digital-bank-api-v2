@@ -14,15 +14,19 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
+import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.ContaBase;
 import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigitaljpa.entity.Usuario;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
+import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
+import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
 import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
@@ -45,18 +49,25 @@ public class CartaoService {
 	private ContaRepository contaRepository;
 	
 	@Autowired
+	private ClienteRepository clienteRepository;
+	
+	@Autowired
 	private SeguroRepository seguroRepository;
 
 	@Autowired
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
+	
+	@Autowired
+	private SecurityService securityService;
 
 	// add cartao
 	@Transactional
-	public CartaoResponse emitirCartao(Long id_conta, TipoCartao tipo, String senha) {
+	public CartaoResponse emitirCartao(Long id_conta, Usuario usuarioLogado, TipoCartao tipo, String senha) {
 		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
 		Objects.requireNonNull(senha, "A senha do cartão não pode ser nula");
 
 		ContaBase conta = verificarContaExitente(id_conta);
+		securityService.validateAccess(usuarioLogado, conta.getCliente());
 		CartaoBase cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
 		cartaoRepository.save(cartaoNovo);
 
@@ -88,22 +99,32 @@ public class CartaoService {
 	}
 
 	// get cartoes por conta
-	public List<CartaoResponse> listarPorConta(Long id_conta) {
-		verificarContaExitente(id_conta);
+	public List<CartaoResponse> listarPorConta(Long id_conta, Usuario usuarioLogado) {
+		ContaBase conta = verificarContaExitente(id_conta);
+		securityService.validateAccess(usuarioLogado, conta.getCliente());
 		List<CartaoBase> cartoes = cartaoRepository.findByContaId(id_conta);
 		return cartoes.stream().map(this::toResponse).toList();
 	}
 
 	// get cartao por cliente
-	public List<CartaoResponse> listarPorCliente(Long id_cliente) {
+	public List<CartaoResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
+		Cliente cliente = verificarClienteExistente(id_cliente);
+		securityService.validateAccess(usuarioLogado, cliente);
 		List<CartaoBase> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
 		return cartoes.stream().map(this::toResponse).toList();
 	}
 
 	// get um cartao
-	public CartaoResponse getCartaoById(Long id_cartao) {
+	public CartaoResponse getCartaoById(Long id_cartao, Usuario usuarioLogado) {
 		CartaoBase cartao = verificarCartaoExistente(id_cartao);
+		securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 		return toResponse(cartao);
+	}
+	
+	// get cartao por usuário
+	public List<CartaoResponse> listarPorUsuario(Usuario usuario) {
+		List<CartaoBase> cartoes = cartaoRepository.findByContaClienteUsuario(usuario);
+		return cartoes.stream().map(this::toResponse).toList();
 	}
 	
 	// deletar cartoes de cliente
@@ -131,8 +152,9 @@ public class CartaoService {
 
 	// pagar
 	@Transactional
-	public PagamentoResponse pagar(Long id_cartao, BigDecimal valor, String senha, String descricao) {
+	public PagamentoResponse pagar(Long id_cartao, Usuario usuarioLogado, BigDecimal valor, String senha, String descricao) {
 		CartaoBase cartao = verificarCartaoExistente(id_cartao);
+		securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 		verificarCartaoAtivo(cartao.getStatus());
 		verificarSenhaCorreta(senha, cartao.getSenha());
 		verificarLimiteSuficiente(valor, cartao.getLimiteAtual());
@@ -167,8 +189,9 @@ public class CartaoService {
 
 	// alter status cartao
 	@Transactional
-	public StatusCartaoResponse alterarStatus(Long id_cartao, Status statusNovo) {
+	public StatusCartaoResponse alterarStatus(Long id_cartao, Usuario usuarioLogado, Status statusNovo) {
 		CartaoBase cartao = verificarCartaoExistente(id_cartao);
+		securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 		
 		if (statusNovo.equals(Status.DESATIVADO)) {
 			verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
@@ -181,8 +204,9 @@ public class CartaoService {
 
 	// alter senha
 	@Transactional
-	public void alterarSenha(Long id_cartao, String senhaAntiga, String senhaNova) {
+	public void alterarSenha(Long id_cartao, Usuario usuarioLogado, String senhaAntiga, String senhaNova) {
 		CartaoBase cartao = verificarCartaoExistente(id_cartao);
+		securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 		
 		verificarCartaoAtivo(cartao.getStatus());
 		verificarSenhaCorreta(senhaAntiga, cartao.getSenha());
@@ -192,10 +216,10 @@ public class CartaoService {
 	}
 
 	// get fatura
-	public FaturaResponse getFatura(Long id_cartao) {
+	public FaturaResponse getFatura(Long id_cartao, Usuario usuarioLogado) {
 		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartao)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
-		
+		securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
 		verificarCartaoAtivo(ccr.getStatus());
 		
 		return FaturaResponse.toFaturaResponse(ccr);
@@ -203,9 +227,10 @@ public class CartaoService {
 
 	// ressetar limite credito
 	@Transactional
-	public FaturaResponse pagarFatura(Long id_cartao) {
+	public FaturaResponse pagarFatura(Long id_cartao, Usuario usuarioLogado) {
 		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartao)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+		securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
 		
 		verificarCartaoAtivo(ccr.getStatus());
 		if(ccr.getTotalFatura().compareTo(ccr.getConta().getSaldo())>0) throw new InvalidInputParameterException("Saldo insuficiente para esta transação. Saldo atual: "+(ccr.getConta().getSaldo()));
@@ -242,15 +267,22 @@ public class CartaoService {
 		}
 	}
 	public void verificarSegurosVinculados(CartaoBase cartao) {
-		if (cartao instanceof CartaoCredito) {
-			if (!seguroRepository.existsByCartaoCreditoId(((CartaoCredito) cartao).getId()))
-				throw new InvalidInputParameterException("Cartão não pode ser excluído com seguros vinculados.");
+		Long id = ((CartaoCredito) cartao).getId();
+		boolean existeSeguro = seguroRepository.existsByCartaoCreditoId(id);
+		log.info("Cartão ID {} possui seguro vinculado? {}", id, existeSeguro);
+		if (existeSeguro) {
+		    throw new InvalidInputParameterException("Cartão não pode ser excluído com seguros vinculados.");
 		}
 	}
 	public ContaBase verificarContaExitente(Long id_conta) {
 		ContaBase conta = contaRepository.findById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID "+id_conta+" não encontrada."));
 		return conta;
+	}
+	public Cliente verificarClienteExistente(Long id_cliente) {
+		Cliente cliente = clienteRepository.findById(id_cliente)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
+		return cliente;
 	}
 	public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
 		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)

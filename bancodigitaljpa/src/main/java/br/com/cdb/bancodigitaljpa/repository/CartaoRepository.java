@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
 import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
+import br.com.cdb.bancodigitaljpa.entity.Usuario;
 
 @Repository
 public interface CartaoRepository extends JpaRepository<CartaoBase, Long> {
@@ -20,6 +21,8 @@ public interface CartaoRepository extends JpaRepository<CartaoBase, Long> {
 	boolean existsByContaClienteId(Long clienteId);
 	
 	boolean existsByNumeroCartao(String numeroCartao);
+	
+	List<CartaoBase> findByContaClienteUsuario(Usuario usuario);
 	
 	//QUERY PARA PEGAR POR CLIENTE QUE SERIA UM JOIN DA TABELA CONTA
 	List<CartaoBase> findByContaClienteId(Long clienteId);

@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,7 @@ import br.com.cdb.bancodigitaljpa.dto.ContratarSeguroDTO;
 import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
 import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
 import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
+import br.com.cdb.bancodigitaljpa.entity.Usuario;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
 import br.com.cdb.bancodigitaljpa.response.AcionarSeguroFraudeResponse;
 import br.com.cdb.bancodigitaljpa.response.AcionarSeguroViagemResponse;
@@ -38,14 +41,20 @@ public class SeguroController {
 	@Autowired
 	private SeguroService seguroService;
 	
-	//contratar seguro
+	// ambos podem contratar novo seguro
+	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login
+	@PreAuthorize("hasRole('CLIENTE')")
 	@PostMapping
-	public ResponseEntity<SeguroResponse> contratarSeguro (@Valid @RequestBody ContratarSeguroDTO dto) {
-		SeguroResponse response = seguroService.contratarSeguro(dto.getId_cartao(), dto.getTipo());
+	public ResponseEntity<SeguroResponse> contratarSeguro (
+			@Valid @RequestBody ContratarSeguroDTO dto,
+			Authentication authentication) {
+		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+		SeguroResponse response = seguroService.contratarSeguro(dto.getId_cartao(), usuarioLogado, dto.getTipo());
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 		
 	}
 
+	// cliente e admin
 	// Listar tipos de Seguros Disponiveis (suas descricoes)
 	@GetMapping("/tipos")
 	public ResponseEntity<List<TipoSeguroResponse>> listarTiposSeguros(){
@@ -56,6 +65,8 @@ public class SeguroController {
 	}
 	
 	// Listar todos seguros
+	// só admin pode puxar uma lista de todos seguros
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	public ResponseEntity<List<SeguroResponse>> getSeguros(){
 		List<SeguroResponse> seguros = seguroService.getSeguros();
@@ -63,38 +74,52 @@ public class SeguroController {
 	}
 	
 	// Listar Seguro por cartao
+	// admin tem acesso ao id, cliente só pode ver se for dele
 	@GetMapping("/cartao/{id_cartao}")
 	public ResponseEntity<List<SeguroResponse>> listarPorCartao(
-			@PathVariable Long id_cartao){
-		List<SeguroResponse> seguros = seguroService.getSeguroByCartaoId(id_cartao);
+			@PathVariable Long id_cartao,
+			Authentication authentication) {
+		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+		List<SeguroResponse> seguros = seguroService.getSeguroByCartaoId(id_cartao, usuarioLogado);
 		return ResponseEntity.ok(seguros);
 	}
 	
 	// Listar Seguro por cliente
+	// admin tem acesso ao id, cliente só pode ver se for dele
 	@GetMapping("/cliente/{id_cliente}")
 	public ResponseEntity<List<SeguroResponse>> listarPorCliente(
-			@PathVariable Long id_cliente){
-		List<SeguroResponse> seguros = seguroService.getSeguroByClienteId(id_cliente);
+			@PathVariable Long id_cliente,
+			Authentication authentication) {
+		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+		List<SeguroResponse> seguros = seguroService.getSeguroByClienteId(id_cliente, usuarioLogado);
 		return ResponseEntity.ok(seguros);
 	}
 	
 	// Listar by id
+	// admin tem acesso ao id, cliente só pode ver se for dele
 	@GetMapping("/{id_seguro}")
 	public ResponseEntity<SeguroResponse> getSeguroById(
-			@PathVariable Long id_seguro){
-		SeguroResponse seguro = seguroService.getSeguroById(id_seguro);
+			@PathVariable Long id_seguro,
+			Authentication authentication) {
+		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+		SeguroResponse seguro = seguroService.getSeguroById(id_seguro, usuarioLogado);
 		return ResponseEntity.ok(seguro);	
 	}
 	
 	// cancelar apólice
+	// admin tem acesso ao id, cliente só pode ver se for dele
 	@PutMapping("/{id_seguro}/cancelar")
 	public ResponseEntity<CancelarSeguroResponse> cancelarSeguro(
-			@PathVariable Long id_seguro){
-		CancelarSeguroResponse response = seguroService.cancelarSeguro(id_seguro);
+			@PathVariable Long id_seguro,
+			Authentication authentication) {
+		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+		CancelarSeguroResponse response = seguroService.cancelarSeguro(id_seguro, usuarioLogado);
 		return ResponseEntity.ok(response);
 	}
 	
 	// deletar seguros by cliente
+	// só o admin pode confirmar a exclusão de cadastro de seguros
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/cliente/{id_cliente}")
 	public ResponseEntity<Void> deleteSegurosByCliente(
 			@PathVariable Long id_cliente){
@@ -103,22 +128,29 @@ public class SeguroController {
 	}
 	
 	// acionar seguro
+	// admin tem acesso ao id, cliente só pode ver se for dele
 	@PutMapping("/fraude/{id_seguro}/acionar")
 	public ResponseEntity<AcionarSeguroFraudeResponse> acionarSeguroFraude(
 			@PathVariable Long id_seguro,
-			@Valid @RequestBody AcionarSeguroFraudeDTO dto){
-		SeguroBase seguro = seguroService.acionarSeguro(id_seguro, dto.getValorFraude());
+			@Valid @RequestBody AcionarSeguroFraudeDTO dto,
+			Authentication authentication) {
+		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+		SeguroBase seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, dto.getValorFraude());
 		return ResponseEntity.ok(AcionarSeguroFraudeResponse.toSeguroFraudeResponse((SeguroFraude) seguro));
 	}
 	
+	// admin tem acesso ao id, cliente só pode ver se for dele
 	@PutMapping("/viagem/{id_seguro}/acionar")
 	public ResponseEntity<AcionarSeguroViagemResponse> acionarSeguroFraude(
-			@PathVariable Long id_seguro){
-		SeguroBase seguro = seguroService.acionarSeguro(id_seguro, BigDecimal.ZERO);
+			@PathVariable Long id_seguro,
+			Authentication authentication) {
+		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+		SeguroBase seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, BigDecimal.ZERO);
 		return ResponseEntity.ok(AcionarSeguroViagemResponse.toSeguroViagemResponse((SeguroViagem) seguro));
 	}
 	
 	// debitar premio seguro
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/viagem/{id_seguro}/premio")
 	public ResponseEntity<DebitarPremioSeguroResponse> debitarPremioSeguro(
 			@PathVariable Long id_seguro){
