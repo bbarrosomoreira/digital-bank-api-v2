@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
+import br.com.cdb.bancodigitaljpa.entity.Usuario;
 
 @Repository
 public interface SeguroRepository extends JpaRepository<SeguroBase, Long>{
@@ -24,4 +25,5 @@ public interface SeguroRepository extends JpaRepository<SeguroBase, Long>{
 	@Query("SELECT seguro FROM SeguroBase seguro WHERE seguro.cartaoCredito.conta.cliente.id = :clienteId")
 	List<SeguroBase> findByClienteId (@Param("clienteId") Long clienteId);
 
+	List<SeguroBase> findByCartaoCreditoContaClienteUsuario(Usuario usuario);
 }

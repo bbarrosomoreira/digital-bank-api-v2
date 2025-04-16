@@ -272,7 +272,7 @@ public class ContaService {
 		if(conta.getSaldo() != null && conta.getSaldo().compareTo(BigDecimal.ZERO)>0) throw new InvalidInputParameterException("Não é possivel excluir uma conta com saldo remanescente.");	
 	}
 	public void verificarCartoesVinculados(ContaBase conta) {
-		if(!cartaoRepository.existsByContaId(conta.getId())) throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
+		if(cartaoRepository.existsByContaId(conta.getId())) throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
 	}
 	public ContaBase verificarContaExitente(Long id_conta) {
 		ContaBase conta = contaRepository.findById(id_conta)
