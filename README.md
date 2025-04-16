@@ -83,4 +83,5 @@ Uma versão aprimorada com ferramentas modernas do backend Java e boas práticas
 ### 📄 Licença
 
 Este projeto está licenciado sob a licença [MIT](LICENSE).
+
 ---
