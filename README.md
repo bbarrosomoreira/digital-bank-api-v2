@@ -39,10 +39,10 @@ An enhanced version using modern Java backend tools and best practices:
 - JWT
 - Maven
 
----
-## 📄 License
+### 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
+
 ---
 
 ## 🇧🇷 Projeto Banco Digital
@@ -80,8 +80,7 @@ Uma versão aprimorada com ferramentas modernas do backend Java e boas práticas
 - JWT
 - Maven
 
----
-## 📄 Licença
+### 📄 Licença
 
-Este projeto está licenciado sob a licença [MIT](LICENSE)
+Este projeto está licenciado sob a licença [MIT](LICENSE).
 ---
