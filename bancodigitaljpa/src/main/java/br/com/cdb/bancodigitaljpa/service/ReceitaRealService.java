@@ -3,6 +3,7 @@ package br.com.cdb.bancodigitaljpa.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -15,9 +16,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.cdb.bancodigitaljpa.response.CpfValidationResponse;
 
 @Service 
-public class ReceitaCpfService {
+@Profile("prod") // roda apenas com a API externa de simulação da Receita Federal
+public class ReceitaRealService implements ReceitaService{
 	
-	private static final Logger log = LoggerFactory.getLogger(ReceitaCpfService.class);
+	private static final Logger log = LoggerFactory.getLogger(ReceitaRealService.class);
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -47,6 +49,7 @@ public class ReceitaCpfService {
 
 	}
 	
+	@Override
 	public boolean isCpfValidoEAtivo(String cpf) {
 		CpfValidationResponse response = consultarCpf(cpf);
 		return response.isValid().equals(Boolean.TRUE) && response.getStatus().equals("ATIVO");

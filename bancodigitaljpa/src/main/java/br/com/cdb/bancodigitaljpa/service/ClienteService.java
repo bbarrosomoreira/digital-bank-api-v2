@@ -62,7 +62,7 @@ public class ClienteService {
 	private PoliticaDeTaxasRepository politicaDeTaxaRepository;
 	
 	@Autowired
-	private ReceitaCpfService receitaCpfService;
+	private ReceitaService receitaService;
 	
 	@Autowired
 	private SecurityService securityService;
@@ -73,7 +73,7 @@ public class ClienteService {
 		Cliente cliente = dto.transformaParaObjeto();
 		cliente.setUsuario(usuario);
 		
-		if(!receitaCpfService.isCpfValidoEAtivo(cliente.getCpf())) throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
+		if(!receitaService.isCpfValidoEAtivo(cliente.getCpf())) throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
 		
 		validarCpfUnico(cliente.getCpf());
 		validarMaiorIdade(cliente);
