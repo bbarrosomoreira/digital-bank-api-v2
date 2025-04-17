@@ -106,6 +106,16 @@ public class SeguroController {
 		return ResponseEntity.ok(seguro);	
 	}
 	
+	// para usuário logado ver informações de seus cartoes (cliente)
+	@PreAuthorize("hasRole('CLIENTE')")
+	@GetMapping("/meus-seguros")
+	public ResponseEntity<List<SeguroResponse>> buscarSegurosDoUsuario (
+			Authentication authentication) {
+		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+		List<SeguroResponse> seguros = seguroService.listarPorUsuario(usuarioLogado);
+		return ResponseEntity.ok(seguros);
+	}
+	
 	// cancelar apólice
 	// admin tem acesso ao id, cliente só pode ver se for dele
 	@PutMapping("/{id_seguro}/cancelar")

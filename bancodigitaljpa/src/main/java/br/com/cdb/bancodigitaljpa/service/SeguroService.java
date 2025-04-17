@@ -95,6 +95,12 @@ public class SeguroService {
 		securityService.validateAccess(usuarioLogado, seguro.getCartaoCredito().getConta().getCliente());
 		return SeguroResponse.toSeguroResponse(seguro);
 	}
+	
+	// get seguro por usuario
+	public List<SeguroResponse> listarPorUsuario(Usuario usuario) {
+		List<SeguroBase> seguros = seguroRepository.findByCartaoCreditoContaClienteUsuario(usuario);
+		return seguros.stream().map(this::toResponse).toList();
+	}
 
 	// cancelar apolice seguro
 	@Transactional
