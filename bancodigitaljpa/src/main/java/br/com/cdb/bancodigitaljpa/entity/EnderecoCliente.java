@@ -11,7 +11,7 @@ public class EnderecoCliente {
 	//atributos
 	
 	@NotBlank(message = "CEP é obrigatório")
-	@Pattern(regexp = "\\d{5}-\\d{3}", message = "CEP deve estar no formato XXXXX-XXX")
+	@Pattern(regexp = "\\d{8}", message = "CEP deve estar no formato XXXXXXXX")
 	private String cep;
 	
 	@NotBlank(message = "Rua é um campo obrigatório")
@@ -23,6 +23,10 @@ public class EnderecoCliente {
 	
 	@Size(max = 100, message = "Complemento deve ter no máximo 100 caracteres")
 	private String complemento;
+	
+	@NotBlank(message = "Bairro é um campo obrigatório")
+	@Size(max = 100)
+	private String bairro;
 	
 	@NotBlank(message = "Cidade é obrigatória")
     @Size(max = 50, message = "Cidade deve ter no máximo 50 caracteres")
@@ -78,13 +82,20 @@ public class EnderecoCliente {
 	public void setEnderecoPrincipal(boolean enderecoPrincipal) {
 		this.enderecoPrincipal = enderecoPrincipal;
 	}
+	public String getBairro() {
+		return bairro;
+	}
+	public void setBairro(String bairro) {
+		this.bairro = bairro;
+	}
 	
 	//construtor
-	public EnderecoCliente(String rua, int numero, String complemento, String cidade, String estado, String cep, boolean enderecoPrincipal) {
+	public EnderecoCliente(String rua, int numero, String complemento, String bairro, String cidade, String estado, String cep, boolean enderecoPrincipal) {
 		super();
 		this.rua = rua;
 		this.numero = numero;
 		this.complemento = complemento;
+		this.bairro = bairro;
 		this.cidade = cidade;
 		this.estado = estado;
 		this.cep = cep;

@@ -67,7 +67,7 @@ public class ClienteController {
 			@PathVariable Long id_cliente,
 			Authentication authentication) {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		ClienteResponse cliente = clienteService.getClienteById(id_cliente, usuarioLogado);
+		ClienteResponse cliente = clienteService.toResponse(clienteService.getClienteById(id_cliente, usuarioLogado));
 		return ResponseEntity.ok(cliente);
 	}
 	

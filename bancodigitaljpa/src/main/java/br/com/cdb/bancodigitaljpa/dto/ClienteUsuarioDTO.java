@@ -8,14 +8,21 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.EnderecoCliente;
+import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.enums.Role;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class ClienteDTO {
-	
+public class ClienteUsuarioDTO {
+
+	//CLIENTE
 	@NotBlank(message = "Nome é obrigatótio")
 	@Size(min=2, max=100, message="Nome deve ter entre 2 e 100 caracteres")
 	@Pattern(regexp = "^[\\p{L} ]+$", message = "Nome deve conter apenas letras e espaços")
@@ -38,6 +45,19 @@ public class ClienteDTO {
 	
 	@Size(max = 100, message = "Complemento deve ter no máximo 100 caracteres")
 	private String complemento;
+	
+	//USUARIO
+	@Email
+	@NotBlank
+	@Column(unique =  true, nullable = false)
+	private String email;
+	
+	@NotBlank
+	private String senha;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private Role role;
 	
 	
 	//Getters and Setters
@@ -77,12 +97,35 @@ public class ClienteDTO {
 	public void setComplemento(String complemento) {
 		this.complemento = complemento;
 	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getSenha() {
+		return senha;
+	}
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+	public Role getRole() {
+		return role;
+	}
+	public void setRole(Role role) {
+		this.role = role;
+	}
 	//metodo
-	public Cliente transformaParaObjeto() {
+	public Cliente transformaParaClienteObjeto() {
 		EnderecoCliente endereco = new EnderecoCliente();
 		return new Cliente(nome, cpf, dataNascimento, endereco);
 	}
-	public ClienteDTO() {}
+	
+	public Usuario transformaParaUsuarioObjeto() {
+		return new Usuario(email, senha, role);
+	}
+	
+	public ClienteUsuarioDTO() {}
 	
 
 }

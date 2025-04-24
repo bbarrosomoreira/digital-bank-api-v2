@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.brasilapi.api.CEP2;
 import br.com.cdb.bancodigitaljpa.dto.ClienteDTO;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
 import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
@@ -66,11 +67,25 @@ public class ClienteService {
 	
 	@Autowired
 	private SecurityService securityService;
+	
+	@Autowired
+    private BrasilApiService brasilApiService;
 
 	// Cadastrar cliente
-	public ClienteResponse cadastrarCliente(ClienteDTO  dto, Usuario usuario) {
+	public ClienteResponse cadastrarCliente(ClienteDTO dto, Usuario usuario) {
+		CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
 		
 		Cliente cliente = dto.transformaParaObjeto();
+		cliente.getEndereco().setCep(dto.getCep());
+		cliente.getEndereco().setBairro(cepInfo.getNeighborhood());
+		cliente.getEndereco().setCidade(cepInfo.getCity());
+		cliente.getEndereco().setComplemento(dto.getComplemento());
+		cliente.getEndereco().setEnderecoPrincipal(true);
+		cliente.getEndereco().setEstado(cepInfo.getState());
+		cliente.getEndereco().setNumero(dto.getNumero());
+		cliente.getEndereco().setRua(cepInfo.getStreet());
+
+		
 		cliente.setUsuario(usuario);
 		
 		if(!receitaService.isCpfValidoEAtivo(cliente.getCpf())) throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
@@ -88,10 +103,10 @@ public class ClienteService {
 		return clientes.stream().map(this::toResponse).toList();
 	} 
 
-	public ClienteResponse getClienteById(Long id_cliente, Usuario usuarioLogado) {
+	public Cliente getClienteById(Long id_cliente, Usuario usuarioLogado) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		securityService.validateAccess(usuarioLogado, cliente);
-		return toResponse(cliente);
+		return cliente;
 	}
 	public ClienteResponse buscarClienteDoUsuario(Usuario usuario) {
 	    Cliente cliente = clienteRepository.findByUsuario(usuario)
@@ -161,13 +176,10 @@ public class ClienteService {
 		securityService.validateAccess(usuarioLogado, cliente);
 		
 		// atualiza todos os campos
-		cliente.setNome(dto.getNome());
-		if (!cliente.getCpf().equals(dto.getCpf())) {
-			validarCpfUnico(dto.getCpf());
-		}
-		cliente.setCpf(dto.getCpf());
-		cliente.setDataNascimento(dto.getDataNascimento());
-		cliente.setEndereco(dto.getEndereco());
+		cliente = dto.transformaParaObjeto();
+		if(!receitaService.isCpfValidoEAtivo(cliente.getCpf())) throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");		
+		validarCpfUnico(cliente.getCpf());
+		validarMaiorIdade(cliente);
 		
 		clienteRepository.save(cliente);
 		return toResponse(cliente);
