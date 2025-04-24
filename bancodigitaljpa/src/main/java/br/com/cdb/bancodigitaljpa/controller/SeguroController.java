@@ -151,7 +151,7 @@ public class SeguroController {
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
 	@PutMapping("/viagem/{id_seguro}/acionar")
-	public ResponseEntity<AcionarSeguroViagemResponse> acionarSeguroFraude(
+	public ResponseEntity<AcionarSeguroViagemResponse> acionarSeguroViagem(
 			@PathVariable Long id_seguro,
 			Authentication authentication) {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();

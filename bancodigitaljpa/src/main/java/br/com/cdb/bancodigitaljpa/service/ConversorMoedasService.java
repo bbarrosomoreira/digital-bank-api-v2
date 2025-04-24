@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import br.com.cdb.bancodigitaljpa.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.response.ApiConversorMoedasResponse;
+import io.github.cdimascio.dotenv.Dotenv;
 
 @Service
 public class ConversorMoedasService {
@@ -24,8 +25,10 @@ public class ConversorMoedasService {
 	@Autowired
 	private RestTemplate restTemplate;
 	
-	private final String API_URL = "https://api.apilayer.com/currency_data/convert";
-    private final String API_KEY = "j6k9BY4OO4oXOOhLiUbdjPzfsKKcxoIZ";
+	private static final Dotenv dotenv = Dotenv.load();
+	
+	private static final String API_URL = "https://api.apilayer.com/currency_data/convert";
+    private static final String API_KEY = dotenv.get("API_KEY");
     
     public ApiConversorMoedasResponse fazerConversao(Moeda from, Moeda to, BigDecimal amount) {
     	try {
