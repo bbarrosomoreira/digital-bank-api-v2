@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigitaljpa.entity.Cliente;
 import br.com.cdb.bancodigitaljpa.entity.EnderecoCliente;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -29,8 +29,16 @@ public class ClienteDTO {
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dataNascimento;
 	
-	@Valid
-	private EnderecoCliente endereco;
+	@NotBlank(message = "CEP é obrigatório")
+	@Pattern(regexp = "\\d{8}", message = "CEP deve estar no formato XXXXXXXX")
+	private String cep;
+	
+	@NotNull(message = "Numero é um campo obrigatório - Se endereço não tiver número, digite 0")
+	private int numero;
+	
+	@Size(max = 100, message = "Complemento deve ter no máximo 100 caracteres")
+	private String complemento;
+	
 	
 	//Getters and Setters
 	public String getNome() {
@@ -51,15 +59,27 @@ public class ClienteDTO {
 	public void setDataNascimento(LocalDate dataNascimento) {
 		this.dataNascimento = dataNascimento;
 	}
-	public EnderecoCliente getEndereco() {
-		return endereco;
+	public String getCep() {
+		return cep;
 	}
-	public void setEndereco(EnderecoCliente endereco) {
-		this.endereco = endereco;
+	public void setCep(String cep) {
+		this.cep = cep;
 	}
-	
+	public int getNumero() {
+		return numero;
+	}
+	public void setNumero(int numero) {
+		this.numero = numero;
+	}
+	public String getComplemento() {
+		return complemento;
+	}
+	public void setComplemento(String complemento) {
+		this.complemento = complemento;
+	}
 	//metodo
 	public Cliente transformaParaObjeto() {
+		EnderecoCliente endereco = new EnderecoCliente();
 		return new Cliente(nome, cpf, dataNascimento, endereco);
 	}
 	public ClienteDTO() {}

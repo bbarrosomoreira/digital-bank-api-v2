@@ -17,9 +17,9 @@ import br.com.cdb.bancodigitaljpa.response.CpfValidationResponse;
 
 @Service 
 @Profile("prod") // roda apenas com a API externa de simulação da Receita Federal
-public class ReceitaRealService implements ReceitaService{
+public class ReceitaServiceImpl implements ReceitaService{
 	
-	private static final Logger log = LoggerFactory.getLogger(ReceitaRealService.class);
+	private static final Logger log = LoggerFactory.getLogger(ReceitaServiceImpl.class);
 
 	@Autowired
 	private RestTemplate restTemplate;
