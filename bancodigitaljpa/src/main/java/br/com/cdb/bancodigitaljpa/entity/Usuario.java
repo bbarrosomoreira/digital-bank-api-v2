@@ -94,4 +94,13 @@ public class Usuario implements UserDetails {
 		return serialVersionUID;
 	}
 	public Usuario() {}
+	
+	public Usuario(@Email @NotBlank String email, @NotBlank String senha, Role role) {
+		super();
+		this.email = email;
+		this.senha = senha;
+		this.role = role;
+	}
+	
+	
 }

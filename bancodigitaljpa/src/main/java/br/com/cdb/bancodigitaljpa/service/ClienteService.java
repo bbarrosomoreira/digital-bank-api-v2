@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.brasilapi.BrasilAPI;
 import br.com.brasilapi.api.CEP2;
 import br.com.cdb.bancodigitaljpa.dto.ClienteDTO;
 import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
@@ -68,20 +67,23 @@ public class ClienteService {
 	
 	@Autowired
 	private SecurityService securityService;
+	
+	@Autowired
+    private BrasilApiService brasilApiService;
 
 	// Cadastrar cliente
 	public ClienteResponse cadastrarCliente(ClienteDTO dto, Usuario usuario) {
-		CEP2 cep2 = BrasilAPI.cep2(dto.getCep());
+		CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
 		
 		Cliente cliente = dto.transformaParaObjeto();
 		cliente.getEndereco().setCep(dto.getCep());
-		cliente.getEndereco().setBairro(cep2.getNeighborhood());
-		cliente.getEndereco().setCidade(cep2.getCity());
+		cliente.getEndereco().setBairro(cepInfo.getNeighborhood());
+		cliente.getEndereco().setCidade(cepInfo.getCity());
 		cliente.getEndereco().setComplemento(dto.getComplemento());
 		cliente.getEndereco().setEnderecoPrincipal(true);
-		cliente.getEndereco().setEstado(cep2.getState());
+		cliente.getEndereco().setEstado(cepInfo.getState());
 		cliente.getEndereco().setNumero(dto.getNumero());
-		cliente.getEndereco().setRua(cep2.getStreet());
+		cliente.getEndereco().setRua(cepInfo.getStreet());
 
 		
 		cliente.setUsuario(usuario);
