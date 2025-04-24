@@ -45,6 +45,7 @@ public class ClienteController {
 	}
 	
 	// para usuário logado ver suas informações (cliente)
+	@PreAuthorize("hasRole('CLIENTE')")
 	@GetMapping("/me")
 	public ResponseEntity<ClienteResponse> buscarClienteDoUsuario(
 			Authentication authentication) {
@@ -103,7 +104,7 @@ public class ClienteController {
 	
 	// só admin pode alterar a categoria do cliente
 	@PreAuthorize("hasRole('ADMIN')")
-	@PutMapping("/{id_cliente}/categoria")
+	@PatchMapping("/categoria/{id_cliente}")
 	public ResponseEntity<ClienteResponse> updateCategoriaCliente(
 			@PathVariable Long id_cliente, 
 			@Valid @RequestBody AtualizarCategoriaClienteDTO dto) {
