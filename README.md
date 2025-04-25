@@ -28,6 +28,7 @@ An enhanced version using modern Java backend tools and best practices:
 - JPA for ORM and entity persistence
 - Role-based access (ADMIN / USER)
 - Exception handling and custom error responses
+- Integration with external APIs (postal code search and currency conversion)
 
 ### 🛠️ Technologies
 
@@ -54,6 +55,7 @@ An enhanced version using modern Java backend tools and best practices:
 
 ```bash
 git clone https://github.com/bbarrosomoreira/digital-bank-api.git
+cd digital-bank-springboot
 ```
 
 2. **Import project in Eclipse**
@@ -76,15 +78,54 @@ API_KEY=j6k9BY4OO4oXOOhLiUbdjPzfsKKcxoIZ
 > ℹ️ **Note:** 
 This `API_KEY` is used to access an **external currency conversion API**.  
 In a real-world project, this key should be kept private and **never exposed publicly**, for security reasons.
-
 However, **for educational purposes**, the key has been included here so that anyone can test and explore **all features** of the system without restrictions.
-
 You can also generate your own key on the API provider's website and replace it in the `.env` file.
+
+### ⚙️ Environment profiles (CPF validation)
+
+You can run the application using different profiles:
+
+- `dev` (default): skips CPF validation and always considers CPF as **valid and active** (mock behavior to simplify local testing)
+  
+```properties
+spring.profiles.active=dev
+```
+
+- `prod`: connects to a **mock Receita Federal API** for CPF status simulation.  
+  To use it, you must run the companion repository: [validadorCPF](https://github.com/bbarrosomoreira/validadorCPF)
+
+```properties
+spring.profiles.active=prod
+```
+
+This simulated API works with the following logic:
+
+| CPF starts with | Resposta       |
+|----------------|----------------|
+| `0` to `5`      | `status: ACTIVE` |
+| `6` or `7`     | `status: INACTIVE` |
+| `8`            | Simulated instability in Receita API |
+| Other values | Standard handling |
+
+> ⚠️ This API is **not affiliated with the real Receita Federal**. It was created solely for **testing and demonstration purposes**.
 
 4. **Run the application**
 
 - Locate the main class with `@SpringBootApplication` (BancodigitaljpaApplication)
 - Right-click and select `Run As > Java Application`
+
+---
+
+### 🧩 Possible issue after cloning the project
+
+After cloning, Spring Boot might not run immediately. To fix that:
+
+1. Right-click the project in your IDE → `Configure` → `Convert to Maven Project`  
+2. Right-click again → `Maven` → `Update Project` → check "Force update"  
+3. Run the application from the main class (`@SpringBootApplication`)  
+4. Ensure the `.env` file exists at the project root  
+
+If issues persist, open an issue in this repository.
 
 ### 📄 License
 
@@ -116,6 +157,7 @@ Uma versão aprimorada com ferramentas modernas do backend Java e boas práticas
 - JPA para persistência das entidades
 - Controle de acesso por perfil (ADMIN / USER)
 - Tratamento de exceções e respostas personalizadas
+- Integração com APIs externas (busca de CEP, conversão de moedas e mock da Receita Federal)
 
 ### 🛠️ Tecnologias
 
@@ -142,6 +184,7 @@ Uma versão aprimorada com ferramentas modernas do backend Java e boas práticas
 
 ```bash
 git clone https://github.com/bbarrosomoreira/digital-bank-api.git
+cd digital-bank-springboot
 ```
 
 2. **Importe o projeto no Eclipse**
@@ -164,18 +207,55 @@ API_KEY=j6k9BY4OO4oXOOhLiUbdjPzfsKKcxoIZ
 > ℹ️ **Observação:** 
 Esta `API_KEY` é utilizada para acessar uma **API externa de conversão de moedas**.  
 Em um projeto real, essa chave deveria ser mantida em sigilo e **nunca ser exposta publicamente**, por questões de segurança.
-
 No entanto, **para fins didáticos**, a chave foi incluída aqui para que qualquer pessoa consiga testar e explorar **todas as funcionalidades** do sistema sem restrições.
-
 Você também pode gerar sua própria chave diretamente no site da API e substituí-la no arquivo `.env`.
+
+### ⚙️ Perfis de ambiente (validação de CPF)
+
+Você pode executar o projeto com diferentes perfis:
+
+- `dev` (padrão): ignora a validação e considera todo CPF como **válido e ativo** (comportamento mockado para facilitar testes locais)
+  
+```properties
+spring.profiles.active=dev
+```
+
+- `prod`: utiliza uma **API simulada da Receita Federal** para validação de CPF.  
+  Para usar, é necessário rodar o repositório auxiliar: [validadorCPF](https://github.com/bbarrosomoreira/validadorCPF)
+
+```properties
+spring.profiles.active=prod
+```
+
+A resposta da API varia conforme o dígito inicial do CPF informado:
+
+| CPF começa com | Resposta       |
+|----------------|----------------|
+| `0` a `5`      | `status: ATIVO` |
+| `6` ou `7`     | `status: INATIVO` |
+| `8`            | Simula erro da API (lança exceção) |
+| Outros valores | Tratamento padrão |
+
+> ⚠️ Esta é uma **simulação** e **não realiza validações reais**. Não tem relação com a Receita Federal oficial.
 
 4. **Execute o projeto**
 
 - Localize a classe principal com `@SpringBootApplication` (BancodigitaljpaApplication)
 - Clique com o botão direito e selecione `Run As > Java Application`
 
+---
+
+### 🧩 Problema ao clonar e rodar o projeto
+
+Após clonar o repositório, o Spring Boot pode não rodar imediatamente. Para resolver:
+
+1. Clique com o botão direito no projeto → `Configure` → `Convert to Maven Project`  
+2. Depois → `Maven` → `Update Project` e marque "Force update"  
+3. Rode a aplicação pela classe principal (`@SpringBootApplication`)  
+4. Verifique se o arquivo `.env` está presente na raiz do projeto  
+
+Se o problema persistir, abra uma issue neste repositório.
+
 ### 📄 Licença
 
 Este projeto está licenciado sob a licença [MIT](LICENSE).
-
----
