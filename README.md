@@ -6,21 +6,6 @@
 
 ## 🇺🇸 Digital Bank Project
 
-This repository contains the second version of a **Digital Bank** project developed in Java:
-
-### 📌 First Version: Basic Java 
-👉 Check it out here: [digital-bank-java](https://github.com/bbarrosomoreira/digital-bank-java)
-A simple and functional version, built only with Java (no frameworks), including:
-
-- Account management
-- Deposit, withdrawal, and transfer features
-- Card and insurance structure
-- Object-oriented approach
-
-### 🚀 Second Version: Java + Spring Boot + JWT
-
-An enhanced version using modern Java backend tools and best practices:
-
 - Built with **Spring Boot**
 - API with RESTful endpoints
 - Security with **JWT Authentication**
@@ -81,9 +66,11 @@ In a real-world project, this key should be kept private and **never exposed pub
 However, **for educational purposes**, the key has been included here so that anyone can test and explore **all features** of the system without restrictions.
 You can also generate your own key on the API provider's website and replace it in the `.env` file.
 
-### ⚙️ Environment profiles (CPF validation)
+### 🔁 Receita Federal API Simulation
 
-You can run the application using different profiles:
+This project also consumes a **simulated Receita Federal API**, used to validate CPF (Brazilian ID).
+
+You can choose between two ways to run the system:
 
 - `dev` (default): skips CPF validation and always considers CPF as **valid and active** (mock behavior to simplify local testing)
   
@@ -135,21 +122,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 🇧🇷 Projeto Banco Digital
 
-Este repositório contém duas versões de um **Banco Digital** desenvolvido em Java:
-
-### 📌 Primeira Versão: Java Básico
-👉 Acesse aqui: [digital-bank-java](https://github.com/bbarrosomoreira/digital-bank-java)
-Versão simples e funcional, construída apenas com Java (sem frameworks), incluindo:
-
-- Gerenciamento de contas
-- Funcionalidades de depósito, saque e transferência
-- Estrutura de cartões e seguros
-- Abordagem orientada a objetos
-
-### 🚀 Segunda Versão: Java + Spring Boot + JWT
-
-Uma versão aprimorada com ferramentas modernas do backend Java e boas práticas:
-
 - Desenvolvido com **Spring Boot**
 - API com endpoints RESTful
 - Segurança com **autenticação JWT**
@@ -175,7 +147,7 @@ Uma versão aprimorada com ferramentas modernas do backend Java e boas práticas
 
 - [Java 17 ou superior](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 - [Maven](https://maven.apache.org/)
-- [IDE Eclipse](https://www.eclipse.org/downloads/)
+- [IDE Eclipse](https://www.eclipse.org/downloads/) ou outra IDE
 - [Git](https://git-scm.com/) (opcional)
 
 #### 👣 Passo a passo
@@ -210,9 +182,11 @@ Em um projeto real, essa chave deveria ser mantida em sigilo e **nunca ser expos
 No entanto, **para fins didáticos**, a chave foi incluída aqui para que qualquer pessoa consiga testar e explorar **todas as funcionalidades** do sistema sem restrições.
 Você também pode gerar sua própria chave diretamente no site da API e substituí-la no arquivo `.env`.
 
-### ⚙️ Perfis de ambiente (validação de CPF)
+### 🔁 Simulação da API da Receita Federal
 
-Você pode executar o projeto com diferentes perfis:
+Este projeto também consome uma **API simulada da Receita Federal**, usada para validar CPF.
+
+Você pode escolher entre duas formas de rodar o sistema:
 
 - `dev` (padrão): ignora a validação e considera todo CPF como **válido e ativo** (comportamento mockado para facilitar testes locais)
   
@@ -245,7 +219,7 @@ A resposta da API varia conforme o dígito inicial do CPF informado:
 
 ---
 
-### 🧩 Problema ao clonar e rodar o projeto
+### 🧩 Possíveis problemas ao clonar e rodar o projeto
 
 Após clonar o repositório, o Spring Boot pode não rodar imediatamente. Para resolver:
 
