@@ -100,12 +100,12 @@ spring.profiles.active=prod
 
 This simulated API works with the following logic:
 
-| CPF starts with | Resposta       |
-|----------------|----------------|
-| `0` to `5`      | `status: ACTIVE` |
-| `6` or `7`     | `status: INACTIVE` |
-| `8`            | Simulated instability in Receita API |
-| Other values | Standard handling |
+| CPF Starts With | Response      |
+|------------------|----------------|
+| `0` to `5`       | `status: ATIVO` (Active) |
+| `6` or `7`       | `status: INATIVO` (Inactive) |
+| `8`              | Simulates an API error (throws exception) |
+| Other values     | Default handling |
 
 > ⚠️ This API is **not affiliated with the real Receita Federal**. It was created solely for **testing and demonstration purposes**.
 
