@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
-import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
-import br.com.cdb.bancodigitaljpa.entity.CartaoDebito;
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.CartaoBase;
+import br.com.cdb.bancodigitaljpa.model.CartaoCredito;
+import br.com.cdb.bancodigitaljpa.model.CartaoDebito;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 
 @Repository
 public interface CartaoRepository extends JpaRepository<CartaoBase, Long> {

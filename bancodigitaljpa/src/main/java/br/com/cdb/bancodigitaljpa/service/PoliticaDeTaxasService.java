@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigitaljpa.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;

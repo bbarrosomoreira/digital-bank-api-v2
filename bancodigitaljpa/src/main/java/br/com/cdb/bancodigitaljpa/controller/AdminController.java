@@ -15,7 +15,7 @@ import br.com.cdb.bancodigitaljpa.dto.AbrirContaDTO;
 import br.com.cdb.bancodigitaljpa.dto.ClienteUsuarioDTO;
 import br.com.cdb.bancodigitaljpa.dto.ContratarSeguroDTO;
 import br.com.cdb.bancodigitaljpa.dto.EmitirCartaoDTO;
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.response.CartaoResponse;
 import br.com.cdb.bancodigitaljpa.response.ClienteResponse;
 import br.com.cdb.bancodigitaljpa.response.ContaResponse;

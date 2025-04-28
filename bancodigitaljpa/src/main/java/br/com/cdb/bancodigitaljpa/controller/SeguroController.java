@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroFraudeDTO;
 import br.com.cdb.bancodigitaljpa.dto.ContratarSeguroDTO;
-import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
-import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
-import br.com.cdb.bancodigitaljpa.entity.SeguroViagem;
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.SeguroBase;
+import br.com.cdb.bancodigitaljpa.model.SeguroFraude;
+import br.com.cdb.bancodigitaljpa.model.SeguroViagem;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
 import br.com.cdb.bancodigitaljpa.response.AcionarSeguroFraudeResponse;
 import br.com.cdb.bancodigitaljpa.response.AcionarSeguroViagemResponse;

@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.SeguroBase;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 
 @Repository
 public interface SeguroRepository extends JpaRepository<SeguroBase, Long>{

@@ -1,7 +1,7 @@
 package br.com.cdb.bancodigitaljpa.response;
 
 
-import br.com.cdb.bancodigitaljpa.entity.CartaoBase;
+import br.com.cdb.bancodigitaljpa.model.CartaoBase;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 
 public record StatusCartaoResponse (

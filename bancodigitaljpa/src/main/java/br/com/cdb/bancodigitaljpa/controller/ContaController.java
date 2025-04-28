@@ -22,7 +22,7 @@ import br.com.cdb.bancodigitaljpa.dto.DepositoDTO;
 import br.com.cdb.bancodigitaljpa.dto.PixDTO;
 import br.com.cdb.bancodigitaljpa.dto.SaqueDTO;
 import br.com.cdb.bancodigitaljpa.dto.TransferenciaDTO;
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 import br.com.cdb.bancodigitaljpa.response.AplicarTxManutencaoResponse;
 import br.com.cdb.bancodigitaljpa.response.AplicarTxRendimentoResponse;

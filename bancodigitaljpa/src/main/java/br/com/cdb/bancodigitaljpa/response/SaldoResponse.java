@@ -2,7 +2,7 @@ package br.com.cdb.bancodigitaljpa.response;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigitaljpa.entity.ContaBase;
+import br.com.cdb.bancodigitaljpa.model.ContaBase;
 import br.com.cdb.bancodigitaljpa.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.enums.TipoConta;
 

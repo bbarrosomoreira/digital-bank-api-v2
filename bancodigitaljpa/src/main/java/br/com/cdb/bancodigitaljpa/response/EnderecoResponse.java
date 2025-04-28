@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigitaljpa.response;
 
-import br.com.cdb.bancodigitaljpa.entity.EnderecoCliente;
+import br.com.cdb.bancodigitaljpa.model.EnderecoCliente;
 
 public class EnderecoResponse {
 	

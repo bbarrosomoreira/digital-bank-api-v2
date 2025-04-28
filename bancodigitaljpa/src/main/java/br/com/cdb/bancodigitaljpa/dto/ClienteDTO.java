@@ -6,8 +6,8 @@ import org.hibernate.validator.constraints.br.CPF;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigitaljpa.entity.Cliente;
-import br.com.cdb.bancodigitaljpa.entity.EnderecoCliente;
+import br.com.cdb.bancodigitaljpa.model.Cliente;
+import br.com.cdb.bancodigitaljpa.model.EnderecoCliente;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;

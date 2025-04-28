@@ -3,7 +3,7 @@ package br.com.cdb.bancodigitaljpa.response;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import br.com.cdb.bancodigitaljpa.entity.SeguroFraude;
+import br.com.cdb.bancodigitaljpa.model.SeguroFraude;
 
 public record AcionarSeguroFraudeResponse  (
 		String tipoSeguro,

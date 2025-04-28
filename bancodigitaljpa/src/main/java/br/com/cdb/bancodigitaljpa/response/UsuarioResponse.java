@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigitaljpa.response;
 
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.enums.Role;
 
 public class UsuarioResponse {

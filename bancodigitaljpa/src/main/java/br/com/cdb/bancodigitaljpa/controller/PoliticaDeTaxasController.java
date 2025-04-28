@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigitaljpa.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.service.PoliticaDeTaxasService;
 

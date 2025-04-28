@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.AtualizarCategoriaClienteDTO;
 import br.com.cdb.bancodigitaljpa.dto.ClienteDTO;
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.response.ClienteResponse;
 import br.com.cdb.bancodigitaljpa.service.ClienteService;

@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigitaljpa.response;
 
-import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
+import br.com.cdb.bancodigitaljpa.model.SeguroBase;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 
 public record CancelarSeguroResponse (

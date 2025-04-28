@@ -2,7 +2,7 @@ package br.com.cdb.bancodigitaljpa.response;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigitaljpa.entity.CartaoCredito;
+import br.com.cdb.bancodigitaljpa.model.CartaoCredito;
 
 public record FaturaResponse (
 		String numCartao,

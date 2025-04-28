@@ -3,8 +3,8 @@ package br.com.cdb.bancodigitaljpa.service;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigitaljpa.entity.Cliente;
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.Cliente;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.enums.Role;
 
 @Service

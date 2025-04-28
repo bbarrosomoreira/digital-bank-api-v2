@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import br.com.cdb.bancodigitaljpa.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigitaljpa.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
 

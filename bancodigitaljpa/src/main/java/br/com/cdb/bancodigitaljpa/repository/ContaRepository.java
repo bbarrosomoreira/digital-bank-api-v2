@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import br.com.cdb.bancodigitaljpa.entity.ContaBase;
-import br.com.cdb.bancodigitaljpa.entity.ContaCorrente;
-import br.com.cdb.bancodigitaljpa.entity.ContaPoupanca;
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.ContaBase;
+import br.com.cdb.bancodigitaljpa.model.ContaCorrente;
+import br.com.cdb.bancodigitaljpa.model.ContaPoupanca;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 
 @Repository
 public interface ContaRepository extends JpaRepository<ContaBase, Long> {

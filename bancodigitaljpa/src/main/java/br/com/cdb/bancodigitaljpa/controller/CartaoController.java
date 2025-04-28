@@ -21,7 +21,7 @@ import br.com.cdb.bancodigitaljpa.dto.AlterarSenhaDTO;
 import br.com.cdb.bancodigitaljpa.dto.AlterarStatusCartaoDTO;
 import br.com.cdb.bancodigitaljpa.dto.EmitirCartaoDTO;
 import br.com.cdb.bancodigitaljpa.dto.PagamentoDTO;
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.response.CartaoResponse;
 import br.com.cdb.bancodigitaljpa.response.FaturaResponse;

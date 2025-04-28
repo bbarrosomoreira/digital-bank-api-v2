@@ -5,7 +5,7 @@ import java.time.Period;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigitaljpa.entity.Cliente;
+import br.com.cdb.bancodigitaljpa.model.Cliente;
 import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
 
 public class ClienteResponse {

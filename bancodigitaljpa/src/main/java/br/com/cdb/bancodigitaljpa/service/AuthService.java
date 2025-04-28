@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigitaljpa.dto.LoginDTO;
 import br.com.cdb.bancodigitaljpa.dto.RegistroUsuarioDTO;
-import br.com.cdb.bancodigitaljpa.entity.Usuario;
+import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.repository.UsuarioRepository;
@@ -34,7 +34,7 @@ public class AuthService {
     
     public LoginResponse registrar(RegistroUsuarioDTO dto) {
         // verificar se email está em uso
-    	Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(dto.getEmail());
+    	Optional<Usuario> usuarioExistente = usuarioRepository.buscarUsuarioPorEmail(dto.getEmail());
     	if(usuarioExistente.isPresent()) {
     		throw new ResourceAlreadyExistsException("E-mail já cadastrado");
     	}
@@ -45,10 +45,8 @@ public class AuthService {
     	novoUsuario.setSenha(passwordEncoder.encode(dto.getSenha()));
     	novoUsuario.setRole(dto.getRole());
     	
-    	Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
-    	
     	// gerar token
-    	String token = jwtService.gerarToken(usuarioSalvo);
+    	String token = jwtService.gerarToken(novoUsuario);
     	
         return new LoginResponse(token);
     }
@@ -59,8 +57,7 @@ public class AuthService {
     			new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha()));
     	
     	// buscar usuário
-    	Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
-    			.orElseThrow(()-> new ResourceNotFoundException("Usuário não encontrado"));
+    	Usuario usuario = usuarioRepository.buscarUsuarioPorEmail(dto.getEmail());
     	
     	// gerar token
     	String token = jwtService.gerarToken(usuario);

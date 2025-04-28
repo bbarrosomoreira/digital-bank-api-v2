@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigitaljpa.entity;
+package br.com.cdb.bancodigitaljpa.model;
 
 import java.beans.Transient;
 import java.math.BigDecimal;
@@ -14,8 +14,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
 @Entity
-@DiscriminatorValue("FRAUDE")
-public class SeguroFraude extends SeguroBase {
+@DiscriminatorValue("VIAGEM")
+public class SeguroViagem extends SeguroBase {
 	
 	@Enumerated(EnumType.STRING)
 	private Status statusSeguro;
@@ -23,20 +23,11 @@ public class SeguroFraude extends SeguroBase {
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dataAcionamento;
 	
-	private BigDecimal valorFraude;
-
-	//G&S
 	public Status getStatusSeguro() {
 		return statusSeguro;
 	}
 	public void setStatusSeguro(Status statusSeguro) {
 		this.statusSeguro = statusSeguro;
-	}
-	public BigDecimal getValorFraude() {
-		return valorFraude;
-	}
-	public void setValorFraude(BigDecimal valor) {
-		this.valorFraude = valor;
 	}
 	public LocalDate getDataAcionamento() {
 		return dataAcionamento;
@@ -46,45 +37,35 @@ public class SeguroFraude extends SeguroBase {
 	}
 	
 	//C
-	public SeguroFraude () {}
-	public SeguroFraude (CartaoCredito ccr) {
+	public SeguroViagem () {}
+	public SeguroViagem(CartaoCredito ccr) {
 		super(ccr);
 		this.statusSeguro = Status.ATIVADO;
-		this.setDescricaoCondicoes(TipoSeguro.FRAUDE.getDescricao());
-		this.setValorApolice(BigDecimal.valueOf(5000.00));
+		this.setDescricaoCondicoes(TipoSeguro.VIAGEM.getDescricao());
+		this.setValorApolice(BigDecimal.valueOf(10000.00));
 	}
 	
 	//M
 	@Override
 	@Transient
 	public TipoSeguro getTipoSeguro() {
-		return TipoSeguro.FRAUDE;
+		return TipoSeguro.VIAGEM;
 	}
 	public String getDescricaoTipoSeguro() {
-		return TipoSeguro.FRAUDE.getDescricao();
+		return TipoSeguro.VIAGEM.getDescricao();
 	}
 	@Override
 	public void setarStatusSeguro(Status statusNovo) {
 		this.setStatusSeguro(statusNovo);
 	}
-	
-	public BigDecimal getValorRessarcido() {
-		BigDecimal valor;
-		if(valorFraude.compareTo(getValorApolice())>0) {
-			valor = this.getValorApolice();
-		} else {
-			valor = valorFraude;
-		}
-		return valor;
-	}
-
 	@Override
 	public void acionarSeguro() {
-		this.getCartaoCredito().getConta().depositar(getValorRessarcido());
+		this.setarStatusSeguro(Status.ATIVADO);
 		this.setDataAcionamento(LocalDate.now());
 	}
 	public void aplicarPremio() {
 		this.getCartaoCredito().getConta().sacar(getPremioApolice());
 	}
+	
 
 }

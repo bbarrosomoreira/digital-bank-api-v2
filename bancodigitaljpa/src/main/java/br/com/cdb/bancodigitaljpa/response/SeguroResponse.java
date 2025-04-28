@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigitaljpa.entity.SeguroBase;
+import br.com.cdb.bancodigitaljpa.model.SeguroBase;
 import br.com.cdb.bancodigitaljpa.enums.Status;
 
 public class SeguroResponse {
