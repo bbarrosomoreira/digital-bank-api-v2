@@ -2,7 +2,31 @@
 
 🇧🇷 Versão em português abaixo | 🇺🇸 English version below
 
+## Project Updates 🚀
+
+The project is currently undergoing improvements to its architecture and technology stack.
+
+## Upcoming Changes
+
+1. **Removal of JPA + Hibernate**: To simplify database communication.
+2. **Migration to PostgreSQL**: For better integration, scalability, and performance.
+
+All updates are being developed in the `dev` branch.
+
 ---
+
+## Atualizações em Andamento 🚀
+
+O projeto está se modernizando com as seguintes mudanças:
+
+1. **Remoção do JPA + Hibernate**: Simplificar a comunicação com o banco de dados.
+2. **Troca do banco para PostgreSQL**: Melhor integração, escalabilidade e desempenho.
+
+Essas mudanças estão em desenvolvimento na branch `dev`.
+
+---
+
+## About Original Project | Sobre o Projeto Original
 
 ## 🇺🇸 Digital Bank Project
 
@@ -87,12 +111,12 @@ spring.profiles.active=prod
 
 This simulated API works with the following logic:
 
-| CPF Starts With | Response      |
-|------------------|----------------|
-| `0` to `5`       | `status: ATIVO` (Active) |
-| `6` or `7`       | `status: INATIVO` (Inactive) |
-| `8`              | Simulates an API error (throws exception) |
-| Other values     | Default handling |
+| CPF Starts With | Response                                  |
+|-----------------|-------------------------------------------|
+| `0` to `5`      | `status: ATIVO` (Active)                  |
+| `6` or `7`      | `status: INATIVO` (Inactive)              |
+| `8`             | Simulates an API error (throws exception) |
+| Other values    | Default handling                          |
 
 > ⚠️ This API is **not affiliated with the real Receita Federal**. It was created solely for **testing and demonstration purposes**.
 
@@ -180,7 +204,7 @@ API_KEY=j6k9BY4OO4oXOOhLiUbdjPzfsKKcxoIZ
 Esta `API_KEY` é utilizada para acessar uma **API externa de conversão de moedas**.  
 Em um projeto real, essa chave deveria ser mantida em sigilo e **nunca ser exposta publicamente**, por questões de segurança.
 No entanto, **para fins didáticos**, a chave foi incluída aqui para que qualquer pessoa consiga testar e explorar **todas as funcionalidades** do sistema sem restrições.
-Você também pode gerar sua própria chave diretamente no site da API e substituí-la no arquivo `.env`.
+Você também pode gerar a sua própria chave diretamente no site da API e substituí-la no arquivo `.env`.
 
 ### 🔁 Simulação da API da Receita Federal
 
@@ -203,12 +227,12 @@ spring.profiles.active=prod
 
 A resposta da API varia conforme o dígito inicial do CPF informado:
 
-| CPF começa com | Resposta       |
-|----------------|----------------|
-| `0` a `5`      | `status: ATIVO` |
-| `6` ou `7`     | `status: INATIVO` |
+| CPF começa com | Resposta                           |
+|----------------|------------------------------------|
+| `0` a `5`      | `status: ATIVO`                    |
+| `6` ou `7`     | `status: INATIVO`                  |
 | `8`            | Simula erro da API (lança exceção) |
-| Outros valores | Tratamento padrão |
+| Outros valores | Tratamento padrão                  |
 
 > ⚠️ Esta é uma **simulação** e **não realiza validações reais**. Não tem relação com a Receita Federal oficial.
 
