@@ -3,6 +3,8 @@ package br.com.cdb.bancodigitaljpa.repository;
 import br.com.cdb.bancodigitaljpa.config.ConexaoPGadmin;
 import br.com.cdb.bancodigitaljpa.enums.Role;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.cdb.bancodigitaljpa.model.Usuario;
@@ -12,10 +14,10 @@ import java.sql.*;
 @Repository
 public class UsuarioRepository {
 
-	private final ConexaoPGadmin conexaoPGadmin;
+	private final JdbcTemplate jdbcTemplate;
 
-	public UsuarioRepository(ConexaoPGadmin conexaoPGadmin) {
-		this.conexaoPGadmin = conexaoPGadmin;
+	public UsuarioRepository(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	// CREATE | Criar tabela
@@ -24,64 +26,63 @@ public class UsuarioRepository {
 				+ "id BIGSERIAL PRIMARY KEY, "
 				+ "email VARCHAR(100) NOT NULL UNIQUE, "
 				+ "senha VARCHAR(255) NOT NULL, "
-				+ "role VARCHAR(20) NOT NULL"
-				+ ");";
+				+ "role VARCHAR(20) NOT NULL);";
 
-		try (Connection conexao = conexaoPGadmin.getConnection();
-			 Statement stmt = conexao.createStatement()) {
-			stmt.execute(sql);
-			System.out.println("Tabela usuario criada com sucesso!");
-		} catch (SQLException e) {
-			throw new RuntimeException("Erro ao criar tabela usuário no banco de dados: " + e.getMessage(), e);
-		}
+		jdbcTemplate.execute(sql);
 	}
 
 	// READ | Listar usuários
 	public Usuario buscarUsuarioPorEmail(String email) {
 		String sql = "SELECT * FROM usuario WHERE email = ?";
 
-		try (Connection conexao = conexaoPGadmin.getConnection();
-			 PreparedStatement stmt = conexao.prepareStatement(sql)) {
-
-			stmt.setString(1, email);
-			ResultSet rs = stmt.executeQuery();
-
-			if (rs.next()) {
-				return new Usuario(
-						rs.getLong("id"),
-						rs.getString("email"),
-						rs.getString("senha"),
-						Role.fromString(rs.getString("role"))
-				);
-			} else {
-				throw new ResourceNotFoundException("Erro ao encontrar o usuário através do email.");
-			}
-
-		} catch (SQLException e) {
-			throw new RuntimeException("Erro ao buscar usuário no banco de dados: " + e.getMessage(), e);
-		}
-
+		return jdbcTemplate.query(
+				sql,
+				ps -> ps.setString(1, email), // PreparedStatementSetter
+				rs -> {
+					if (rs.next()) {
+						return new Usuario(
+								rs.getLong("id"),
+								rs.getString("email"),
+								rs.getString("senha"),
+								Role.fromString(rs.getString("role"))
+						);
+					} else {
+						throw new ResourceNotFoundException("Usuário não encontrado com email: " + email);
+					}
+				}
+		);
 	}
 
 	// UPDATE | Inserir usuários
-	public void inserirUsuario(String email, String senha, Role role) {
-		String sql = "INSERT INTO usuario (email, senha, role) VALUES (?, ?, ?)";
+	public Usuario inserirUsuario(String email, String senha, Role role) {
+		String sql = "INSERT INTO usuario (email, senha, role) VALUES (?, ?, ?) RETURNING id";
 
-		try (Connection conexao = conexaoPGadmin.getConnection();
-			 PreparedStatement stmt = conexao.prepareStatement(sql)) {
-
-			stmt.setString(1, email);
-			stmt.setString(2, senha);
-			stmt.setString(3, role.name());
-
-			stmt.executeUpdate();
-			System.out.println("Usuario inserido com sucesso!");
-
-		} catch (SQLException e) {
-			throw new RuntimeException("Erro ao inserir usuário no banco de dados: " + e.getMessage(), e);
-		}
+		return jdbcTemplate.query(
+				sql,
+				ps -> {
+					ps.setString(1, email);
+					ps.setString(2, senha);
+					ps.setString(3, role.name());
+				},
+				rs -> {
+					if (rs.next()) {
+						long id = rs.getLong("id");
+						return new Usuario(id, email, senha, role);
+					} else {
+						throw new RuntimeException("Erro ao inserir usuário e recuperar o ID.");
+					}
+				}
+		);
 	}
 
-	// DELETE | Exclui usuários
+	// DELETE | Excluir usuários
+	public void deletarUsuarioPorId(Long id) {
+		String sql = "DELETE FROM usuario WHERE id = ?";
+		int linhasAfetadas = jdbcTemplate.update(sql, id);
+
+		if (linhasAfetadas == 0) {
+			throw new ResourceNotFoundException("Usuário com ID " + id + " não encontrado para exclusão.");
+		}
+	}
 
 }

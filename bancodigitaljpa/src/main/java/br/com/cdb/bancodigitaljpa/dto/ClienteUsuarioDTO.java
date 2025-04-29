@@ -49,14 +49,11 @@ public class ClienteUsuarioDTO {
 	//USUARIO
 	@Email
 	@NotBlank
-	@Column(unique =  true, nullable = false)
 	private String email;
 	
 	@NotBlank
 	private String senha;
 	
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
 	private Role role;
 	
 	
@@ -115,14 +112,11 @@ public class ClienteUsuarioDTO {
 	public void setRole(Role role) {
 		this.role = role;
 	}
+
 	//metodo
 	public Cliente transformaParaClienteObjeto() {
 		EnderecoCliente endereco = new EnderecoCliente();
 		return new Cliente(nome, cpf, dataNascimento, endereco);
-	}
-	
-	public Usuario transformaParaUsuarioObjeto() {
-		return new Usuario(email, senha, role);
 	}
 	
 	public ClienteUsuarioDTO() {}

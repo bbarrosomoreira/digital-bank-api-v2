@@ -34,18 +34,18 @@ public class AuthService {
     
     public LoginResponse registrar(RegistroUsuarioDTO dto) {
         // verificar se email está em uso
-    	Optional<Usuario> usuarioExistente = usuarioRepository.buscarUsuarioPorEmail(dto.getEmail());
-    	if(usuarioExistente.isPresent()) {
-    		throw new ResourceAlreadyExistsException("E-mail já cadastrado");
-    	}
-    	
-    	// criar e salvar novo usuário
-    	Usuario novoUsuario = new Usuario();
-    	novoUsuario.setEmail(dto.getEmail());
-    	novoUsuario.setSenha(passwordEncoder.encode(dto.getSenha()));
-    	novoUsuario.setRole(dto.getRole());
-    	
-    	// gerar token
+		try {
+			usuarioRepository.buscarUsuarioPorEmail(dto.getEmail());
+			throw new ResourceAlreadyExistsException("E-mail já cadastrado");
+		} catch (ResourceNotFoundException e) {
+			//usuário não existe - segue com o registro
+		}
+
+		// criar novo usuário e salvar no banco
+		String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
+		Usuario novoUsuario = usuarioRepository.inserirUsuario(dto.getEmail(), senhaCriptografada, dto.getRole());
+
+		// gerar token
     	String token = jwtService.gerarToken(novoUsuario);
     	
         return new LoginResponse(token);

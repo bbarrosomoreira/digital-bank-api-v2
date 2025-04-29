@@ -81,9 +81,8 @@ public class AdminService {
 	public ClienteResponse cadastrarCliente(ClienteUsuarioDTO dto) {
 		CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
 		
-		Usuario usuario = dto.transformaParaUsuarioObjeto();
-		usuarioRepository.save(usuario);
-		
+		Usuario usuario = usuarioRepository.inserirUsuario(dto.getEmail(), dto.getSenha(), dto.getRole());
+
 		Cliente cliente = dto.transformaParaClienteObjeto();
 		cliente.getEndereco().setCep(dto.getCep());
 		cliente.getEndereco().setBairro(cepInfo.getNeighborhood());
