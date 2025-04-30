@@ -11,8 +11,8 @@
 	<groupId>br.com.cdb</groupId>
 	<artifactId>bancodigitaljpa</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>bancodigitaljpa</name>
-	<description>Demo project for Spring Boot JPA</description>
+	<name>bancodigital</name>
+	<description>Projeto Spring Boot com JDBC Template para banco digital</description>
 	<url/>
 	<licenses>
 		<license/>

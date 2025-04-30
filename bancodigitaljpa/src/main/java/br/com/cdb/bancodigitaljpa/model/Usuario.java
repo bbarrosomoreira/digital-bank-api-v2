@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigitaljpa.model;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,11 +13,13 @@ import br.com.cdb.bancodigitaljpa.enums.Role;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @ToString
 public class Usuario implements UserDetails {
 	
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
@@ -36,26 +39,5 @@ public class Usuario implements UserDetails {
 	public String getUsername() {
 		return this.email;
 	}
-	@Override
-	public boolean isAccountNonExpired() {
-	    return true;
-	}
-	@Override
-	public boolean isAccountNonLocked() {
-	    return true;
-	}
-	@Override
-	public boolean isCredentialsNonExpired() {
-	    return true;
-	}
-	@Override
-	public boolean isEnabled() {
-	    return true;
-	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	public Usuario() {}
 }

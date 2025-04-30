@@ -108,7 +108,7 @@ public class SeguroService {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
 		securityService.validateAccess(usuarioLogado, seguro.getCartaoCredito().getConta().getCliente());
-		seguro.setarStatusSeguro(Status.DESATIVADO);
+		seguro.setarStatusSeguro(Status.INATIVO);
 		seguroRepository.save(seguro);
 		return CancelarSeguroResponse.toCancelarSeguroResponse(seguro);
 	}
@@ -164,7 +164,7 @@ public class SeguroService {
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
 		securityService.validateAccess(usuarioLogado, seguro.getCartaoCredito().getConta().getCliente());
 		
-		if(seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
+		if(seguro.getStatusSeguro().equals(Status.INATIVO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
 		if(seguro instanceof SeguroFraude) {
 			((SeguroFraude) seguro).setValorFraude(valor);
 		}
@@ -180,7 +180,7 @@ public class SeguroService {
 		SeguroBase seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
 		
-		if (seguro.getStatusSeguro().equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
+		if (seguro.getStatusSeguro().equals(Status.INATIVO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
 		if (seguro.getPremioApolice().compareTo(seguro.getCartaoCredito().getConta().getSaldo())>0) throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
 		
 		seguro.aplicarPremio();

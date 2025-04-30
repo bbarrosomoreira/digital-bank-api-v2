@@ -4,28 +4,21 @@ import java.beans.Transient;
 import java.math.BigDecimal;
 
 import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import lombok.*;
 
-@Entity
-@DiscriminatorValue("CREDITO")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class CartaoCredito extends CartaoBase {
-	
-	@Column(name = "limite_mensal_de_credito", precision = 19, scale = 2)
+
 	private BigDecimal limiteCredito;
-	
-	@Column(precision = 19, scale = 2)
 	private BigDecimal limiteAtual;
-	
-	@Column(precision = 19, scale = 2)
 	private BigDecimal totalFatura;
-	
-	@Column(precision = 19, scale = 2)
 	private BigDecimal totalFaturaPaga;
 	
-	//C
-	public CartaoCredito() {}
 	public CartaoCredito(ContaBase conta, String senha, BigDecimal limiteCredito) {
 		super(conta, senha);
 		this.limiteCredito = limiteCredito;
@@ -33,33 +26,6 @@ public class CartaoCredito extends CartaoBase {
 		this.totalFatura = BigDecimal.ZERO;
 	}
 	
-	//G&S
-	// virá dos parâmetros
-	public BigDecimal getLimiteCredito() {
-		return limiteCredito;
-	}
-	public void setLimiteCredito(BigDecimal limiteCredito) {
-		this.limiteCredito = limiteCredito;
-	}
-	public BigDecimal getLimiteAtual() {
-		return limiteAtual;
-	}
-	public void setLimiteAtual(BigDecimal limiteAtual) {
-		this.limiteAtual = limiteAtual;
-	}
-	public BigDecimal getTotalFatura() {
-		return totalFatura;
-	}
-	public void setTotalFatura(BigDecimal totalFatura) {
-		this.totalFatura = totalFatura;
-	}
-	public BigDecimal getTotalFaturaPaga() {
-		return totalFaturaPaga;
-	}
-	public void setTotalFaturaPaga(BigDecimal totalFaturaPaga) {
-		this.totalFaturaPaga = totalFaturaPaga;
-	}
-	//M
 	@Override
 	@Transient
 	public TipoCartao getTipoCartao() {

@@ -8,44 +8,27 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import lombok.*;
 
-@Entity
-@DiscriminatorValue("VIAGEM")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class SeguroViagem extends SeguroBase {
 	
-	@Enumerated(EnumType.STRING)
 	private Status statusSeguro;
-	
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dataAcionamento;
 	
-	public Status getStatusSeguro() {
-		return statusSeguro;
-	}
-	public void setStatusSeguro(Status statusSeguro) {
-		this.statusSeguro = statusSeguro;
-	}
-	public LocalDate getDataAcionamento() {
-		return dataAcionamento;
-	}
-	public void setDataAcionamento(LocalDate dataAcionamento) {
-		this.dataAcionamento = dataAcionamento;
-	}
-	
-	//C
-	public SeguroViagem () {}
 	public SeguroViagem(CartaoCredito ccr) {
 		super(ccr);
-		this.statusSeguro = Status.ATIVADO;
+		this.statusSeguro = Status.ATIVO;
 		this.setDescricaoCondicoes(TipoSeguro.VIAGEM.getDescricao());
 		this.setValorApolice(BigDecimal.valueOf(10000.00));
 	}
 	
-	//M
 	@Override
 	@Transient
 	public TipoSeguro getTipoSeguro() {
@@ -60,7 +43,7 @@ public class SeguroViagem extends SeguroBase {
 	}
 	@Override
 	public void acionarSeguro() {
-		this.setarStatusSeguro(Status.ATIVADO);
+		this.setarStatusSeguro(Status.ATIVO);
 		this.setDataAcionamento(LocalDate.now());
 	}
 	public void aplicarPremio() {

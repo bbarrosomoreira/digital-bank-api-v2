@@ -1,7 +1,5 @@
 package br.com.cdb.bancodigitaljpa.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +41,7 @@ public class AuthService {
 
 		// criar novo usuário e salvar no banco
 		String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
-		Usuario novoUsuario = usuarioRepository.inserirUsuario(dto.getEmail(), senhaCriptografada, dto.getRole());
+		Usuario novoUsuario = usuarioRepository.criarUsuario(dto.getEmail(), senhaCriptografada, dto.getRole());
 
 		// gerar token
     	String token = jwtService.gerarToken(novoUsuario);

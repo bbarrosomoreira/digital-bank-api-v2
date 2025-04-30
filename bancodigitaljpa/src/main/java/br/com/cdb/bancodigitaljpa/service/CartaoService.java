@@ -193,7 +193,7 @@ public class CartaoService {
 		CartaoBase cartao = verificarCartaoExistente(id_cartao);
 		securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 		
-		if (statusNovo.equals(Status.DESATIVADO)) {
+		if (statusNovo.equals(Status.INATIVO)) {
 			verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
 		}
 		
@@ -295,7 +295,7 @@ public class CartaoService {
 		return cartao;
 	}
 	public void verificarCartaoAtivo(Status status) {
-		if (status.equals(Status.DESATIVADO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
+		if (status.equals(Status.INATIVO)) throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
 	}
 	public void verificarSenhaCorreta(String senhaDigitada, String senhaCartao) {
 		if (!senhaDigitada.equals(senhaCartao)) throw new ValidationException("A senha informada está incorreta!");

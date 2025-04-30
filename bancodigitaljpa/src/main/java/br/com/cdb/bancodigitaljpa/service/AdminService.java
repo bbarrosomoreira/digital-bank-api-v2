@@ -81,7 +81,7 @@ public class AdminService {
 	public ClienteResponse cadastrarCliente(ClienteUsuarioDTO dto) {
 		CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
 		
-		Usuario usuario = usuarioRepository.inserirUsuario(dto.getEmail(), dto.getSenha(), dto.getRole());
+		Usuario usuario = usuarioRepository.criarUsuario(dto.getEmail(), dto.getSenha(), dto.getRole());
 
 		Cliente cliente = dto.transformaParaClienteObjeto();
 		cliente.getEndereco().setCep(dto.getCep());
@@ -191,7 +191,8 @@ public class AdminService {
 	}
 	
 	private ContaCorrente criarContaCorrente(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
-		ContaCorrente cc = new ContaCorrente(cliente);
+		ContaCorrente cc = new ContaCorrente();
+		cc.setCliente(cliente);
 		cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
 		cc.setMoeda(moeda);
 		cc.setSaldo(valorDeposito);
@@ -199,7 +200,8 @@ public class AdminService {
 	}
 	
 	private ContaPoupanca criarContaPoupanca(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
-		ContaPoupanca cp = new ContaPoupanca(cliente);
+		ContaPoupanca cp = new ContaPoupanca();
+		cp.setCliente(cliente);
 		cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
 		cp.setMoeda(moeda);
 		cp.setSaldo(valorDeposito);

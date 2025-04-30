@@ -8,53 +8,28 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigitaljpa.enums.Status;
 import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import lombok.*;
 
-@Entity
-@DiscriminatorValue("FRAUDE")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class SeguroFraude extends SeguroBase {
 	
-	@Enumerated(EnumType.STRING)
 	private Status statusSeguro;
-	
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dataAcionamento;
-	
 	private BigDecimal valorFraude;
 
-	//G&S
-	public Status getStatusSeguro() {
-		return statusSeguro;
-	}
-	public void setStatusSeguro(Status statusSeguro) {
-		this.statusSeguro = statusSeguro;
-	}
-	public BigDecimal getValorFraude() {
-		return valorFraude;
-	}
-	public void setValorFraude(BigDecimal valor) {
-		this.valorFraude = valor;
-	}
-	public LocalDate getDataAcionamento() {
-		return dataAcionamento;
-	}
-	public void setDataAcionamento(LocalDate dataAcionamento) {
-		this.dataAcionamento = dataAcionamento;
-	}
-	
-	//C
-	public SeguroFraude () {}
 	public SeguroFraude (CartaoCredito ccr) {
 		super(ccr);
-		this.statusSeguro = Status.ATIVADO;
+		this.statusSeguro = Status.ATIVO;
 		this.setDescricaoCondicoes(TipoSeguro.FRAUDE.getDescricao());
 		this.setValorApolice(BigDecimal.valueOf(5000.00));
 	}
 	
-	//M
 	@Override
 	@Transient
 	public TipoSeguro getTipoSeguro() {

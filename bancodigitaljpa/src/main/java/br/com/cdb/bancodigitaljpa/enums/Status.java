@@ -3,8 +3,8 @@ package br.com.cdb.bancodigitaljpa.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum Status {
-	ATIVADO (1),
-	DESATIVADO (2);
+	ATIVO(1),
+	INATIVO(2);
 	
 	private final int codigo;
 	

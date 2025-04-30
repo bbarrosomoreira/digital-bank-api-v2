@@ -91,7 +91,8 @@ public class ContaService {
 	}
 	
 	private ContaCorrente criarContaCorrente(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
-		ContaCorrente cc = new ContaCorrente(cliente);
+		ContaCorrente cc = new ContaCorrente();
+		cc.setCliente(cliente);
 		cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
 		cc.setMoeda(moeda);
 		cc.setSaldo(valorDeposito);
@@ -99,7 +100,8 @@ public class ContaService {
 	}
 	
 	private ContaPoupanca criarContaPoupanca(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
-		ContaPoupanca cp = new ContaPoupanca(cliente);
+		ContaPoupanca cp = new ContaPoupanca();
+		cp.setCliente(cliente);
 		cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
 		cp.setMoeda(moeda);
 		cp.setSaldo(valorDeposito);
