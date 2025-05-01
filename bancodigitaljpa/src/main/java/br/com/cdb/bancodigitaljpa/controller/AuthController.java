@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.LoginDTO;
 import br.com.cdb.bancodigitaljpa.dto.RegistroUsuarioDTO;
-import br.com.cdb.bancodigitaljpa.response.LoginResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.LoginResponse;
 import br.com.cdb.bancodigitaljpa.service.AuthService;
 import jakarta.validation.Valid;
 

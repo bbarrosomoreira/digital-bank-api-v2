@@ -3,7 +3,7 @@ package br.com.cdb.bancodigitaljpa.model;
 import java.beans.Transient;
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
+import br.com.cdb.bancodigitaljpa.model.enums.TipoCartao;
 import lombok.*;
 
 @Getter

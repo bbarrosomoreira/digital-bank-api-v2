@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigitaljpa.dto;
 
-import br.com.cdb.bancodigitaljpa.enums.TipoSeguro;
+import br.com.cdb.bancodigitaljpa.model.enums.TipoSeguro;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;

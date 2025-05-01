@@ -3,7 +3,7 @@
 import java.beans.Transient;
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigitaljpa.enums.TipoConta;
+import br.com.cdb.bancodigitaljpa.model.enums.TipoConta;
 import lombok.*;
 
  @Getter

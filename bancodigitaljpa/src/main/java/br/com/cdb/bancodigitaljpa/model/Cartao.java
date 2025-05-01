@@ -2,7 +2,7 @@ package br.com.cdb.bancodigitaljpa.model;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigitaljpa.enums.Status;
+import br.com.cdb.bancodigitaljpa.model.enums.Status;
 
 public interface Cartao {
 	String getDescricaoTipoCartao();

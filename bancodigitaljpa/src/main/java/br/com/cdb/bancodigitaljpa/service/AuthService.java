@@ -11,8 +11,8 @@ import br.com.cdb.bancodigitaljpa.dto.RegistroUsuarioDTO;
 import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigitaljpa.repository.UsuarioRepository;
-import br.com.cdb.bancodigitaljpa.response.LoginResponse;
+import br.com.cdb.bancodigitaljpa.dao.UsuarioRepository;
+import br.com.cdb.bancodigitaljpa.dto.response.LoginResponse;
 import br.com.cdb.bancodigitaljpa.security.JwtService;
 
 @Service

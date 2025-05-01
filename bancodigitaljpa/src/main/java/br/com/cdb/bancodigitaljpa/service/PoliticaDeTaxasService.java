@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigitaljpa.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
+import br.com.cdb.bancodigitaljpa.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
+import br.com.cdb.bancodigitaljpa.dao.PoliticaDeTaxasRepository;
 
 @Service
 public class PoliticaDeTaxasService {

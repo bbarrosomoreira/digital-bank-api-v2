@@ -3,7 +3,7 @@ package br.com.cdb.bancodigitaljpa.service;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigitaljpa.response.CpfValidationResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.CpfValidationResponse;
 
 @Service
 @Profile("dev")

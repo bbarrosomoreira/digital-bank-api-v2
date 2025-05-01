@@ -8,8 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigitaljpa.model.Cliente;
 import br.com.cdb.bancodigitaljpa.model.EnderecoCliente;
-import br.com.cdb.bancodigitaljpa.model.Usuario;
-import br.com.cdb.bancodigitaljpa.enums.Role;
+import br.com.cdb.bancodigitaljpa.model.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

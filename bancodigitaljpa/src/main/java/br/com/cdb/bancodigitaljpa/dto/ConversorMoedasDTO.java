@@ -2,7 +2,7 @@ package br.com.cdb.bancodigitaljpa.dto;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigitaljpa.enums.Moeda;
+import br.com.cdb.bancodigitaljpa.model.enums.Moeda;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Digits;

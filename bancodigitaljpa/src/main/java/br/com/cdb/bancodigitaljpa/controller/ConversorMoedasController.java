@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.ConversorMoedasDTO;
-import br.com.cdb.bancodigitaljpa.response.ApiConversorMoedasResponse;
-import br.com.cdb.bancodigitaljpa.response.ConversorMoedasResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.ApiConversorMoedasResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.ConversorMoedasResponse;
 import br.com.cdb.bancodigitaljpa.service.ConversorMoedasService;
 
 @RestController

@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ApiException;
-import br.com.cdb.bancodigitaljpa.response.ErrorResponse;
-import br.com.cdb.bancodigitaljpa.response.ValidationErrorResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.ErrorResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.ValidationErrorResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

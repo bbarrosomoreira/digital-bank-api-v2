@@ -16,10 +16,10 @@ import br.com.cdb.bancodigitaljpa.dto.ClienteUsuarioDTO;
 import br.com.cdb.bancodigitaljpa.dto.ContratarSeguroDTO;
 import br.com.cdb.bancodigitaljpa.dto.EmitirCartaoDTO;
 import br.com.cdb.bancodigitaljpa.model.Usuario;
-import br.com.cdb.bancodigitaljpa.response.CartaoResponse;
-import br.com.cdb.bancodigitaljpa.response.ClienteResponse;
-import br.com.cdb.bancodigitaljpa.response.ContaResponse;
-import br.com.cdb.bancodigitaljpa.response.SeguroResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.CartaoResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.ClienteResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.ContaResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.SeguroResponse;
 import br.com.cdb.bancodigitaljpa.service.AdminService;
 import jakarta.validation.Valid;
 

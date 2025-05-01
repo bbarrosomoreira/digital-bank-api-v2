@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
 import lombok.*;
 
-import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
+import br.com.cdb.bancodigitaljpa.model.enums.CategoriaCliente;
 
 
 @Getter

@@ -4,7 +4,7 @@ import java.beans.Transient;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import br.com.cdb.bancodigitaljpa.enums.TipoConta;
+import br.com.cdb.bancodigitaljpa.model.enums.TipoConta;
 import lombok.*;
 
 @Getter

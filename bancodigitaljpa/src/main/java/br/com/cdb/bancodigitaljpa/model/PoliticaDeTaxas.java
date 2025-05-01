@@ -2,7 +2,7 @@ package br.com.cdb.bancodigitaljpa.model;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
+import br.com.cdb.bancodigitaljpa.model.enums.CategoriaCliente;
 import lombok.*;
 
 @Getter

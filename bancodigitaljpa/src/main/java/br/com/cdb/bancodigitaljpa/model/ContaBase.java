@@ -5,8 +5,8 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigitaljpa.enums.Moeda;
-import br.com.cdb.bancodigitaljpa.enums.TipoConta;
+import br.com.cdb.bancodigitaljpa.model.enums.Moeda;
+import br.com.cdb.bancodigitaljpa.model.enums.TipoConta;
 import lombok.*;
 
 @Getter

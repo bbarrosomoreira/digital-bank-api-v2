@@ -13,8 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import br.com.cdb.bancodigitaljpa.enums.Moeda;
-import br.com.cdb.bancodigitaljpa.response.ApiConversorMoedasResponse;
+import br.com.cdb.bancodigitaljpa.model.enums.Moeda;
+import br.com.cdb.bancodigitaljpa.dto.response.ApiConversorMoedasResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 
 @Service

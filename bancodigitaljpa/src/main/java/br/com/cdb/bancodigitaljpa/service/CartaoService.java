@@ -18,24 +18,24 @@ import br.com.cdb.bancodigitaljpa.model.Cliente;
 import br.com.cdb.bancodigitaljpa.model.ContaBase;
 import br.com.cdb.bancodigitaljpa.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigitaljpa.model.Usuario;
-import br.com.cdb.bancodigitaljpa.enums.CategoriaCliente;
-import br.com.cdb.bancodigitaljpa.enums.Status;
-import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
+import br.com.cdb.bancodigitaljpa.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigitaljpa.model.enums.Status;
+import br.com.cdb.bancodigitaljpa.model.enums.TipoCartao;
 import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigitaljpa.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigitaljpa.repository.CartaoRepository;
-import br.com.cdb.bancodigitaljpa.repository.ClienteRepository;
-import br.com.cdb.bancodigitaljpa.repository.ContaRepository;
-import br.com.cdb.bancodigitaljpa.repository.PoliticaDeTaxasRepository;
-import br.com.cdb.bancodigitaljpa.repository.SeguroRepository;
-import br.com.cdb.bancodigitaljpa.response.CartaoResponse;
-import br.com.cdb.bancodigitaljpa.response.FaturaResponse;
-import br.com.cdb.bancodigitaljpa.response.LimiteResponse;
-import br.com.cdb.bancodigitaljpa.response.PagamentoResponse;
-import br.com.cdb.bancodigitaljpa.response.RessetarLimiteDiarioResponse;
-import br.com.cdb.bancodigitaljpa.response.StatusCartaoResponse;
+import br.com.cdb.bancodigitaljpa.dao.CartaoRepository;
+import br.com.cdb.bancodigitaljpa.dao.ClienteRepository;
+import br.com.cdb.bancodigitaljpa.dao.ContaRepository;
+import br.com.cdb.bancodigitaljpa.dao.PoliticaDeTaxasRepository;
+import br.com.cdb.bancodigitaljpa.dao.SeguroRepository;
+import br.com.cdb.bancodigitaljpa.dto.response.CartaoResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.FaturaResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.LimiteResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.PagamentoResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.RessetarLimiteDiarioResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.StatusCartaoResponse;
 
 @Service
 public class CartaoService {

@@ -7,8 +7,8 @@ import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigitaljpa.enums.Status;
-import br.com.cdb.bancodigitaljpa.enums.TipoCartao;
+import br.com.cdb.bancodigitaljpa.model.enums.Status;
+import br.com.cdb.bancodigitaljpa.model.enums.TipoCartao;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 

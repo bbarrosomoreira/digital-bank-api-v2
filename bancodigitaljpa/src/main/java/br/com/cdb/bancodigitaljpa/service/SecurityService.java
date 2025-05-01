@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigitaljpa.model.Cliente;
 import br.com.cdb.bancodigitaljpa.model.Usuario;
-import br.com.cdb.bancodigitaljpa.enums.Role;
+import br.com.cdb.bancodigitaljpa.model.enums.Role;
 
 @Service
 public class SecurityService {

@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.cdb.bancodigitaljpa.response.CpfValidationResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.CpfValidationResponse;
 
 @Service 
 @Profile("prod") // roda apenas com a API externa de simulação da Receita Federal

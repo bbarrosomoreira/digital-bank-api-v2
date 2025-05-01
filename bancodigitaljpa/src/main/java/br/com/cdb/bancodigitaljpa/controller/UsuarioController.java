@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.model.Usuario;
-import br.com.cdb.bancodigitaljpa.response.UsuarioResponse;
+import br.com.cdb.bancodigitaljpa.dto.response.UsuarioResponse;
 
 @RestController
 @RequestMapping("/usuario")

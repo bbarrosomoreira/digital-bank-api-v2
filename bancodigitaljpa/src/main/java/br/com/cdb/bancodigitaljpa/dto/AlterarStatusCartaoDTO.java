@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigitaljpa.dto;
 
-import br.com.cdb.bancodigitaljpa.enums.Status;
+import br.com.cdb.bancodigitaljpa.model.enums.Status;
 
 public class AlterarStatusCartaoDTO {
 	

@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import br.com.cdb.bancodigitaljpa.enums.Role;
+import br.com.cdb.bancodigitaljpa.model.enums.Role;
 
 @Getter
 @Setter
