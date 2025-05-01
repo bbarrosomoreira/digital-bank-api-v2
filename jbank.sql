@@ -1,4 +1,16 @@
 -- ========================
+-- Drop das tabelas
+-- ========================
+
+DROP TABLE IF EXISTS seguro CASCADE;
+DROP TABLE IF EXISTS cartao CASCADE;
+DROP TABLE IF EXISTS conta CASCADE;
+DROP TABLE IF EXISTS endereco_cliente CASCADE;
+DROP TABLE IF EXISTS cliente CASCADE;
+DROP TABLE IF EXISTS politica_de_taxas CASCADE;
+DROP TABLE IF EXISTS usuario CASCADE;
+
+-- ========================
 -- Tabela: usuario
 -- ========================
 CREATE TABLE IF NOT EXISTS usuario (
