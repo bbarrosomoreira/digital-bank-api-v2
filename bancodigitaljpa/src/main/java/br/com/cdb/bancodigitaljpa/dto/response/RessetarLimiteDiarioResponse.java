@@ -2,17 +2,16 @@ package br.com.cdb.bancodigitaljpa.dto.response;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigitaljpa.model.CartaoBase;
-import br.com.cdb.bancodigitaljpa.model.CartaoDebito;
+import br.com.cdb.bancodigitaljpa.model.Cartao;
 
 public record RessetarLimiteDiarioResponse(
 		String numCartao,
 		BigDecimal limiteAtual
 		){
-	public static RessetarLimiteDiarioResponse toRessetarLimiteDiarioResponse (CartaoBase cartao) {
+	public static RessetarLimiteDiarioResponse toRessetarLimiteDiarioResponse (Cartao cartao) {
 		return new RessetarLimiteDiarioResponse(
 				cartao.getNumeroCartao(),
-				((CartaoDebito) cartao).getLimiteAtual());
+				cartao.getLimiteAtual());
 	}
 
 }

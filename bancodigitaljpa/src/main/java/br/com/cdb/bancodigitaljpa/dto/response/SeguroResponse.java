@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigitaljpa.model.SeguroBase;
+import br.com.cdb.bancodigitaljpa.model.Seguro;
 import br.com.cdb.bancodigitaljpa.model.enums.Status;
 
 public class SeguroResponse {
@@ -63,7 +63,7 @@ public class SeguroResponse {
 		return statusSeguro;
 	}
 
-	public static SeguroResponse toSeguroResponse (SeguroBase seguro) {
+	public static SeguroResponse toSeguroResponse (Seguro seguro) {
 		return new SeguroResponse (
 				seguro.getTipoSeguro().getNome(),
 				seguro.getNumApolice(),

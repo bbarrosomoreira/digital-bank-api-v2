@@ -16,18 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brasilapi.api.CEP2;
 import br.com.cdb.bancodigitaljpa.dto.ClienteDTO;
-import br.com.cdb.bancodigitaljpa.model.CartaoBase;
-import br.com.cdb.bancodigitaljpa.model.CartaoCredito;
-import br.com.cdb.bancodigitaljpa.model.CartaoDebito;
+import br.com.cdb.bancodigitaljpa.model.Cartao;
 import br.com.cdb.bancodigitaljpa.model.Cliente;
-import br.com.cdb.bancodigitaljpa.model.ContaBase;
-import br.com.cdb.bancodigitaljpa.model.ContaCorrente;
-import br.com.cdb.bancodigitaljpa.model.ContaPoupanca;
+import br.com.cdb.bancodigitaljpa.model.Conta;
 import br.com.cdb.bancodigitaljpa.model.EnderecoCliente;
 import br.com.cdb.bancodigitaljpa.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigitaljpa.model.SeguroBase;
-import br.com.cdb.bancodigitaljpa.model.SeguroFraude;
-import br.com.cdb.bancodigitaljpa.model.SeguroViagem;
+import br.com.cdb.bancodigitaljpa.model.Seguro;
 import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.exceptions.ErrorMessages;
@@ -227,52 +221,65 @@ public class ClienteService {
 			throw new ValidationException("Cliente deve ser maior de 18 anos para se cadastrar.");
 	}
 	public void atualizarTaxasDasContas(Long id_cliente, PoliticaDeTaxas parametros) {
-		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
+		List<Conta> contas = contaRepository.findByClienteId(id_cliente);
 
 		if (contas.isEmpty()) {
 			log.info("Cliente ID {} não possui contas.", id_cliente);
 			return;
 		} else {
 			contas.forEach(conta -> {
-				if (conta instanceof ContaCorrente cc) {
-					cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
-				} else if (conta instanceof ContaPoupanca cp) {
-					cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
+				switch (conta.getTipoConta()) {
+					case CORRENTE -> {
+						conta.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
+					}
+					case POUPANCA -> {
+						conta.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
+					}
+					case INTERNACIONAL -> {
+						conta.setTarifaManutencao(parametros.getTarifaManutencaoContaInternacional());
+					}
 				}
 			});
 			contaRepository.saveAll(contas);		
 		}
 	}
 	public void atualizarTaxasDosCartoes(Long id_cliente, PoliticaDeTaxas parametros) {
-		List<CartaoBase> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
+		List<Cartao> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
 
 		if (cartoes.isEmpty()) {
 			log.info("Cliente Id {} não possui cartões.", id_cliente);
 			return;
 		} else {
 			cartoes.forEach(cartao -> {
-				if (cartao instanceof CartaoCredito ccr) {
-					ccr.setLimiteCredito(parametros.getLimiteCartaoCredito());
-				} else if (cartao instanceof CartaoDebito cdb) {
-					cdb.setLimiteDiario(parametros.getLimiteDiarioDebito());
+				switch (cartao.getTipoCartao()){
+					case CREDITO -> {
+						cartao.setLimite(parametros.getLimiteCartaoCredito());
+					}
+					case DEBITO -> {
+						cartao.setLimite(parametros.getLimiteDiarioDebito());
+					}
 				}
 			});
 			cartaoRepository.saveAll(cartoes);
 		}
 	}
 	public void atualizarTaxasDosSeguros(Long id_cliente, PoliticaDeTaxas parametros) {
-		List<SeguroBase> seguros = seguroRepository.findByClienteId(id_cliente);
+		List<Seguro> seguros = seguroRepository.findByClienteId(id_cliente);
 
 		if (seguros.isEmpty()) {
 			log.info("Cliente Id {} não possui seguros.", id_cliente);
 			return;
 		} else {
 			seguros.forEach(seguro -> {
-				if (seguro instanceof SeguroFraude sf) {
-					sf.setPremioApolice(parametros.getTarifaSeguroFraude());
-				} else if (seguro instanceof SeguroViagem sv) {
-					sv.setPremioApolice(parametros.getTarifaSeguroViagem());
+				switch (seguro.getTipoSeguro()){
+					case FRAUDE -> {
+						seguro.setPremioApolice(parametros.getTarifaSeguroFraude());
+					}
+					case VIAGEM -> {
+						seguro.setPremioApolice(parametros.getTarifaSeguroViagem());
+					}
 				}
+
 			});		
 			seguroRepository.saveAll(seguros);	
 		}

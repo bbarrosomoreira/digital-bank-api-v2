@@ -20,9 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigitaljpa.dto.AcionarSeguroFraudeDTO;
 import br.com.cdb.bancodigitaljpa.dto.ContratarSeguroDTO;
-import br.com.cdb.bancodigitaljpa.model.SeguroBase;
-import br.com.cdb.bancodigitaljpa.model.SeguroFraude;
-import br.com.cdb.bancodigitaljpa.model.SeguroViagem;
+import br.com.cdb.bancodigitaljpa.model.Seguro;
 import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.model.enums.TipoSeguro;
 import br.com.cdb.bancodigitaljpa.dto.response.AcionarSeguroFraudeResponse;
@@ -145,8 +143,8 @@ public class SeguroController {
 			@Valid @RequestBody AcionarSeguroFraudeDTO dto,
 			Authentication authentication) {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		SeguroBase seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, dto.getValorFraude());
-		return ResponseEntity.ok(AcionarSeguroFraudeResponse.toSeguroFraudeResponse((SeguroFraude) seguro));
+		Seguro seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, dto.getValorFraude());
+		return ResponseEntity.ok(AcionarSeguroFraudeResponse.toSeguroFraudeResponse(seguro);
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
@@ -155,8 +153,8 @@ public class SeguroController {
 			@PathVariable Long id_seguro,
 			Authentication authentication) {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		SeguroBase seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, BigDecimal.ZERO);
-		return ResponseEntity.ok(AcionarSeguroViagemResponse.toSeguroViagemResponse((SeguroViagem) seguro));
+		Seguro seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, BigDecimal.ZERO);
+		return ResponseEntity.ok(AcionarSeguroViagemResponse.toSeguroViagemResponse(seguro);
 	}
 	
 	// debitar premio seguro

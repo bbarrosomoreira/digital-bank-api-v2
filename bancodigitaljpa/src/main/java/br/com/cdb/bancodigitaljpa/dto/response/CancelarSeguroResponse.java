@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigitaljpa.dto.response;
 
-import br.com.cdb.bancodigitaljpa.model.SeguroBase;
+import br.com.cdb.bancodigitaljpa.model.Seguro;
 import br.com.cdb.bancodigitaljpa.model.enums.Status;
 
 public record CancelarSeguroResponse (
@@ -8,7 +8,7 @@ public record CancelarSeguroResponse (
 		String numApolice,
 		Status status
 		){
-	public static CancelarSeguroResponse toCancelarSeguroResponse (SeguroBase seguro) {
+	public static CancelarSeguroResponse toCancelarSeguroResponse (Seguro seguro) {
 		return new CancelarSeguroResponse(
 				seguro.getTipoSeguro().getNome(),
 				seguro.getNumApolice(),

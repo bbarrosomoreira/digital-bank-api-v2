@@ -1,22 +1,23 @@
 package br.com.cdb.bancodigitaljpa.dto.response;
 
+import br.com.cdb.bancodigitaljpa.model.Cartao;
+
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigitaljpa.model.CartaoCredito;
 
 public record FaturaResponse (
 		String numCartao,
 		BigDecimal totalFaturaPaga,
 		BigDecimal limiteAtual,
-		BigDecimal limiteCredito
+		BigDecimal limite
 		) {
 	
-	public static FaturaResponse toFaturaResponse (CartaoCredito ccr) {
+	public static FaturaResponse toFaturaResponse (Cartao ccr) {
 		return new FaturaResponse(
 				ccr.getNumeroCartao(),
 				ccr.getTotalFaturaPaga(),
 				ccr.getLimiteAtual(),
-				ccr.getLimiteCredito()
+				ccr.getLimite()
 				);
 	}
 

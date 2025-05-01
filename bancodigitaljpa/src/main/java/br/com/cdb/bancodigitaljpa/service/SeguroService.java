@@ -10,13 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigitaljpa.model.CartaoBase;
-import br.com.cdb.bancodigitaljpa.model.CartaoCredito;
+import br.com.cdb.bancodigitaljpa.model.Cartao;
 import br.com.cdb.bancodigitaljpa.model.Cliente;
 import br.com.cdb.bancodigitaljpa.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigitaljpa.model.SeguroBase;
-import br.com.cdb.bancodigitaljpa.model.SeguroFraude;
-import br.com.cdb.bancodigitaljpa.model.SeguroViagem;
+import br.com.cdb.bancodigitaljpa.model.Seguro;
 import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.model.enums.Status;
@@ -56,41 +53,45 @@ public class SeguroService {
 
 	// contrataSeguro
 	@Transactional
-	public SeguroResponse contratarSeguro(Long id_cartaoCredito, Usuario usuarioLogado, TipoSeguro tipo) {
+	public SeguroResponse contratarSeguro(Long id_cartao, Usuario usuarioLogado, TipoSeguro tipo) {
 		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
-		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartaoCredito)
-				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartaoCredito + " não encontrado."));
+		Cartao ccr = cartaoRepository.findCartaoById(id_cartao)
+				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 		securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
-		
-		SeguroBase seguroNovo = contratarSeguroPorTipo(tipo, ccr);
+
+		Seguro seguroNovo = contratarSeguroPorTipo(tipo, ccr);
 		seguroRepository.save(seguroNovo);
 		return toResponse(seguroNovo);
 	}
 
-	public SeguroBase contratarSeguroPorTipo(TipoSeguro tipo, CartaoCredito ccr) {
-		
+	public Seguro contratarSeguroPorTipo(TipoSeguro tipo, Cartao ccr) {
+
 		CategoriaCliente categoria = ccr.getConta().getCliente().getCategoria();
 
 		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
 				.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
 
 		return switch (tipo) {
-		case FRAUDE -> {
-			SeguroFraude sf = new SeguroFraude(ccr);
-			sf.setPremioApolice(parametros.getTarifaSeguroFraude());
-			yield sf;
-		}
-		case VIAGEM -> {
-			SeguroViagem sv = new SeguroViagem(ccr);
-			sv.setPremioApolice(parametros.getTarifaSeguroViagem());
-			yield sv;
-		}
+			case FRAUDE -> {
+				Seguro sf = new Seguro(ccr);
+				sf.setValorApolice(parametros.getValorApoliceFraude);
+				sf.setPremioApolice(parametros.getTarifaSeguroFraude());
+				sf.setDescricaoCondicoes(TipoSeguro.FRAUDE.getDescricao());
+				yield sf;
+			}
+			case VIAGEM -> {
+				Seguro sv = new Seguro(ccr);
+				sv.setValorApolice(parametros.getValorApoliceViagem);
+				sv.setPremioApolice(parametros.getTarifaSeguroViagem());
+				sv.setDescricaoCondicoes(TipoSeguro.VIAGEM.getDescricao());
+				yield sv;
+			}
 		};
 	}
 
 	// obtemDetalhesApolice
 	public SeguroResponse getSeguroById(Long id_seguro, Usuario usuarioLogado) {
-		SeguroBase seguro = seguroRepository.findById(id_seguro)
+		Seguro seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
 		securityService.validateAccess(usuarioLogado, seguro.getCartaoCredito().getConta().getCliente());
 		return SeguroResponse.toSeguroResponse(seguro);
@@ -98,14 +99,14 @@ public class SeguroService {
 	
 	// get seguro por usuario
 	public List<SeguroResponse> listarPorUsuario(Usuario usuario) {
-		List<SeguroBase> seguros = seguroRepository.findByCartaoCreditoContaClienteUsuario(usuario);
+		List<Seguro> seguros = seguroRepository.findByCartaoCreditoContaClienteUsuario(usuario);
 		return seguros.stream().map(this::toResponse).toList();
 	}
 
 	// cancelar apolice seguro
 	@Transactional
 	public CancelarSeguroResponse cancelarSeguro(Long id_seguro, Usuario usuarioLogado) {
-		SeguroBase seguro = seguroRepository.findById(id_seguro)
+		Seguro seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
 		securityService.validateAccess(usuarioLogado, seguro.getCartaoCredito().getConta().getCliente());
 		seguro.setarStatusSeguro(Status.INATIVO);
@@ -117,12 +118,12 @@ public class SeguroService {
 	@Transactional
 	public void deleteSegurosByCliente(Long id_cliente) {
 		verificarClienteExistente(id_cliente);
-		List<SeguroBase> seguros = seguroRepository.findByClienteId(id_cliente);
+		List<Seguro> seguros = seguroRepository.findByClienteId(id_cliente);
 		if (seguros.isEmpty()) {
 			log.info("Cliente Id {} não possui seguros.", id_cliente);
 			return;
 		} 
-		for (SeguroBase seguro : seguros) {
+		for (Seguro seguro : seguros) {
 			try {
 				Long id = seguro.getId();
 				seguroRepository.delete(seguro);
@@ -137,15 +138,15 @@ public class SeguroService {
 
 	// get seguros
 	public List<SeguroResponse> getSeguros() {
-		List<SeguroBase> seguros = seguroRepository.findAll();
+		List<Seguro> seguros = seguroRepository.findAll();
 		return seguros.stream().map(this::toResponse).toList();
 	}
 
 	// get seguros by cartao
 	public List<SeguroResponse> getSeguroByCartaoId(Long id_cartao, Usuario usuarioLogado) {
-		CartaoBase cartao = verificarCartaoExistente(id_cartao);
+		Cartao cartao = verificarCartaoExistente(id_cartao);
 		securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
-		List<SeguroBase> seguros = seguroRepository.findByCartaoCreditoId(id_cartao);
+		List<Seguro> seguros = seguroRepository.findByCartaoCreditoId(id_cartao);
 		return seguros.stream().map(this::toResponse).toList();
 	}
 
@@ -153,21 +154,19 @@ public class SeguroService {
 	public List<SeguroResponse> getSeguroByClienteId(Long id_cliente, Usuario usuarioLogado) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		securityService.validateAccess(usuarioLogado, cliente);
-		List<SeguroBase> seguros = seguroRepository.findByClienteId(id_cliente);
+		List<Seguro> seguros = seguroRepository.findByClienteId(id_cliente);
 		return seguros.stream().map(this::toResponse).toList();
 	}
 	
 	@Transactional
 	// acionarSeguro
-	public SeguroBase acionarSeguro(Long id_seguro, Usuario usuarioLogado, BigDecimal valor) {
-		SeguroBase seguro = seguroRepository.findById(id_seguro)
+	public Seguro acionarSeguro(Long id_seguro, Usuario usuarioLogado, BigDecimal valor) {
+		Seguro seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
 		securityService.validateAccess(usuarioLogado, seguro.getCartaoCredito().getConta().getCliente());
 		
 		if(seguro.getStatusSeguro().equals(Status.INATIVO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
-		if(seguro instanceof SeguroFraude) {
-			((SeguroFraude) seguro).setValorFraude(valor);
-		}
+		seguro.setValorFraude(valor);
 		
 		seguro.acionarSeguro();
 		seguroRepository.save(seguro);
@@ -177,7 +176,7 @@ public class SeguroService {
 	@Transactional
 	// debitarPremioSeguro
 	public DebitarPremioSeguroResponse debitarPremioSeguro(Long id_seguro) {
-		SeguroBase seguro = seguroRepository.findById(id_seguro)
+		Seguro seguro = seguroRepository.findById(id_seguro)
 				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
 		
 		if (seguro.getStatusSeguro().equals(Status.INATIVO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
@@ -187,7 +186,7 @@ public class SeguroService {
 		return DebitarPremioSeguroResponse.toDebitarPremioSeguroResponse(seguro);
 	}
 
-	public SeguroResponse toResponse(SeguroBase seguro) {
+	public SeguroResponse toResponse(Seguro seguro) {
 		return SeguroResponse.toSeguroResponse(seguro);
 	}
 	public Cliente verificarClienteExistente(Long id_cliente) {
@@ -195,8 +194,8 @@ public class SeguroService {
 				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
 		return cliente;
 	}
-	public CartaoBase verificarCartaoExistente(Long id_cartao) {
-		CartaoBase cartao = cartaoRepository.findById(id_cartao)
+	public Cartao verificarCartaoExistente(Long id_cartao) {
+		Cartao cartao = cartaoRepository.findById(id_cartao)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 		return cartao;
 	}

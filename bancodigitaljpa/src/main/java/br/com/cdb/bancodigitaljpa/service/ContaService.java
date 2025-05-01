@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import br.com.cdb.bancodigitaljpa.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.cdb.bancodigitaljpa.model.Cliente;
-import br.com.cdb.bancodigitaljpa.model.ContaBase;
-import br.com.cdb.bancodigitaljpa.model.ContaCorrente;
-import br.com.cdb.bancodigitaljpa.model.ContaInternacional;
-import br.com.cdb.bancodigitaljpa.model.ContaPoupanca;
-import br.com.cdb.bancodigitaljpa.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigitaljpa.model.Usuario;
+import br.com.cdb.bancodigitaljpa.model.Conta;
 import br.com.cdb.bancodigitaljpa.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.model.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.model.enums.TipoConta;
@@ -68,49 +63,49 @@ public class ContaService {
 
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		securityService.validateAccess(usuarioLogado, cliente);
-		ContaBase contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
+		Conta contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
 		contaRepository.save(contaNova);
 		
 		return toResponse(contaNova);
 	}
 
-	private ContaBase criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
+	private Conta criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
 		PoliticaDeTaxas parametros = verificarPolitiaExitente(cliente.getCategoria());
 
 		return switch (tipo) {
 		case CORRENTE -> {
-			yield criarContaCorrente(cliente, moeda, valorDeposito, parametros);
+			yield criarContaCorrente(cliente, tipo, moeda, valorDeposito, parametros);
 		}
 		case POUPANCA -> {
-			yield criarContaPoupanca(cliente, moeda, valorDeposito, parametros);
+			yield criarContaPoupanca(cliente, tipo, moeda, valorDeposito, parametros);
 		}
 		case INTERNACIONAL -> {	
-			yield criarContaInternacional(cliente, moeda, valorDeposito, parametros);
+			yield criarContaInternacional(cliente, tipo, moeda, valorDeposito, parametros);
 		}
 		};
 	}
-	
-	private ContaCorrente criarContaCorrente(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
-		ContaCorrente cc = new ContaCorrente();
-		cc.setCliente(cliente);
+
+	private Conta criarContaCorrente(Cliente cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
+		Conta cc = new Conta(cliente, tipo);
 		cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
 		cc.setMoeda(moeda);
 		cc.setSaldo(valorDeposito);
 		return cc;
 	}
-	
-	private ContaPoupanca criarContaPoupanca(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
-		ContaPoupanca cp = new ContaPoupanca();
-		cp.setCliente(cliente);
+
+	private Conta criarContaPoupanca(Cliente cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
+		Conta cp = new Conta(cliente, tipo);
 		cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
 		cp.setMoeda(moeda);
 		cp.setSaldo(valorDeposito);
 		return cp;
 	}
-	
-	private ContaInternacional criarContaInternacional(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
-		ContaInternacional ci = new ContaInternacional(cliente, moeda, valorDeposito);
+
+	private Conta criarContaInternacional(Cliente cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
+		Conta ci = new Conta(cliente, tipo);
 		ci.setTarifaManutencao(parametros.getTarifaManutencaoContaInternacional());
+		ci.setMoeda(moeda);
+		ci.setSaldoEmReais(valorDeposito);
 		BigDecimal saldoMoedaExtrangeira = conversorMoedasService.converterDeBrl(ci.getMoeda(), ci.getSaldoEmReais());
 		ci.setSaldo(saldoMoedaExtrangeira);
 		return ci;
@@ -118,13 +113,13 @@ public class ContaService {
 
 	// get contas
 	public List<ContaResponse> getContas() {
-		List<ContaBase> contas = contaRepository.findAll();
+		List<Conta> contas = contaRepository.findAll();
 		return contas.stream().map(this::toResponse).toList();
 	}
 
 	// get conta por usuário
 	public List<ContaResponse> listarPorUsuario(Usuario usuarioLogado) {
-		List<ContaBase> contas = contaRepository.findByClienteUsuario(usuarioLogado);
+		List<Conta> contas = contaRepository.findByClienteUsuario(usuarioLogado);
 		return contas.stream().map(this::toResponse).toList();
 	}
 	
@@ -132,13 +127,13 @@ public class ContaService {
 	public List<ContaResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		securityService.validateAccess(usuarioLogado, cliente);
-		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
+		List<Conta> contas = contaRepository.findByClienteId(id_cliente);
 		return contas.stream().map(this::toResponse).toList();
 	}
 
 	// get uma conta
 	public ContaResponse getContaById(Long id_conta, Usuario usuarioLogado) {
-		ContaBase conta = verificarContaExitente(id_conta);
+		Conta conta = verificarContaExitente(id_conta);
 		Cliente cliente = conta.getCliente();
 		securityService.validateAccess(usuarioLogado, cliente);
 		return toResponse(conta);
@@ -147,12 +142,12 @@ public class ContaService {
 	// deletar contas de cliente
 	@Transactional
 	public void deleteContasByCliente(Long id_cliente) {
-		List<ContaBase> contas = contaRepository.findByClienteId(id_cliente);
+		List<Conta> contas = contaRepository.findByClienteId(id_cliente);
 		if (contas.isEmpty()) {
 			log.info("Cliente Id {} não possui contas.", id_cliente);
 			return;
 		}
-		for (ContaBase conta : contas) {
+		for (Conta conta : contas) {
 			try {
 				verificarCartoesVinculados(conta);
 				verificaSaldoRemanescente(conta);
@@ -170,8 +165,8 @@ public class ContaService {
 	// transferencia
 	@Transactional
 	public TransferenciaResponse transferir(Long id_contaOrigem, Usuario usuarioLogado, Long id_contaDestino, BigDecimal valor) {
-		ContaBase origem = verificarContaExitente(id_contaOrigem);
-		ContaBase destino = verificarContaExitente(id_contaDestino);
+		Conta origem = verificarContaExitente(id_contaOrigem);
+		Conta destino = verificarContaExitente(id_contaDestino);
 		Cliente cliente = origem.getCliente();
 		securityService.validateAccess(usuarioLogado, cliente);
 		verificaSaldoSuficiente(valor, origem.getSaldo());
@@ -186,8 +181,8 @@ public class ContaService {
 	// pix
 	@Transactional
 	public PixResponse pix(Long id_contaOrigem, Usuario usuarioLogado, Long id_contaDestino, BigDecimal valor) {
-		ContaBase origem = verificarContaExitente(id_contaOrigem);
-		ContaBase destino = verificarContaExitente(id_contaDestino);
+		Conta origem = verificarContaExitente(id_contaOrigem);
+		Conta destino = verificarContaExitente(id_contaDestino);
 		Cliente cliente = origem.getCliente();
 		securityService.validateAccess(usuarioLogado, cliente);
 		verificaSaldoSuficiente(valor, origem.getSaldo());
@@ -201,7 +196,7 @@ public class ContaService {
 
 	// get saldo
 	public SaldoResponse getSaldo(Long id_conta, Usuario usuarioLogado) {
-		ContaBase conta = verificarContaExitente(id_conta);
+		Conta conta = verificarContaExitente(id_conta);
 		Cliente cliente = conta.getCliente();
 		securityService.validateAccess(usuarioLogado, cliente);
 		return SaldoResponse.toSaldoResponse(conta);
@@ -210,7 +205,7 @@ public class ContaService {
 	// deposito
 	@Transactional
 	public DepositoResponse depositar(Long id_conta, BigDecimal valor) {
-		ContaBase conta = verificarContaExitente(id_conta);
+		Conta conta = verificarContaExitente(id_conta);
 		conta.depositar(valor);
 		contaRepository.save(conta);
 		return DepositoResponse.toDepositoResponse(conta.getNumeroConta(), valor, conta.getSaldo());
@@ -222,7 +217,7 @@ public class ContaService {
 	// saque
 	@Transactional
 	public SaqueResponse sacar(Long id_conta, Usuario usuarioLogado, BigDecimal valor) {
-		ContaBase conta = verificarContaExitente(id_conta);
+		Conta conta = verificarContaExitente(id_conta);
 		Cliente cliente = conta.getCliente();
 		securityService.validateAccess(usuarioLogado, cliente);
 		verificaSaldoSuficiente(valor, conta.getSaldo());
@@ -236,11 +231,11 @@ public class ContaService {
 	// txmanutencao
 	@Transactional
 	public AplicarTxManutencaoResponse debitarTarifaManutencao(Long id_conta) {
-		ContaCorrente cc = contaRepository.findContaCorrenteById(id_conta)
+		Conta cc = contaRepository.findContaById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
 			
 		verificaSaldoSuficiente(cc.getTarifaManutencao(), cc.getSaldo());
-		cc.aplicarTxManutencao();	
+		cc.aplicarTarifaManutencao();
 		contaRepository.save(cc);
 		return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), cc.getTarifaManutencao(), cc.getSaldo());
 	}
@@ -248,7 +243,7 @@ public class ContaService {
 	// rendimento
 	@Transactional
 	public AplicarTxRendimentoResponse creditarRendimento(Long id_conta) {
-		ContaPoupanca cp = contaRepository.findContaPoupancaById(id_conta)
+		Conta cp = contaRepository.findContaById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
 		
 		cp.aplicarRendimento();
@@ -258,26 +253,33 @@ public class ContaService {
 	}
 	
 	//M
-	public ContaResponse toResponse(ContaBase conta) {
+	public ContaResponse toResponse(Conta conta) {
+		BigDecimal tarifa;
+		switch (conta.getTipoConta()){
+			case CORRENTE, INTERNACIONAL -> {
+				tarifa = conta.getTarifaManutencao();
+			}
+			case POUPANCA -> {
+				tarifa = conta.getTaxaRendimento();
+			}
+			default -> throw new IllegalStateException("Unexpected value: " + conta.getTipoConta());
+		}
 		ContaResponse response = new ContaResponse(conta.getId(), conta.getNumeroConta(), conta.getTipoConta(),
-				 conta.getMoeda(), conta.getSaldo(), conta.getDataCriacao(),
-				(conta instanceof ContaCorrente) ? ((ContaCorrente) conta).getTarifaManutencao()
-						: (conta instanceof ContaPoupanca) ? ((ContaPoupanca) conta).getTaxaRendimento() 
-								: (conta instanceof ContaInternacional) ? ((ContaInternacional) conta).getTarifaManutencao() : null);
-		if (conta instanceof ContaInternacional) {
-			ContaInternacional contaInt = (ContaInternacional) conta;
-			response.setSaldoEmReais(contaInt.getSaldoEmReais());
-		}	
+				conta.getMoeda(), conta.getSaldo(), conta.getDataCriacao(),
+				tarifa);
+		if (conta.getTipoConta().equals(TipoConta.INTERNACIONAL)) {
+			response.setSaldoEmReais(conta.getSaldoEmReais());
+		}
 		return response;
 	}
-	public void verificaSaldoRemanescente(ContaBase conta) {
+	public void verificaSaldoRemanescente(Conta conta) {
 		if(conta.getSaldo() != null && conta.getSaldo().compareTo(BigDecimal.ZERO)>0) throw new InvalidInputParameterException("Não é possivel excluir uma conta com saldo remanescente.");	
 	}
-	public void verificarCartoesVinculados(ContaBase conta) {
+	public void verificarCartoesVinculados(Conta conta) {
 		if(cartaoRepository.existsByContaId(conta.getId())) throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
 	}
-	public ContaBase verificarContaExitente(Long id_conta) {
-		ContaBase conta = contaRepository.findById(id_conta)
+	public Conta verificarContaExitente(Long id_conta) {
+		Conta conta = contaRepository.findById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID "+id_conta+" não encontrada."));
 		return conta;
 	}

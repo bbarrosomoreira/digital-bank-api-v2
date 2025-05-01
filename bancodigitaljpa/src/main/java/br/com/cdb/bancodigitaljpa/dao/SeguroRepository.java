@@ -7,11 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import br.com.cdb.bancodigitaljpa.model.SeguroBase;
+import br.com.cdb.bancodigitaljpa.model.Seguro;
 import br.com.cdb.bancodigitaljpa.model.Usuario;
 
 @Repository
-public interface SeguroRepository extends JpaRepository<SeguroBase, Long>{
+public interface SeguroRepository extends JpaRepository<Seguro, Long>{
 	
 	boolean existsByCartaoCreditoId(Long cartaoId);
 	
@@ -19,11 +19,11 @@ public interface SeguroRepository extends JpaRepository<SeguroBase, Long>{
 	
 	//Listar seguros por cartao de credito
 	@Query("SELECT seguro FROM SeguroBase seguro WHERE seguro.cartaoCredito.id = :cartaoCreditoId")
-	List<SeguroBase> findByCartaoCreditoId (@Param("cartaoCreditoId") Long cartaoCreditoId);
+	List<Seguro> findByCartaoCreditoId (@Param("cartaoCreditoId") Long cartaoCreditoId);
 	
 	//Listar seguros por cliente
 	@Query("SELECT seguro FROM SeguroBase seguro WHERE seguro.cartaoCredito.conta.cliente.id = :clienteId")
-	List<SeguroBase> findByClienteId (@Param("clienteId") Long clienteId);
+	List<Seguro> findByClienteId (@Param("clienteId") Long clienteId);
 
-	List<SeguroBase> findByCartaoCreditoContaClienteUsuario(Usuario usuario);
+	List<Seguro> findByCartaoCreditoContaClienteUsuario(Usuario usuario);
 }

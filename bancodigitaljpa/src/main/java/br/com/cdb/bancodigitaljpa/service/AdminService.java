@@ -9,18 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brasilapi.api.CEP2;
 import br.com.cdb.bancodigitaljpa.dto.ClienteUsuarioDTO;
-import br.com.cdb.bancodigitaljpa.model.CartaoBase;
-import br.com.cdb.bancodigitaljpa.model.CartaoCredito;
-import br.com.cdb.bancodigitaljpa.model.CartaoDebito;
+import br.com.cdb.bancodigitaljpa.model.Cartao;
 import br.com.cdb.bancodigitaljpa.model.Cliente;
-import br.com.cdb.bancodigitaljpa.model.ContaBase;
-import br.com.cdb.bancodigitaljpa.model.ContaCorrente;
-import br.com.cdb.bancodigitaljpa.model.ContaInternacional;
-import br.com.cdb.bancodigitaljpa.model.ContaPoupanca;
+import br.com.cdb.bancodigitaljpa.model.Conta;
 import br.com.cdb.bancodigitaljpa.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigitaljpa.model.SeguroBase;
-import br.com.cdb.bancodigitaljpa.model.SeguroFraude;
-import br.com.cdb.bancodigitaljpa.model.SeguroViagem;
+import br.com.cdb.bancodigitaljpa.model.Seguro;
 import br.com.cdb.bancodigitaljpa.model.Usuario;
 import br.com.cdb.bancodigitaljpa.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigitaljpa.model.enums.Moeda;
@@ -111,7 +104,7 @@ public class AdminService {
 
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		securityService.validateAccess(usuarioLogado, cliente);
-		ContaBase contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
+		Conta contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
 		contaRepository.save(contaNova);
 		
 		return toContaResponse(contaNova);
@@ -123,9 +116,9 @@ public class AdminService {
 		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
 		Objects.requireNonNull(senha, "A senha do cartão não pode ser nula");
 
-		ContaBase conta = verificarContaExitente(id_conta);
+		Conta conta = verificarContaExitente(id_conta);
 		securityService.validateAccess(usuarioLogado, conta.getCliente());
-		CartaoBase cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
+		Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
 		cartaoRepository.save(cartaoNovo);
 
 		return toCartaoResponse(cartaoNovo);
@@ -133,13 +126,13 @@ public class AdminService {
 	
 	// contrataSeguro
 	@Transactional
-	public SeguroResponse contratarSeguro(Long id_cartaoCredito, Usuario usuarioLogado, TipoSeguro tipo) {
+	public SeguroResponse contratarSeguro(Long id_cartao, Usuario usuarioLogado, TipoSeguro tipo) {
 		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
-		CartaoCredito ccr = cartaoRepository.findCartaoCreditoById(id_cartaoCredito)
-				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartaoCredito + " não encontrado."));
+		Cartao ccr = cartaoRepository.findCartaoById(id_cartao)
+				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 		securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
 		
-		SeguroBase seguroNovo = contratarSeguroPorTipo(tipo, ccr);
+		Seguro seguroNovo = contratarSeguroPorTipo(tipo, ccr);
 		seguroRepository.save(seguroNovo);
 		return toSeguroResponse(seguroNovo);
 	}
@@ -156,8 +149,8 @@ public class AdminService {
 		return cliente;
 	}
 	
-	public ContaBase verificarContaExitente(Long id_conta) {
-		ContaBase conta = contaRepository.findById(id_conta)
+	public Conta verificarContaExitente(Long id_conta) {
+		Conta conta = contaRepository.findById(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID "+id_conta+" não encontrada."));
 		return conta;
 	}
@@ -174,43 +167,43 @@ public class AdminService {
 			throw new ValidationException("Cliente deve ser maior de 18 anos para se cadastrar.");
 	}
 	
-	private ContaBase criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
+	private Conta criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
 		PoliticaDeTaxas parametros = verificarPolitiaExitente(cliente.getCategoria());
 
 		return switch (tipo) {
 		case CORRENTE -> {
-			yield criarContaCorrente(cliente, moeda, valorDeposito, parametros);
+			yield criarContaCorrente(cliente, tipo, moeda, valorDeposito, parametros);
 		}
 		case POUPANCA -> {
-			yield criarContaPoupanca(cliente, moeda, valorDeposito, parametros);
+			yield criarContaPoupanca(cliente, tipo, moeda, valorDeposito, parametros);
 		}
 		case INTERNACIONAL -> {	
-			yield criarContaInternacional(cliente, moeda, valorDeposito, parametros);
+			yield criarContaInternacional(cliente, tipo, moeda, valorDeposito, parametros);
 		}
 		};
 	}
 	
-	private ContaCorrente criarContaCorrente(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
-		ContaCorrente cc = new ContaCorrente();
-		cc.setCliente(cliente);
+	private Conta criarContaCorrente(Cliente cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
+		Conta cc = new Conta(cliente, tipo);
 		cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
 		cc.setMoeda(moeda);
 		cc.setSaldo(valorDeposito);
 		return cc;
 	}
 	
-	private ContaPoupanca criarContaPoupanca(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
-		ContaPoupanca cp = new ContaPoupanca();
-		cp.setCliente(cliente);
+	private Conta criarContaPoupanca(Cliente cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
+		Conta cp = new Conta(cliente, tipo);
 		cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
 		cp.setMoeda(moeda);
 		cp.setSaldo(valorDeposito);
 		return cp;
 	}
 	
-	private ContaInternacional criarContaInternacional(Cliente cliente, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
-		ContaInternacional ci = new ContaInternacional(cliente, moeda, valorDeposito);
+	private Conta criarContaInternacional(Cliente cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
+		Conta ci = new Conta(cliente, tipo);
 		ci.setTarifaManutencao(parametros.getTarifaManutencaoContaInternacional());
+		ci.setMoeda(moeda);
+		ci.setSaldoEmReais(valorDeposito);
 		BigDecimal saldoMoedaExtrangeira = conversorMoedasService.converterDeBrl(ci.getMoeda(), ci.getSaldoEmReais());
 		ci.setSaldo(saldoMoedaExtrangeira);
 		return ci;
@@ -222,45 +215,52 @@ public class AdminService {
 		return parametros;
 	}
 	
-	public ContaResponse toContaResponse(ContaBase conta) {
+	public ContaResponse toContaResponse(Conta conta) {
+		BigDecimal tarifa;
+		switch (conta.getTipoConta()){
+			case CORRENTE, INTERNACIONAL -> {
+				tarifa = conta.getTarifaManutencao();
+			}
+			case POUPANCA -> {
+				tarifa = conta.getTaxaRendimento();
+			}
+            default -> throw new IllegalStateException("Unexpected value: " + conta.getTipoConta());
+        }
 		ContaResponse response = new ContaResponse(conta.getId(), conta.getNumeroConta(), conta.getTipoConta(),
 				 conta.getMoeda(), conta.getSaldo(), conta.getDataCriacao(),
-				(conta instanceof ContaCorrente) ? ((ContaCorrente) conta).getTarifaManutencao()
-						: (conta instanceof ContaPoupanca) ? ((ContaPoupanca) conta).getTaxaRendimento() 
-								: (conta instanceof ContaInternacional) ? ((ContaInternacional) conta).getTarifaManutencao() : null);
-		if (conta instanceof ContaInternacional) {
-			ContaInternacional contaInt = (ContaInternacional) conta;
-			response.setSaldoEmReais(contaInt.getSaldoEmReais());
+				tarifa);
+		if (conta.getTipoConta().equals(TipoConta.INTERNACIONAL)) {
+			response.setSaldoEmReais(conta.getSaldoEmReais());
 		}	
 		return response;
 	}
 	
-	public CartaoResponse toCartaoResponse(CartaoBase cartao) {
+	public CartaoResponse toCartaoResponse(Cartao cartao) {
 		return new CartaoResponse(cartao.getId(), cartao.getNumeroCartao(), cartao.getTipoCartao(),
-				cartao.getStatus(), cartao.getConta().getNumeroConta(), cartao.getDataVencimento(),
-				(cartao instanceof CartaoCredito) ? ((CartaoCredito) cartao).getLimiteCredito()
-						: (cartao instanceof CartaoDebito) ? ((CartaoDebito) cartao).getLimiteDiario() : null);
+				cartao.getStatus(), cartao.getConta().getNumeroConta(), cartao.getDataVencimento(), cartao.getLimite());
 	}
 	
-	public CartaoBase criarCartaoPorTipo(TipoCartao tipo, ContaBase conta, String senha) {
+	public Cartao criarCartaoPorTipo(TipoCartao tipo, Conta conta, String senha) {
 
 		CategoriaCliente categoria = conta.getCliente().getCategoria();
 		PoliticaDeTaxas parametros = verificarPolitiaExitente(categoria);
 		
 		return switch (tipo) {
 		case CREDITO -> {
-			CartaoCredito ccr = new CartaoCredito(conta, senha, parametros.getLimiteCartaoCredito());
+			Cartao ccr = new Cartao(conta, senha, tipo);
+			ccr.setLimite(parametros.getLimiteCartaoCredito());
 			yield ccr;
 		}
 		case DEBITO -> {
-			CartaoDebito cdb = new CartaoDebito(conta, senha, parametros.getLimiteDiarioDebito());
+			Cartao cdb = new Cartao(conta, senha, tipo);
+			cdb.setLimite(parametros.getLimiteDiarioDebito());
 			yield cdb;
 		}
 		};
 
 	}
 	
-	public SeguroBase contratarSeguroPorTipo(TipoSeguro tipo, CartaoCredito ccr) {
+	public Seguro contratarSeguroPorTipo(TipoSeguro tipo, Cartao ccr) {
 		
 		CategoriaCliente categoria = ccr.getConta().getCliente().getCategoria();
 
@@ -269,19 +269,23 @@ public class AdminService {
 
 		return switch (tipo) {
 		case FRAUDE -> {
-			SeguroFraude sf = new SeguroFraude(ccr);
+			Seguro sf = new Seguro(ccr);
+			sf.setValorApolice(parametros.getValorApoliceFraude());
 			sf.setPremioApolice(parametros.getTarifaSeguroFraude());
+			sf.setDescricaoCondicoes(TipoSeguro.FRAUDE.getDescricao());
 			yield sf;
 		}
 		case VIAGEM -> {
-			SeguroViagem sv = new SeguroViagem(ccr);
+			Seguro sv = new Seguro(ccr);
+			sv.setValorApolice(parametros.getValorApoliceViagem());
 			sv.setPremioApolice(parametros.getTarifaSeguroViagem());
+			sv.setDescricaoCondicoes(TipoSeguro.VIAGEM.getDescricao());
 			yield sv;
 		}
 		};
 	}
 	
-	public SeguroResponse toSeguroResponse(SeguroBase seguro) {
+	public SeguroResponse toSeguroResponse(Seguro seguro) {
 		return SeguroResponse.toSeguroResponse(seguro);
 	}
 }

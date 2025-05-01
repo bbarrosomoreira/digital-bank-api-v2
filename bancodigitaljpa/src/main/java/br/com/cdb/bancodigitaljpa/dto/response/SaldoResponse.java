@@ -2,7 +2,7 @@ package br.com.cdb.bancodigitaljpa.dto.response;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigitaljpa.model.ContaBase;
+import br.com.cdb.bancodigitaljpa.model.Conta;
 import br.com.cdb.bancodigitaljpa.model.enums.Moeda;
 import br.com.cdb.bancodigitaljpa.model.enums.TipoConta;
 
@@ -15,7 +15,7 @@ public record SaldoResponse (
 		){
 	
     // Método estático para construção a partir de ContaBase
-    public static SaldoResponse toSaldoResponse(ContaBase conta) {
+    public static SaldoResponse toSaldoResponse(Conta conta) {
         return new SaldoResponse(
             conta.getNumeroConta(),
             conta.getTipoConta(),

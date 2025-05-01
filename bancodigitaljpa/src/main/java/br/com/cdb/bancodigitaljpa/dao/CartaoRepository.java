@@ -8,13 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import br.com.cdb.bancodigitaljpa.model.CartaoBase;
-import br.com.cdb.bancodigitaljpa.model.CartaoCredito;
-import br.com.cdb.bancodigitaljpa.model.CartaoDebito;
+import br.com.cdb.bancodigitaljpa.model.Cartao;
 import br.com.cdb.bancodigitaljpa.model.Usuario;
 
 @Repository
-public interface CartaoRepository extends JpaRepository<CartaoBase, Long> {
+public interface CartaoRepository extends JpaRepository<Cartao, Long> {
 	
 	boolean existsByContaId(Long contaId);
 	
@@ -22,23 +20,23 @@ public interface CartaoRepository extends JpaRepository<CartaoBase, Long> {
 	
 	boolean existsByNumeroCartao(String numeroCartao);
 	
-	List<CartaoBase> findByContaClienteUsuario(Usuario usuario);
+	List<Cartao> findByContaClienteUsuario(Usuario usuario);
 	
 	//QUERY PARA PEGAR POR CLIENTE QUE SERIA UM JOIN DA TABELA CONTA
-	List<CartaoBase> findByContaClienteId(Long clienteId);
+	List<Cartao> findByContaClienteId(Long clienteId);
 
-	List<CartaoBase> findByContaId(Long contaId);
+	List<Cartao> findByContaId(Long contaId);
 	
-	@Query("SELECT ccr FROM CartaoCredito ccr WHERE ccr.conta.id = :contaId")
-	List<CartaoCredito> findCartaoCreditoByContaId(@Param("contaId") Long contaId);
+	@Query("SELECT ccr FROM Cartao ccr WHERE ccr.conta.id = :contaId")
+	List<Cartao> findCartaoByContaId(@Param("contaId") Long contaId);
 	
-	@Query("SELECT ccr FROM CartaoCredito ccr WHERE ccr.id = :id")
-	Optional<CartaoCredito> findCartaoCreditoById(@Param("id") Long id);
+	@Query("SELECT ccr FROM Cartao ccr WHERE ccr.id = :id")
+	Optional<Cartao> findCartaoById(@Param("id") Long id);
 	
-	@Query("SELECT cdb FROM CartaoDebito cdb WHERE cdb.conta.id = :contaId")
-	List<CartaoDebito> findCartaoDebitoByContaId(@Param("contaId") Long contaId);
+	@Query("SELECT cdb FROM Cartao cdb WHERE cdb.conta.id = :contaId")
+	List<Cartao> findCartaoByContaId(@Param("contaId") Long contaId);
 	
-	@Query("SELECT cdb FROM CartaoDebito cdb WHERE cdb.id = :id")
-	Optional<CartaoDebito> findCartaoDebitoById(@Param("id") Long id);
+	@Query("SELECT cdb FROM Cartao cdb WHERE cdb.id = :id")
+	Optional<Cartao> findCartaoById(@Param("id") Long id);
 	
 }

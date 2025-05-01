@@ -23,5 +23,7 @@ public class PoliticaDeTaxas {
 	private BigDecimal limiteDiarioDebito;
 	private BigDecimal tarifaSeguroViagem;
 	private BigDecimal tarifaSeguroFraude;
+	private BigDecimal valorApoliceFraude;
+	private BigDecimal valorApoliceViagem;
 
 }

@@ -3,7 +3,7 @@ package br.com.cdb.bancodigitaljpa.dto.response;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import br.com.cdb.bancodigitaljpa.model.SeguroFraude;
+import br.com.cdb.bancodigitaljpa.model.Seguro;
 
 public record AcionarSeguroFraudeResponse  (
 		String tipoSeguro,
@@ -19,13 +19,13 @@ public record AcionarSeguroFraudeResponse  (
 		)
 {
 		
-	public static AcionarSeguroFraudeResponse toSeguroFraudeResponse (SeguroFraude seguro) {
+	public static AcionarSeguroFraudeResponse toSeguroFraudeResponse (Seguro seguro) {
 		return new AcionarSeguroFraudeResponse (
 				seguro.getTipoSeguro().getNome(),
 				seguro.getNumApolice(),
 				seguro.getDataAcionamento(),
-				seguro.getCartaoCredito().getNumeroCartao(),
-				seguro.getCartaoCredito().getConta().getCliente().getCategoria().getDescricao(),
+				seguro.getCartao().getNumeroCartao(),
+				seguro.getCartao().getConta().getCliente().getCategoria().getDescricao(),
 				seguro.getValorApolice(),
 				seguro.getValorFraude(),
 				seguro.getValorRessarcido(),
