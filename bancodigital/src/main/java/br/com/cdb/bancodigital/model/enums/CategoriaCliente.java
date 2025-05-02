@@ -27,13 +27,11 @@ public enum CategoriaCliente {
         if (categoriaStr == null) {
             throw new IllegalArgumentException("Categoria não pode ser nula.");
         }
-
         for (CategoriaCliente categoria : CategoriaCliente.values()) {
             if (categoria.name().equalsIgnoreCase(categoriaStr)) {
                 return categoria;
             }
         }
-
         throw new IllegalArgumentException("Categoria inválida: " + categoriaStr +
                 ". Valores permitidos: " + Arrays.toString(CategoriaCliente.values()));
     }

@@ -3,6 +3,8 @@ package br.com.cdb.bancodigital.model.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.*;
 
+import java.util.Arrays;
+
 @Getter
 @AllArgsConstructor
 public enum TipoSeguro {
@@ -14,8 +16,18 @@ public enum TipoSeguro {
 	private final String condicoes;
 
 	@JsonCreator
-	public static TipoSeguro fromString (String value) {
-		return TipoSeguro.valueOf(value.toUpperCase());
+	public static TipoSeguro fromString (String tipoSeguroStr) {
+		if (tipoSeguroStr == null) {
+			throw new IllegalArgumentException("Tipo de seguro não pode ser nulo.");
+		}
+		for (TipoSeguro tipoSeguro : TipoSeguro.values()) {
+			if (tipoSeguro.name().equalsIgnoreCase(tipoSeguroStr)) {
+				return tipoSeguro;
+			}
+		}
+		throw new IllegalArgumentException("Tipo de seguro inválido: " + tipoSeguroStr +
+				". Valores permitidos: " + Arrays.toString(TipoSeguro.values()));
+
 	}
 
 }

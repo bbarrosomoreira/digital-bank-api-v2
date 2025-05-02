@@ -12,8 +12,7 @@ import lombok.Setter;
 public class ContratarSeguroDTO {
 	
 	private Long id_cartao;
-	
-	@NotNull
+
 	private TipoSeguro tipo;
 
 }

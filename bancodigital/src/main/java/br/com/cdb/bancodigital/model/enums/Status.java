@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 @AllArgsConstructor
 public enum Status {
@@ -14,6 +16,16 @@ public enum Status {
 	
     @JsonCreator
     public static Status fromString(String statusStr) {
-        return Status.valueOf(statusStr.toUpperCase());
+        if (statusStr == null) {
+            throw new IllegalArgumentException("Status não pode ser nulo.");
+        }
+        for (Status status : Status.values()) {
+            if (status.name().equalsIgnoreCase(statusStr)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Status inválido: " + statusStr +
+                ". Valores permitidos: " + Arrays.toString(Status.values()));
+
     }
 }

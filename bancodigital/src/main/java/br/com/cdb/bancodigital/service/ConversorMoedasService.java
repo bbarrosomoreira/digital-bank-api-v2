@@ -2,10 +2,12 @@ package br.com.cdb.bancodigital.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Optional;
 
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,75 +20,69 @@ import br.com.cdb.bancodigital.dto.response.ApiConversorMoedasResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 
 @Service
-@RequiredArgsConstructor
 public class ConversorMoedasService {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ConversorMoedasService.class);
 
-	private final RestTemplate restTemplate;
-	
-	private static final Dotenv dotenv = Dotenv.load();
-	
+	@Autowired
+	private RestTemplate restTemplate;
+
 	private static final String API_URL = "https://api.apilayer.com/currency_data/convert";
-    private static final String API_KEY = dotenv.get("API_KEY");
-    
-    public ApiConversorMoedasResponse fazerConversao(Moeda from, Moeda to, BigDecimal amount) {
-    	try {
-        	// Montar URL
-        	String url = API_URL + "?from=" + from + "&to=" + to + "&amount=" + amount;
-        	
-        	// Montar headers (crachá)
-        	HttpHeaders headers = new HttpHeaders();
-        	headers.set("apikey", API_KEY);
-        	HttpEntity<String> entity = new HttpEntity<>(headers);
-        	
-        	// Fazer requisição
-        	ResponseEntity<ApiConversorMoedasResponse> response = restTemplate.exchange(
-        			url,
-        			HttpMethod.GET,
-        			entity,
-        			ApiConversorMoedasResponse.class);
 
-        	// Retornar o body	
-        	return response.getBody();
-    	} catch (Exception e) {
-			log.error("Erro na conversão de moeda: " + e.getMessage());
-		}
-		return null;
-    }
-	
-    public BigDecimal converterDeBrl(Moeda to, BigDecimal amount) {
-		if (Moeda.BRL == to) {
-			return amount;
-		}
-    	try {
-        	// Montar URL
-        	String url = API_URL + "?from=" + "BRL" + "&to=" + to + "&amount=" + amount;
-        	
-        	// Montar headers (crachá)
-        	HttpHeaders headers = new HttpHeaders();
-        	headers.set("apikey", API_KEY);
-        	HttpEntity<String> entity = new HttpEntity<>(headers);
-        	
-        	// Criar RestTemplate
-        	RestTemplate restTemplate = new RestTemplate();
-        	
-        	// Fazer requisição
-        	ResponseEntity<ApiConversorMoedasResponse> response = restTemplate.exchange(
-        			url,
-        			HttpMethod.GET,
-        			entity,
-        			ApiConversorMoedasResponse.class);
+	@Value("${api.currency.key}")
+	private String apiKey;
 
-        	// Retornar o result do body	
-            if (response.getBody() != null) {
-                return response.getBody().getResult().setScale(2, RoundingMode.HALF_UP);
-            }
-
-        } catch (Exception e) {
-			log.error("Erro na conversão de moeda: " + e.getMessage());
+	public Optional<ApiConversorMoedasResponse> fazerConversao(Moeda from, Moeda to, BigDecimal amount) {
+		if (from == null || to == null || amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+			log.warn("Parâmetros inválidos para conversão de moeda.");
+			return Optional.empty();
 		}
-		
+
+		try {
+			ApiConversorMoedasResponse resposta = chamarApiConversao(from, to, amount);
+			return Optional.ofNullable(resposta);
+		} catch (Exception e) {
+			log.error("Erro na conversão de moeda: {}", e.getMessage());
+			return Optional.empty();
+		}
+	}
+
+	public BigDecimal converterDeBrl(Moeda to, BigDecimal amount) {
+		if (to == null || amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+			log.warn("Parâmetros inválidos para conversão de BRL.");
+			return BigDecimal.ZERO;
+		}
+
+		if (to == Moeda.BRL) {
+			return amount.setScale(2, RoundingMode.HALF_UP);
+		}
+
+		try {
+			ApiConversorMoedasResponse resposta = chamarApiConversao(Moeda.BRL, to, amount);
+			if (resposta != null && resposta.getResult() != null) {
+				return resposta.getResult().setScale(2, RoundingMode.HALF_UP);
+			}
+		} catch (Exception e) {
+			log.error("Erro na conversão de BRL para {}: {}", to, e.getMessage());
+		}
+
 		return BigDecimal.ZERO;
-    }
+	}
+
+	private ApiConversorMoedasResponse chamarApiConversao(Moeda from, Moeda to, BigDecimal amount) {
+		String url = String.format("%s?from=%s&to=%s&amount=%s", API_URL, from, to, amount);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("apikey", apiKey);
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+
+		ResponseEntity<ApiConversorMoedasResponse> response = restTemplate.exchange(
+				url,
+				HttpMethod.GET,
+				entity,
+				ApiConversorMoedasResponse.class
+		);
+
+		return response.getBody();
+	}
 }

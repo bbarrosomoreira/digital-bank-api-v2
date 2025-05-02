@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.controller;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,7 +14,7 @@ import br.com.cdb.bancodigital.service.ReceitaService;
 
 @RestController
 @RequestMapping("/receita-federal")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ReceitaController {
 	
 	private final ReceitaService receitaService;

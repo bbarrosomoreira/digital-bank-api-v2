@@ -26,7 +26,7 @@ public class PoliticaDeTaxasDAO{
     public Optional<PoliticaDeTaxas> findByCategoria(CategoriaCliente categoriaCliente) {
         String sql = "SELECT * FROM politica_de_taxas WHERE categoria = ?";
         try {
-            PoliticaDeTaxas politicaDeTaxas = jdbcTemplate.queryForObject(sql, politicaDeTaxasMapper, categoriaCliente);
+            PoliticaDeTaxas politicaDeTaxas = jdbcTemplate.queryForObject(sql, politicaDeTaxasMapper, categoriaCliente.name());
             return Optional.of(politicaDeTaxas);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

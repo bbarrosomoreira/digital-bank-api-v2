@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +34,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/cartoes")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class CartaoController {
 	
 	private final CartaoService cartaoService;

@@ -1,7 +1,6 @@
 package br.com.cdb.bancodigital.controller;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +15,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthController {
 	
 	private final AuthService authService;

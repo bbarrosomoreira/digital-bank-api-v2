@@ -3,7 +3,7 @@ package br.com.cdb.bancodigital.controller;
 import java.util.List;
 
 import br.com.cdb.bancodigital.dto.ClienteAtualizadoDTO;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +28,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/clientes")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ClienteController {
 
 	private final ClienteService clienteService;

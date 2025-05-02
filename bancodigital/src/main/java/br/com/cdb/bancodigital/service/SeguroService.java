@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -32,7 +32,7 @@ import br.com.cdb.bancodigital.dto.response.SeguroResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class SeguroService {
 	
 	private static final Logger log = LoggerFactory.getLogger(SeguroService.class);
@@ -66,6 +66,7 @@ public class SeguroService {
 		return switch (tipo) {
 			case FRAUDE -> {
 				Seguro sf = new Seguro(ccr);
+				sf.setTipoSeguro(TipoSeguro.FRAUDE);
 				sf.setValorApolice(parametros.getValorApoliceFraude());
 				sf.setPremioApolice(parametros.getTarifaSeguroFraude());
 				sf.setDescricaoCondicoes(TipoSeguro.FRAUDE.getDescricao());
@@ -73,6 +74,7 @@ public class SeguroService {
 			}
 			case VIAGEM -> {
 				Seguro sv = new Seguro(ccr);
+				sv.setTipoSeguro(TipoSeguro.VIAGEM);
 				sv.setValorApolice(parametros.getValorApoliceViagem());
 				sv.setPremioApolice(parametros.getTarifaSeguroViagem());
 				sv.setDescricaoCondicoes(TipoSeguro.VIAGEM.getDescricao());

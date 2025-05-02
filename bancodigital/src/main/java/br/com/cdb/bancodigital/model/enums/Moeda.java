@@ -24,7 +24,6 @@ public enum Moeda {
 				return moeda;
 			}
 		}
-
 		throw new IllegalArgumentException("Moeda inválida: " + moedaStr +
 				". Valores permitidos: " + Arrays.toString(Moeda.values()));
 	}

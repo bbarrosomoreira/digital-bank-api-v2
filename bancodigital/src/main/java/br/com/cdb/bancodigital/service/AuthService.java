@@ -1,7 +1,7 @@
 package br.com.cdb.bancodigital.service;
 
 import br.com.cdb.bancodigital.dao.UsuarioDAO;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +17,7 @@ import br.com.cdb.bancodigital.security.JwtService;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthService {
 
 	private final AuthenticationManager authenticationManager;

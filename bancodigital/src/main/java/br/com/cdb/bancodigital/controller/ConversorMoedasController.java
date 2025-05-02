@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.math.BigDecimal;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +16,7 @@ import br.com.cdb.bancodigital.service.ConversorMoedasService;
 
 @RestController
 @RequestMapping("/cambio")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ConversorMoedasController {
 	
 	private final ConversorMoedasService conversorMoedasService;
@@ -35,8 +35,9 @@ public class ConversorMoedasController {
 	@GetMapping("/conversor-moedas")
 	public ResponseEntity<ApiConversorMoedasResponse> fazerConversao (
 			@RequestBody ConversorMoedasDTO dto){
-		ApiConversorMoedasResponse response = conversorMoedasService.fazerConversao(dto.getMoedaOrigem(), dto.getMoedaDestino(), dto.getValor());
-		return ResponseEntity.ok(response);
+		return conversorMoedasService.fazerConversao(dto.getMoedaOrigem(), dto.getMoedaDestino(), dto.getValor())
+				.map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.badRequest().build());
 	}
 
 }

@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.service;
 
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
@@ -11,7 +11,7 @@ import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class PoliticaDeTaxasService {
 	
 	private final PoliticaDeTaxasDAO parametrosDAO;

@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,7 @@ import br.com.cdb.bancodigital.service.PoliticaDeTaxasService;
 
 @RestController
 @RequestMapping("/parametros")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class PoliticaDeTaxasController {
 	
 	private final PoliticaDeTaxasService parametrosService;

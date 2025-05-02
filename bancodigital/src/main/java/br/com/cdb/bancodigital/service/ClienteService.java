@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import br.com.cdb.bancodigital.dao.*;
 import br.com.cdb.bancodigital.dto.ClienteAtualizadoDTO;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigital.dto.response.ClienteResponse;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ClienteService {
 
     private static final Logger log = LoggerFactory.getLogger(ClienteService.class);

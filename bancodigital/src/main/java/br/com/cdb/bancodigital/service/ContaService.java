@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.cdb.bancodigital.model.*;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,7 +34,7 @@ import br.com.cdb.bancodigital.dto.response.SaqueResponse;
 import br.com.cdb.bancodigital.dto.response.TransferenciaResponse;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ContaService {
 	
 	private static final Logger log = LoggerFactory.getLogger(ContaService.class);

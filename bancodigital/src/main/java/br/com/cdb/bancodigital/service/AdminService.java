@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import br.com.cdb.bancodigital.dao.*;
 import br.com.cdb.bancodigital.model.*;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +27,7 @@ import br.com.cdb.bancodigital.dto.response.ContaResponse;
 import br.com.cdb.bancodigital.dto.response.SeguroResponse;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AdminService {
 	
 	private final UsuarioDAO usuarioDAO;

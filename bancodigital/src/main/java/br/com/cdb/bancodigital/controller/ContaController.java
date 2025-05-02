@@ -3,7 +3,7 @@ package br.com.cdb.bancodigital.controller;
 import java.util.Arrays;
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,7 +37,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/contas")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ContaController {
 
 	private final ContaService contaService;

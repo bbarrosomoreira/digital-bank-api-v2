@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public enum Role {
 	
 	ADMIN,
@@ -18,13 +17,11 @@ public enum Role {
 		if (roleStr == null) {
 			throw new IllegalArgumentException("Role não pode ser nulo.");
 		}
-
 		for (Role role : Role.values()) {
 			if (role.name().equalsIgnoreCase(roleStr)) {
 				return role;
 			}
 		}
-
 		throw new IllegalArgumentException("Valor de role inválido: " + roleStr +
 				". Valores permitidos: " + Arrays.toString(Role.values()));
 	}

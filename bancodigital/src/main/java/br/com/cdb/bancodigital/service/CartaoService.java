@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -36,7 +36,7 @@ import br.com.cdb.bancodigital.dto.response.RessetarLimiteDiarioResponse;
 import br.com.cdb.bancodigital.dto.response.StatusCartaoResponse;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class CartaoService {
 
     private static final Logger log = LoggerFactory.getLogger(CartaoService.class);
