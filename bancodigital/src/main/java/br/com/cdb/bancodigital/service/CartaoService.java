@@ -23,11 +23,11 @@ import br.com.cdb.bancodigital.exceptions.ErrorMessages;
 import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.dao.CartaoRepository;
-import br.com.cdb.bancodigital.dao.ClienteRepository;
-import br.com.cdb.bancodigital.dao.ContaRepository;
-import br.com.cdb.bancodigital.dao.PoliticaDeTaxasRepository;
-import br.com.cdb.bancodigital.dao.SeguroRepository;
+import br.com.cdb.bancodigital.dao.CartaoDAO;
+import br.com.cdb.bancodigital.dao.ClienteDAO;
+import br.com.cdb.bancodigital.dao.ContaDAO;
+import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
+import br.com.cdb.bancodigital.dao.SeguroDAO;
 import br.com.cdb.bancodigital.dto.response.CartaoResponse;
 import br.com.cdb.bancodigital.dto.response.FaturaResponse;
 import br.com.cdb.bancodigital.dto.response.LimiteResponse;
@@ -41,19 +41,19 @@ public class CartaoService {
     private static final Logger log = LoggerFactory.getLogger(CartaoService.class);
 
     @Autowired
-    private CartaoRepository cartaoRepository;
+    private CartaoDAO cartaoRepository;
 
     @Autowired
-    private ContaRepository contaRepository;
+    private ContaDAO contaRepository;
 
     @Autowired
-    private ClienteRepository clienteRepository;
+    private ClienteDAO clienteRepository;
 
     @Autowired
-    private SeguroRepository seguroRepository;
+    private SeguroDAO seguroRepository;
 
     @Autowired
-    private PoliticaDeTaxasRepository politicaDeTaxaRepository;
+    private PoliticaDeTaxasDAO politicaDeTaxaRepository;
 
     @Autowired
     private SecurityService securityService;

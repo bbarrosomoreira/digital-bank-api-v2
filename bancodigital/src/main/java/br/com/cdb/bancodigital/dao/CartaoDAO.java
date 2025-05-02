@@ -12,7 +12,7 @@ import br.com.cdb.bancodigital.model.Cartao;
 import br.com.cdb.bancodigital.model.Usuario;
 
 @Repository
-public interface CartaoRepository extends JpaRepository<Cartao, Long> {
+public interface CartaoDAO extends JpaRepository<Cartao, Long> {
 	
 	boolean existsByContaId(Long contaId);
 	

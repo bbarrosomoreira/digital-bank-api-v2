@@ -11,7 +11,7 @@ import br.com.cdb.bancodigital.model.Seguro;
 import br.com.cdb.bancodigital.model.Usuario;
 
 @Repository
-public interface SeguroRepository extends JpaRepository<Seguro, Long>{
+public interface SeguroDAO extends JpaRepository<Seguro, Long>{
 	
 	boolean existsByCartaoCreditoId(Long cartaoId);
 	

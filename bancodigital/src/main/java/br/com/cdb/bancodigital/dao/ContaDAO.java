@@ -12,7 +12,7 @@ import br.com.cdb.bancodigital.model.Conta;
 import br.com.cdb.bancodigital.model.Usuario;
 
 @Repository
-public interface ContaRepository extends JpaRepository<Conta, Long> {
+public interface ContaDAO extends JpaRepository<Conta, Long> {
 	
 	boolean existsByClienteId(Long clienteId);
 	

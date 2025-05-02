@@ -5,11 +5,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class ClienteRepository {
+public class ClienteDAO {
 
 	private final JdbcTemplate jdbcTemplate;
 
-	public ClienteRepository(JdbcTemplate jdbcTemplate) {
+	public ClienteDAO(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 

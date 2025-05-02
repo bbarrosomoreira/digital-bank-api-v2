@@ -9,7 +9,7 @@ import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 
 @Repository
-public interface PoliticaDeTaxasRepository extends JpaRepository<PoliticaDeTaxas, Long>{
+public interface PoliticaDeTaxasDAO extends JpaRepository<PoliticaDeTaxas, Long>{
 
 	Optional<PoliticaDeTaxas> findByCategoria(CategoriaCliente categoria);
 }

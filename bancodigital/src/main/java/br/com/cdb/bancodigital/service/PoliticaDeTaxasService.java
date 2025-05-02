@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.dao.PoliticaDeTaxasRepository;
+import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
 
 @Service
 public class PoliticaDeTaxasService {
 	
 	@Autowired
-	private PoliticaDeTaxasRepository parametrosRepository;
+	private PoliticaDeTaxasDAO parametrosRepository;
 	
 
 	public PoliticaDeTaxas buscarParametosPorCategoria(CategoriaCliente categoria) {
