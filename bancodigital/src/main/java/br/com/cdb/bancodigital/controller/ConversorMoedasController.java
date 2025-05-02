@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,10 +16,10 @@ import br.com.cdb.bancodigital.service.ConversorMoedasService;
 
 @RestController
 @RequestMapping("/cambio")
+@RequiredArgsConstructor
 public class ConversorMoedasController {
 	
-	@Autowired
-	private ConversorMoedasService conversorMoedasService;
+	private final ConversorMoedasService conversorMoedasService;
 	
 	@GetMapping("/conversor-real")
 	public ResponseEntity<ConversorMoedasResponse> converterParaBrl (

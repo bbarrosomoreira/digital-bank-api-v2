@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,20 +24,18 @@ import br.com.cdb.bancodigital.security.UsuarioDetailsService;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity()
+@RequiredArgsConstructor
 public class SecurityConfig {
 	
-	@Autowired
-	private UsuarioDetailsService usuarioDetailsService;
-	
-	@Autowired
-	private JwtAuthFilter jwtAuthFilter;
+	private final UsuarioDetailsService usuarioDetailsService;
+	private final JwtAuthFilter jwtAuthFilter;
 	
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { //configura as rotas que precisam de login
         http
-        	.csrf(csrf -> csrf.disable())
-            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+        	.csrf(AbstractHttpConfigurer::disable)
+            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
         	.authorizeHttpRequests(auth -> auth
         			.requestMatchers(HttpMethod.POST, "/auth/**").permitAll() //libera login/cadastro
                     .requestMatchers("/h2-console/**").permitAll() // libera console H2

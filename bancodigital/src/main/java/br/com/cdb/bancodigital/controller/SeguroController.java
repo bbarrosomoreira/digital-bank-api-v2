@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,10 +34,10 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/seguros")
+@RequiredArgsConstructor
 public class SeguroController {
 	
-	@Autowired
-	private SeguroService seguroService;
+	private final SeguroService seguroService;
 	
 	// ambos podem contratar novo seguro
 	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login

@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.dto;
 import java.time.LocalDate;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -18,6 +19,7 @@ import jakarta.validation.constraints.Size;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ClienteDTO {
 	
 	@NotBlank(message = "Nome é obrigatótio")
@@ -57,8 +59,6 @@ public class ClienteDTO {
 		cliente.setDataNascimento(dataNascimento);
 		return cliente;
 	}
-
-	public ClienteDTO() {}
 	
 
 }

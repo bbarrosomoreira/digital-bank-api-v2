@@ -1,10 +1,12 @@
 package br.com.cdb.bancodigital.model.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
 
 @Getter
+@AllArgsConstructor
 public enum Moeda {
 	BRL ("Real Brasileiro", "R$"),
 	USD ("Dólar Americano", "US$"),
@@ -12,11 +14,6 @@ public enum Moeda {
 	
 	private final String nome;
 	private final String simbolo;
-	
-	Moeda (String nome, String simbolo) {
-		this.nome = nome;
-		this.simbolo = simbolo;
-	}
 
 	public static Moeda fromString(String moedaStr) {
 		if(moedaStr == null) {

@@ -1,9 +1,9 @@
 package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.cdb.bancodigital.dto.ClienteAtualizadoDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,10 +28,10 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/clientes")
+@RequiredArgsConstructor
 public class ClienteController {
 
-	@Autowired
-	private ClienteService clienteService;
+	private final ClienteService clienteService;
 
 	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login
 	@PreAuthorize("hasRole('CLIENTE')")
@@ -84,21 +84,21 @@ public class ClienteController {
 	@PutMapping("/{id_cliente}")
 	public ResponseEntity<ClienteResponse> updateCliente(
 			@PathVariable Long id_cliente, 
-			@Valid @RequestBody ClienteDTO clienteAtualizado,
+			@Valid @RequestBody ClienteAtualizadoDTO clienteAtualizado,
 			Authentication authentication){
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		ClienteResponse atualizado = clienteService.updateCliente(id_cliente, clienteAtualizado, usuarioLogado);
+		ClienteResponse atualizado = clienteService.atualizarCliente(id_cliente, clienteAtualizado, usuarioLogado);
 			return ResponseEntity.ok(atualizado);
 	}
 	
 	// admin podem atualizar dados cadastrais, cliente só se for dele
 	@PatchMapping("/{id_cliente}")
 	public ResponseEntity<ClienteResponse> updateParcial(
-			@PathVariable Long id_cliente, 
-			@Valid @RequestBody Map<String, Object> camposAtualizados,
+			@PathVariable Long id_cliente,
+			@Valid @RequestBody ClienteAtualizadoDTO clienteAtualizado,
 			Authentication authentication){
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		ClienteResponse atualizado = clienteService.updateParcial(id_cliente, camposAtualizados, usuarioLogado);
+		ClienteResponse atualizado = clienteService.atualizarCliente(id_cliente, clienteAtualizado, usuarioLogado);
 			return ResponseEntity.ok(atualizado);
 	}
 	

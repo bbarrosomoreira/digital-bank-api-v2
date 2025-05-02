@@ -8,7 +8,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigital.model.Cliente;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class ClienteResponse {
 	
 	private Long id;
@@ -18,29 +24,7 @@ public class ClienteResponse {
 	private Integer idade;
 	private EnderecoResponse endereco;
 	private CategoriaCliente categoria;
-	
-	//G
-	public Long getId() {
-		return id;
-	}
-	public String getNome() {
-		return nome;
-	}
-	public LocalDate getDataNascimento() {
-		return dataNascimento;
-	}
-	public Integer getIdade() {
-		return idade;
-	}
-	public EnderecoResponse getEndereco() {
-		return endereco;
-	}
-	public CategoriaCliente getCategoria() {
-		return categoria;
-	}
-	
-	//C
-	public ClienteResponse () {}
+
 	public ClienteResponse(Cliente cliente, EnderecoCliente endereco) {
 		this.id = cliente.getId();
 		this.nome = cliente.getNome();

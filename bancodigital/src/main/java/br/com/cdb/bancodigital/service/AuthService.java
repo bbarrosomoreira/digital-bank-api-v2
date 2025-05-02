@@ -2,7 +2,6 @@ package br.com.cdb.bancodigital.service;
 
 import br.com.cdb.bancodigital.dao.UsuarioDAO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,7 +11,6 @@ import br.com.cdb.bancodigital.dto.LoginDTO;
 import br.com.cdb.bancodigital.dto.UsuarioDTO;
 import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.dto.response.LoginResponse;
 import br.com.cdb.bancodigital.security.JwtService;
 

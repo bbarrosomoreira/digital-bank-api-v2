@@ -8,7 +8,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class TransferenciaDTO {
 	
 	@NotNull(message = "ID da conta de destino é obrigatório")
@@ -20,31 +26,5 @@ public class TransferenciaDTO {
 	
 	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate dataTransacao;
-
-	//G&S
-	public Long getId_contaDestino() {
-		return id_contaDestino;
-	}
-	public void setId_contaDestino(Long id_contaDestino) {
-		this.id_contaDestino = id_contaDestino;
-	}
-	public BigDecimal getValor() {
-		return valor;
-	}
-	public void setValor(BigDecimal valor) {
-		this.valor = valor;
-	}
-	public LocalDate getDataTransacao() {
-		return dataTransacao;
-	}
-	public void setDataTransacao(LocalDate dataTransacao) {
-		this.dataTransacao = dataTransacao;
-	}
-	
-	//constructor
-	public TransferenciaDTO() {
-	}
-	
-	
 
 }

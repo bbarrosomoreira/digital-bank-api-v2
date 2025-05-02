@@ -4,7 +4,6 @@ import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.mapper.EnderecoClienteMapper;
 import br.com.cdb.bancodigital.model.Cliente;
 import br.com.cdb.bancodigital.model.EnderecoCliente;
-import br.com.cdb.bancodigital.model.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

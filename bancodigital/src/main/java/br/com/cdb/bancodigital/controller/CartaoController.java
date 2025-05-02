@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,10 +34,10 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/cartoes")
+@RequiredArgsConstructor
 public class CartaoController {
 	
-	@Autowired
-	private CartaoService cartaoService;
+	private final CartaoService cartaoService;
 	
 	// ambos podem emitir novo cartao
 	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login

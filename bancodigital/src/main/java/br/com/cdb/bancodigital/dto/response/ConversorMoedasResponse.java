@@ -3,14 +3,17 @@ package br.com.cdb.bancodigital.dto.response;
 import java.math.BigDecimal;
 
 import br.com.cdb.bancodigital.model.enums.Moeda;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class ConversorMoedasResponse {
 	@NotNull(message = "Moeda da conta é obrigatório")
-	@Enumerated(EnumType.STRING)
 	private Moeda moeda;
 
 	@Digits(integer = 19, fraction = 2)
@@ -18,32 +21,5 @@ public class ConversorMoedasResponse {
 
 	@Digits(integer = 19, fraction = 2)
 	private BigDecimal valorConvertido;
-
-	public ConversorMoedasResponse() {
-	}
-
-	public Moeda getMoeda() {
-		return moeda;
-	}
-
-	public void setMoeda(Moeda moeda) {
-		this.moeda = moeda;
-	}
-
-	public BigDecimal getValorOriginal() {
-		return valorOriginal;
-	}
-
-	public void setValorOriginal(BigDecimal valorOriginal) {
-		this.valorOriginal = valorOriginal;
-	}
-
-	public BigDecimal getValorConvertido() {
-		return valorConvertido;
-	}
-
-	public void setValorConvertido(BigDecimal valorConvertido) {
-		this.valorConvertido = valorConvertido;
-	}
 
 }

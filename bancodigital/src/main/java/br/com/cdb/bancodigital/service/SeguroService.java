@@ -66,14 +66,14 @@ public class SeguroService {
 		return switch (tipo) {
 			case FRAUDE -> {
 				Seguro sf = new Seguro(ccr);
-				sf.setValorApolice(parametros.getValorApoliceFraude);
+				sf.setValorApolice(parametros.getValorApoliceFraude());
 				sf.setPremioApolice(parametros.getTarifaSeguroFraude());
 				sf.setDescricaoCondicoes(TipoSeguro.FRAUDE.getDescricao());
 				yield sf;
 			}
 			case VIAGEM -> {
 				Seguro sv = new Seguro(ccr);
-				sv.setValorApolice(parametros.getValorApoliceViagem);
+				sv.setValorApolice(parametros.getValorApoliceViagem());
 				sv.setPremioApolice(parametros.getTarifaSeguroViagem());
 				sv.setDescricaoCondicoes(TipoSeguro.VIAGEM.getDescricao());
 				yield sv;
@@ -158,8 +158,8 @@ public class SeguroService {
 		securityService.validateAccess(usuarioLogado, seguro.getCartao().getConta().getCliente());
 		
 		if(seguro.getStatusSeguro().equals(Status.INATIVO)) throw new InvalidInputParameterException("Seguro desativado - operação bloqueada");
-		seguro.setValorFraude(valor);
-		
+		if(seguro.getTipoSeguro().equals(TipoSeguro.FRAUDE)) seguro.setValorFraude(valor);
+
 		seguro.acionarSeguro();
 		seguroDAO.salvar(seguro);
 		return seguro;
@@ -182,14 +182,12 @@ public class SeguroService {
 		return SeguroResponse.toSeguroResponse(seguro);
 	}
 	public Cliente verificarClienteExistente(Long id_cliente) {
-		Cliente cliente = clienteDAO.buscarClienteporId(id_cliente)
+		return clienteDAO.buscarClienteporId(id_cliente)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-		return cliente;
 	}
 	public Cartao verificarCartaoExistente(Long id_cartao) {
-		Cartao cartao = cartaoDAO.findCartaoById(id_cartao)
+		return cartaoDAO.findCartaoById(id_cartao)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
-		return cartao;
 	}
 
 }

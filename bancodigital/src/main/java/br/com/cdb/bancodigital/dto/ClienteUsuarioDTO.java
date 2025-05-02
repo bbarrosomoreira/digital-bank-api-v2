@@ -2,6 +2,9 @@ package br.com.cdb.bancodigital.dto;
 
 import java.time.LocalDate;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.br.CPF;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,9 +12,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import br.com.cdb.bancodigital.model.Cliente;
 import br.com.cdb.bancodigital.model.EnderecoCliente;
 import br.com.cdb.bancodigital.model.enums.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +19,9 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class ClienteUsuarioDTO {
 
 	//CLIENTE
@@ -54,71 +57,21 @@ public class ClienteUsuarioDTO {
 	private String senha;
 	
 	private Role role;
-	
-	
-	//Getters and Setters
-	public String getNome() {
-		return nome;
-	}
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-	public String getCpf() {
-		return cpf;
-	}
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-	public LocalDate getDataNascimento() {
-		return dataNascimento;
-	}
-	public void setDataNascimento(LocalDate dataNascimento) {
-		this.dataNascimento = dataNascimento;
-	}
-	public String getCep() {
-		return cep;
-	}
-	public void setCep(String cep) {
-		this.cep = cep;
-	}
-	public int getNumero() {
-		return numero;
-	}
-	public void setNumero(int numero) {
-		this.numero = numero;
-	}
-	public String getComplemento() {
-		return complemento;
-	}
-	public void setComplemento(String complemento) {
-		this.complemento = complemento;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	public String getSenha() {
-		return senha;
-	}
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
-	public Role getRole() {
-		return role;
-	}
-	public void setRole(Role role) {
-		this.role = role;
-	}
 
-	//metodo
-	public Cliente transformaParaClienteObjeto() {
-		EnderecoCliente endereco = new EnderecoCliente();
-		return new Cliente(nome, cpf, dataNascimento, endereco);
+	public EnderecoCliente transformaEnderecoParaObjeto() {
+		EnderecoCliente enderecoCliente = new EnderecoCliente();
+		enderecoCliente.setCep(cep);
+		enderecoCliente.setNumero(numero);
+		enderecoCliente.setComplemento(complemento);
+		return enderecoCliente;
 	}
-	
-	public ClienteUsuarioDTO() {}
+	public Cliente transformaClienteParaObjeto() {
+		Cliente cliente = new Cliente();
+		cliente.setNome(nome);
+		cliente.setCpf(cpf);
+		cliente.setDataNascimento(dataNascimento);
+		return cliente;
+	}
 	
 
 }

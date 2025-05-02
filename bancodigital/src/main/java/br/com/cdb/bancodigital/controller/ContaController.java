@@ -3,7 +3,7 @@ package br.com.cdb.bancodigital.controller;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,12 +37,12 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/contas")
+@RequiredArgsConstructor
 public class ContaController {
 
-	@Autowired
-	private ContaService contaService;
+	private final ContaService contaService;
 	
-	//ambos podem criar nova conta
+	//ambos podem criar conta
 	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login
 	@PreAuthorize("hasRole('CLIENTE')")
 	@PostMapping

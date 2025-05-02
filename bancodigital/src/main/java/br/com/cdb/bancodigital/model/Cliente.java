@@ -23,9 +23,9 @@ public class Cliente {
 	private LocalDate dataNascimento;
 	private Usuario usuario;
 
-	public boolean isMaiorDeIdade() {
+	public boolean isMenorDeIdade() {
 		if(this.dataNascimento == null) throw new InvalidInputParameterException("Data de Nascimento não pode ser nula");
-		return this.dataNascimento.plusYears(18).isBefore(LocalDate.now());
+		return this.dataNascimento.plusYears(18).isAfter(LocalDate.now());
 	}
 
 }

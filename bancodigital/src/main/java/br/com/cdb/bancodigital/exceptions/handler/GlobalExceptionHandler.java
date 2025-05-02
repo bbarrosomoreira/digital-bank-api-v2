@@ -8,6 +8,7 @@ import br.com.cdb.bancodigital.exceptions.custom.ApiException;
 import br.com.cdb.bancodigital.dto.response.ErrorResponse;
 import br.com.cdb.bancodigital.dto.response.ValidationErrorResponse;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +47,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
 			MethodArgumentNotValidException ex,
-			HttpHeaders headers, 
-			HttpStatusCode status, 
+			@NotNull HttpHeaders headers,
+			@NotNull HttpStatusCode status,
 			WebRequest request) {
 
 		Map<String, String> fieldErrors = ex.getBindingResult().getFieldErrors()

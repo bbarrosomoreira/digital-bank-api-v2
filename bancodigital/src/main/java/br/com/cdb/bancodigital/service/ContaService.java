@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.cdb.bancodigital.model.*;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,27 +34,17 @@ import br.com.cdb.bancodigital.dto.response.SaqueResponse;
 import br.com.cdb.bancodigital.dto.response.TransferenciaResponse;
 
 @Service
+@RequiredArgsConstructor
 public class ContaService {
 	
 	private static final Logger log = LoggerFactory.getLogger(ContaService.class);
 
-	@Autowired
-	private ContaDAO contaDAO;
-
-	@Autowired
-	private ClienteDAO clienteDAO;
-	
-	@Autowired
-	private CartaoDAO cartaoDAO;
-
-	@Autowired
-	private PoliticaDeTaxasDAO politicaDeTaxaDAO;
-	
-	@Autowired
-	private ConversorMoedasService conversorMoedasService;	
-	
-	@Autowired
-	private SecurityService securityService;
+	private final ContaDAO contaDAO;
+	private final ClienteDAO clienteDAO;
+	private final CartaoDAO cartaoDAO;
+	private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
+	private final ConversorMoedasService conversorMoedasService;
+	private final SecurityService securityService;
 
 	// addConta de forma genérica
 	@Transactional
@@ -279,19 +269,16 @@ public class ContaService {
 		if(cartaoDAO.existsByContaId(conta.getId())) throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
 	}
 	public Conta verificarContaExitente(Long id_conta) {
-		Conta conta = contaDAO.buscarContaPorId(id_conta)
+		return contaDAO.buscarContaPorId(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID "+id_conta+" não encontrada."));
-		return conta;
 	}
 	public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
-		PoliticaDeTaxas parametros = politicaDeTaxaDAO.findByCategoria(categoria)
-		.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
-		return parametros;
+		return politicaDeTaxaDAO.findByCategoria(categoria)
+				.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
 	}
 	public Cliente verificarClienteExistente(Long id_cliente) {
-		Cliente cliente = clienteDAO.buscarClienteporId(id_cliente)
+		return clienteDAO.buscarClienteporId(id_cliente)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-		return cliente;
 	}
 	public void verificaSaldoSuficiente(BigDecimal valor, BigDecimal saldo) {
 		if (valor.compareTo(saldo) > 0)

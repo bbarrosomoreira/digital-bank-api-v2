@@ -1,20 +1,17 @@
 package br.com.cdb.bancodigital.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class AjustarLimiteDTO {
 	
 	private BigDecimal limiteNovo;
-	
-	public AjustarLimiteDTO () {}
-
-	public BigDecimal getLimiteNovo() {
-		return limiteNovo;
-	}
-	public void setLimiteNovo(BigDecimal limiteNovo) {
-		this.limiteNovo = limiteNovo;
-	}
-	
 	
 
 }

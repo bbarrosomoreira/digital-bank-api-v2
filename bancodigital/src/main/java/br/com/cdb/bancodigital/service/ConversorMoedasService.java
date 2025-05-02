@@ -3,9 +3,9 @@ package br.com.cdb.bancodigital.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,12 +18,12 @@ import br.com.cdb.bancodigital.dto.response.ApiConversorMoedasResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 
 @Service
+@RequiredArgsConstructor
 public class ConversorMoedasService {
 	
 	private static final Logger log = LoggerFactory.getLogger(ConversorMoedasService.class);
 
-	@Autowired
-	private RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 	
 	private static final Dotenv dotenv = Dotenv.load();
 	
@@ -79,9 +79,11 @@ public class ConversorMoedasService {
         			ApiConversorMoedasResponse.class);
 
         	// Retornar o result do body	
-        	return response.getBody().getResult().setScale(2, RoundingMode.HALF_UP);
-    		
-    	} catch (Exception e) {
+            if (response.getBody() != null) {
+                return response.getBody().getResult().setScale(2, RoundingMode.HALF_UP);
+            }
+
+        } catch (Exception e) {
 			log.error("Erro na conversão de moeda: " + e.getMessage());
 		}
 		

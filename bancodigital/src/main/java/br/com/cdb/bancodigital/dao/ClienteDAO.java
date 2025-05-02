@@ -53,7 +53,6 @@ public class ClienteDAO {
 		String sql = "SELECT * FROM cliente";
 		return jdbcTemplate.query(sql, clienteMapper);
 	}
-
 	public Optional<Cliente> buscarClienteporId(Long id) {
 		String sql = "SELECT * FROM cliente WHERE id = ?";
 		try {
@@ -63,7 +62,6 @@ public class ClienteDAO {
 			return Optional.empty();
 		}
 	}
-
 	public Optional<Cliente> buscarClienteporUsuario(Usuario usuario) {
 		String sql = "SELECT * FROM cliente WHERE usuario_id = ?";
 		try {
@@ -73,7 +71,6 @@ public class ClienteDAO {
 			return Optional.empty();
 		}
 	}
-
 	public Optional<Cliente> buscarClienteporUsuarioId(Long id) {
 		String sql = "SELECT * FROM cliente WHERE usuario_id = ?";
 		try {
@@ -83,7 +80,6 @@ public class ClienteDAO {
 			return Optional.empty();
 		}
 	}
-
 	public Optional<Cliente> buscarClienteporCPF(String cpf) {
 		String sql = "SELECT * FROM cliente WHERE cpf = ?";
 		try {
@@ -92,6 +88,15 @@ public class ClienteDAO {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		}
+	}
+	// Verificar se existe cliente com o CPF
+	public boolean existsByCpf(String cpf) {
+		String sql = "SELECT COUNT(*) FROM cliente WHERE cpf = ?";
+
+		// O resultado será o número de registros encontrados (1 ou mais)
+		int count = jdbcTemplate.queryForObject(sql, Integer.class, cpf);
+
+		return count > 0;  // Retorna true se existir pelo menos um cliente com o CPF
 	}
 
 	// UPDATE | Atualizar clientes

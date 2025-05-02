@@ -13,8 +13,7 @@ public record SaldoResponse (
 		Moeda moeda,
 		BigDecimal saldo
 		){
-	
-    // Método estático para construção a partir de ContaBase
+
     public static SaldoResponse toSaldoResponse(Conta conta) {
         return new SaldoResponse(
             conta.getNumeroConta(),

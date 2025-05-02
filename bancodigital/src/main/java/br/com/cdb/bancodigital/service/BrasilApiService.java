@@ -11,7 +11,7 @@ import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 @Service
 public class BrasilApiService {
 	
-	private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
+	private static final Logger log = LoggerFactory.getLogger(BrasilApiService.class);
 	
 	public CEP2 buscarEnderecoPorCep(String cep) {
 		try {

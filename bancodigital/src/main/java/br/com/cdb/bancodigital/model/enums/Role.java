@@ -1,16 +1,18 @@
 package br.com.cdb.bancodigital.model.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public enum Role {
 	
 	ADMIN,
 	CLIENTE;
-	
-	Role() {}
 
 	public static Role fromString(String roleStr) {
 		if (roleStr == null) {

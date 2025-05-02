@@ -4,18 +4,13 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 import br.com.cdb.bancodigital.dao.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.cdb.bancodigital.model.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brasilapi.api.CEP2;
 import br.com.cdb.bancodigital.dto.ClienteUsuarioDTO;
-import br.com.cdb.bancodigital.model.Cartao;
-import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.Conta;
-import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.model.Seguro;
-import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.model.enums.Moeda;
 import br.com.cdb.bancodigital.model.enums.TipoCartao;
@@ -32,63 +27,56 @@ import br.com.cdb.bancodigital.dto.response.ContaResponse;
 import br.com.cdb.bancodigital.dto.response.SeguroResponse;
 
 @Service
+@RequiredArgsConstructor
 public class AdminService {
 	
-	@Autowired
-	private UsuarioDAO usuarioDAO;
-	
-	@Autowired
-	private ClienteDAO clienteRepository;
+	private final UsuarioDAO usuarioDAO;
+	private final ClienteDAO clienteDAO;
+	private final EnderecoClienteDAO enderecoClienteDAO;
+	private final ContaDAO contaDAO;
+	private final CartaoDAO cartaoDAO;
+	private final SeguroDAO seguroDAO;
+	private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
+	private final SecurityService securityService;
+	private final ReceitaService receitaService;
+    private final BrasilApiService brasilApiService;
+	private final ConversorMoedasService conversorMoedasService;
 
-	@Autowired
-	private ContaDAO contaRepository;
 
-	@Autowired
-	private CartaoDAO cartaoRepository;
-
-	@Autowired
-	private SeguroDAO seguroRepository;
-	
-	@Autowired
-	private PoliticaDeTaxasDAO politicaDeTaxaRepository;
-	
-	@Autowired
-	private SecurityService securityService;
-	
-	@Autowired
-	private ReceitaService receitaService;
-	
-	@Autowired
-    private BrasilApiService brasilApiService;
-	
-	@Autowired
-	private ConversorMoedasService conversorMoedasService;	
-	
-	
 	// Cadastrar cliente
 	public ClienteResponse cadastrarCliente(ClienteUsuarioDTO dto) {
+		// Buscar dados do CEP na BrasilAPI
 		CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
-		
+		// Criar usuário para cliente
 		Usuario usuario = usuarioDAO.criarUsuario(dto.getEmail(), dto.getSenha(), dto.getRole());
 
-		Cliente cliente = dto.transformaParaClienteObjeto();
-		cliente.getEndereco().setCep(dto.getCep());
-		cliente.getEndereco().setBairro(cepInfo.getNeighborhood());
-		cliente.getEndereco().setCidade(cepInfo.getCity());
-		cliente.getEndereco().setComplemento(dto.getComplemento());
-		cliente.getEndereco().setEstado(cepInfo.getState());
-		cliente.getEndereco().setNumero(dto.getNumero());
-		cliente.getEndereco().setRua(cepInfo.getStreet());
-
+		// Criar cliente
+		Cliente cliente = dto.transformaClienteParaObjeto();
+		cliente.setCategoria(CategoriaCliente.COMUM);
 		cliente.setUsuario(usuario);
-		
-		if(!receitaService.isCpfValidoEAtivo(cliente.getCpf())) throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
-		
+
+		// Validações
+		if (!receitaService.isCpfValidoEAtivo(cliente.getCpf()))
+			throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
 		validarCpfUnico(cliente.getCpf());
 		validarMaiorIdade(cliente);
 
-		clienteRepository.salvar(cliente);
-		return toClienteResponse(cliente);
+		// Salvar cliente no banco
+		Cliente clienteSalvo = clienteDAO.salvar(cliente);
+
+		// Criar endereço
+		EnderecoCliente enderecoCliente = dto.transformaEnderecoParaObjeto();
+		enderecoCliente.setCliente(clienteSalvo);
+		enderecoCliente.setBairro(cepInfo.getNeighborhood());
+		enderecoCliente.setCidade(cepInfo.getCity());
+		enderecoCliente.setEstado(cepInfo.getState());
+		enderecoCliente.setRua(cepInfo.getStreet());
+
+		// Salvar endereço no banco
+		enderecoClienteDAO.salvar(enderecoCliente);
+
+
+		return toClienteResponse(clienteSalvo);
 	}
 	
 	// addConta de forma genérica
@@ -99,7 +87,7 @@ public class AdminService {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		securityService.validateAccess(usuarioLogado, cliente);
 		Conta contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
-		contaRepository.save(contaNova);
+		contaDAO.salvar(contaNova);
 		
 		return toContaResponse(contaNova);
 	}
@@ -113,7 +101,7 @@ public class AdminService {
 		Conta conta = verificarContaExitente(id_conta);
 		securityService.validateAccess(usuarioLogado, conta.getCliente());
 		Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
-		cartaoRepository.save(cartaoNovo);
+		cartaoDAO.salvar(cartaoNovo);
 
 		return toCartaoResponse(cartaoNovo);
 	}
@@ -122,12 +110,12 @@ public class AdminService {
 	@Transactional
 	public SeguroResponse contratarSeguro(Long id_cartao, Usuario usuarioLogado, TipoSeguro tipo) {
 		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
-		Cartao ccr = cartaoRepository.findCartaoById(id_cartao)
+		Cartao ccr = cartaoDAO.findCartaoById(id_cartao)
 				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 		securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
 		
 		Seguro seguroNovo = contratarSeguroPorTipo(tipo, ccr);
-		seguroRepository.save(seguroNovo);
+		seguroDAO.salvar(seguroNovo);
 		return toSeguroResponse(seguroNovo);
 	}
 	
@@ -138,26 +126,25 @@ public class AdminService {
 	}
 	
 	public Cliente verificarClienteExistente(Long id_cliente) {
-		Cliente cliente = clienteRepository.findById(id_cliente)
+		return clienteDAO.buscarClienteporId(id_cliente)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-		return cliente;
 	}
 	
 	public Conta verificarContaExitente(Long id_conta) {
-		Conta conta = contaRepository.findById(id_conta)
+		return contaDAO.buscarContaPorId(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID "+id_conta+" não encontrada."));
-		return conta;
 	}
 	
 	public ClienteResponse toClienteResponse(Cliente cliente) {
-		return new ClienteResponse(cliente);
+		EnderecoCliente endereco = enderecoClienteDAO.buscarEnderecoporClienteOuErro(cliente);
+		return new ClienteResponse(cliente, endereco);
 	}
 	private void validarCpfUnico(String cpf) {
-		if (clienteRepository.existsByCpf(cpf))
+		if (clienteDAO.existsByCpf(cpf))
 			throw new ResourceAlreadyExistsException("CPF já cadastrado no sistema.");
 	}
 	private void validarMaiorIdade(Cliente cliente) {
-		if (!cliente.isMaiorDeIdade())
+		if (cliente.isMenorDeIdade())
 			throw new ValidationException("Cliente deve ser maior de 18 anos para se cadastrar.");
 	}
 	
@@ -204,9 +191,8 @@ public class AdminService {
 	}
 
 	public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
-		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
-		.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
-		return parametros;
+		return politicaDeTaxaDAO.findByCategoria(categoria)
+				.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
 	}
 	
 	public ContaResponse toContaResponse(Conta conta) {
@@ -258,7 +244,7 @@ public class AdminService {
 		
 		CategoriaCliente categoria = ccr.getConta().getCliente().getCategoria();
 
-		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
+		PoliticaDeTaxas parametros = politicaDeTaxaDAO.findByCategoria(categoria)
 				.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
 
 		return switch (tipo) {

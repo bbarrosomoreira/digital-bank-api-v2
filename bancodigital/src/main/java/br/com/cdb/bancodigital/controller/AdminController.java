@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,10 +25,10 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
 	
-	@Autowired
-	private AdminService adminService;
+	private final AdminService adminService;
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/cliente")

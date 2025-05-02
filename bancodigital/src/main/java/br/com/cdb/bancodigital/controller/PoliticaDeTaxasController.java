@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +16,10 @@ import br.com.cdb.bancodigital.service.PoliticaDeTaxasService;
 
 @RestController
 @RequestMapping("/parametros")
+@RequiredArgsConstructor
 public class PoliticaDeTaxasController {
 	
-	@Autowired
-	private PoliticaDeTaxasService parametrosService;
+	private final PoliticaDeTaxasService parametrosService;
 	
 	// só admin pode verificar essas políticas
 	@PreAuthorize("hasRole('ADMIN')")

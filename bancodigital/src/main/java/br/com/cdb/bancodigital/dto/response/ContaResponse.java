@@ -9,7 +9,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import br.com.cdb.bancodigital.model.enums.Moeda;
 import br.com.cdb.bancodigital.model.enums.TipoConta;
 import jakarta.validation.constraints.Digits;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class ContaResponse {
 	
 	private Long id;
@@ -24,36 +30,7 @@ public class ContaResponse {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Digits(integer = 19, fraction = 2)
 	private BigDecimal saldoEmReais;
-	
-	//G
-	public Long getId() {
-		return id;
-	}
-	public String getNumConta() {
-		return numConta;
-	}
-	public TipoConta getTipoConta() {
-		return tipoConta;
-	}
-	public Moeda getMoeda() {
-		return moeda;
-	}
-	public LocalDate getDataCriacao() {
-		return dataCriacao;
-	}
-	public BigDecimal getTaxa() {
-		return taxa;
-	}
-	public BigDecimal getSaldo() {
-		return saldo;
-	}
-	public BigDecimal getSaldoEmReais() {
-		return saldoEmReais;
-	}
-	public void setSaldoEmReais(BigDecimal saldoEmReais) {
-		this.saldoEmReais = saldoEmReais;
-	}
-	//C
+
     public ContaResponse(Long id, String numConta, TipoConta tipoConta, 
                     Moeda moeda, BigDecimal saldo, LocalDate dataCriacao, BigDecimal taxa) {
         this.id = id;

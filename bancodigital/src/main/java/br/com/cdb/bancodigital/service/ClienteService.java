@@ -63,7 +63,7 @@ public class ClienteService {
         validarCpfUnico(cliente.getCpf());
         validarMaiorIdade(cliente);
 
-        // Salvar cliente no banco e obter com ID preenchido
+        // Salvar cliente no banco
         Cliente clienteSalvo = clienteDAO.salvar(cliente);
 
         // Criar endereço
@@ -105,7 +105,7 @@ public class ClienteService {
 
         boolean temContas = contaDAO.existsByClienteId(id_cliente);
         boolean temCartoes = cartaoDAO.existsByContaClienteId(id_cliente);
-        boolean temSeguros = seguroDAO.existsByCartaoCreditoContaClienteId(id_cliente);
+        boolean temSeguros = seguroDAO.existsByCartaoContaClienteId(id_cliente);
 
         if (temContas || temCartoes || temSeguros) throw new ValidationException(
                 "Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.");
@@ -151,7 +151,7 @@ public class ClienteService {
             }
         }
 
-        EnderecoCliente enderecoAtual = enderecoClienteDAO.buscarEnderecoporCliente(cliente).orElse(null);
+        enderecoClienteDAO.buscarEnderecoporCliente(cliente);
 
         return toResponse(cliente);
     }
@@ -198,7 +198,7 @@ public class ClienteService {
     }
 
     private void validarMaiorIdade(Cliente cliente) {
-        if (!cliente.isMaiorDeIdade())
+        if (cliente.isMenorDeIdade())
             throw new ValidationException("Cliente deve ser maior de 18 anos para se cadastrar.");
     }
 
@@ -207,7 +207,6 @@ public class ClienteService {
 
         if (contas.isEmpty()) {
             log.info("Cliente ID {} não possui contas.", id_cliente);
-            return;
         } else {
             contas.forEach(conta -> {
                 switch (conta.getTipoConta()) {
@@ -221,8 +220,8 @@ public class ClienteService {
                         conta.setTarifaManutencao(parametros.getTarifaManutencaoContaInternacional());
                     }
                 }
+                contaDAO.salvar(conta);
             });
-            contaDAO.saveAll(contas);
         }
     }
 
@@ -231,7 +230,6 @@ public class ClienteService {
 
         if (cartoes.isEmpty()) {
             log.info("Cliente Id {} não possui cartões.", id_cliente);
-            return;
         } else {
             cartoes.forEach(cartao -> {
                 switch (cartao.getTipoCartao()) {
@@ -242,17 +240,16 @@ public class ClienteService {
                         cartao.setLimite(parametros.getLimiteDiarioDebito());
                     }
                 }
+                cartaoDAO.salvar(cartao);
             });
-            cartaoDAO.saveAll(cartoes);
         }
     }
 
     public void atualizarTaxasDosSeguros(Long id_cliente, PoliticaDeTaxas parametros) {
-        List<Seguro> seguros = seguroDAO.findByClienteId(id_cliente);
+        List<Seguro> seguros = seguroDAO.findSegurosByClienteId(id_cliente);
 
         if (seguros.isEmpty()) {
             log.info("Cliente Id {} não possui seguros.", id_cliente);
-            return;
         } else {
             seguros.forEach(seguro -> {
                 switch (seguro.getTipoSeguro()) {
@@ -264,21 +261,19 @@ public class ClienteService {
                     }
                 }
 
+                seguroDAO.salvar(seguro);
             });
-            seguroDAO.saveAll(seguros);
         }
     }
 
     public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
-        PoliticaDeTaxas parametros = politicaDeTaxaDAO.findByCategoria(categoria)
+        return politicaDeTaxaDAO.findByCategoria(categoria)
                 .orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
-        return parametros;
     }
 
     public Cliente verificarClienteExistente(Long id_cliente) {
-        Cliente cliente = clienteDAO.buscarClienteporId(id_cliente)
+        return clienteDAO.buscarClienteporId(id_cliente)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-        return cliente;
     }
     private boolean possuiDadosDeEndereco(ClienteAtualizadoDTO dto) {
         return dto.getRua() != null || dto.getNumero() != null || dto.getComplemento() != null ||

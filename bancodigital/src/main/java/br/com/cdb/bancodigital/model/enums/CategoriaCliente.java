@@ -4,9 +4,11 @@ import java.util.Arrays;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum CategoriaCliente {
 	COMUM("Comum", 0), //basic
 	SUPER("Super", 1), //standard
@@ -14,11 +16,6 @@ public enum CategoriaCliente {
 	
 	private final String descricao;
 	private final int nivel;
-	
-	CategoriaCliente(String descricao, int nivel){
-		this.descricao = descricao;
-		this.nivel = nivel;
-	}
 	
     @JsonValue
     public String getDescricao() {

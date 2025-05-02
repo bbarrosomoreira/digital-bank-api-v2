@@ -112,7 +112,7 @@ public class CartaoService {
         return toResponse(cartao);
     }
 
-    // get cartao por usuário
+    // get cartão por usuário
     public List<CartaoResponse> listarPorUsuario(Usuario usuario) {
         List<Cartao> cartoes = cartaoDAO.findByContaClienteUsuario(usuario);
         return cartoes.stream().map(this::toResponse).toList();
@@ -264,27 +264,23 @@ public class CartaoService {
     }
 
     public Conta verificarContaExitente(Long id_conta) {
-        Conta conta = contaDAO.buscarContaPorId(id_conta)
+        return contaDAO.buscarContaPorId(id_conta)
                 .orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
-        return conta;
     }
 
     public Cliente verificarClienteExistente(Long id_cliente) {
-        Cliente cliente = clienteDAO.buscarClienteporId(id_cliente)
+        return clienteDAO.buscarClienteporId(id_cliente)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-        return cliente;
     }
 
     public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
-        PoliticaDeTaxas parametros = politicaDeTaxaDAO.findByCategoria(categoria)
+        return politicaDeTaxaDAO.findByCategoria(categoria)
                 .orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
-        return parametros;
     }
 
     public Cartao verificarCartaoExistente(Long id_cartao) {
-        Cartao cartao = cartaoDAO.findCartaoById(id_cartao)
+        return cartaoDAO.findCartaoById(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
-        return cartao;
     }
 
     public void verificarCartaoAtivo(Status status) {
