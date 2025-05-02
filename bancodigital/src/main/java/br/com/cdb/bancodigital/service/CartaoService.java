@@ -7,7 +7,6 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,7 +93,7 @@ public class CartaoService {
     public List<CartaoResponse> listarPorConta(Long id_conta, Usuario usuarioLogado) {
         Conta conta = verificarContaExitente(id_conta);
         securityService.validateAccess(usuarioLogado, conta.getCliente());
-        List<Cartao> cartoes = cartaoDAO.buscarCartoesPorContaId(id_conta);
+        List<Cartao> cartoes = cartaoDAO.findByContaId(id_conta);
         return cartoes.stream().map(this::toResponse).toList();
     }
 
@@ -207,7 +206,7 @@ public class CartaoService {
 
     // get fatura
     public FaturaResponse getFatura(Long id_cartao, Usuario usuarioLogado) {
-        Cartao ccr = cartaoDAO.buscarCartaoPorId(id_cartao)
+        Cartao ccr = cartaoDAO.findCartaoById(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
         securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
         verificarCartaoAtivo(ccr.getStatus());
@@ -218,7 +217,7 @@ public class CartaoService {
     // ressetar limite credito
     @Transactional
     public FaturaResponse pagarFatura(Long id_cartao, Usuario usuarioLogado) {
-        Cartao ccr = cartaoDAO.buscarCartaoPorId(id_cartao)
+        Cartao ccr = cartaoDAO.findCartaoById(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
         securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
 
@@ -234,7 +233,7 @@ public class CartaoService {
     // ressetar limite diario
     @Transactional
     public RessetarLimiteDiarioResponse ressetarDebito(Long id_cartao) {
-        Cartao cdb = cartaoDAO.buscarCartaoPorId(id_cartao)
+        Cartao cdb = cartaoDAO.findCartaoById(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 
         verificarCartaoAtivo(cdb.getStatus());
@@ -256,8 +255,8 @@ public class CartaoService {
     }
 
     public void verificarSegurosVinculados(Cartao cartao) {
-        Long id = cartao.getId_cartao();
-        boolean existeSeguro = seguroDAO.existsByCartaoCreditoId(id);
+        Long id = cartao.getId();
+        boolean existeSeguro = seguroDAO.existsByCartaoId(id);
         log.info("Cartão ID {} possui seguro vinculado? {}", id, existeSeguro);
         if (existeSeguro) {
             throw new InvalidInputParameterException("Cartão não pode ser excluído com seguros vinculados.");
@@ -283,7 +282,7 @@ public class CartaoService {
     }
 
     public Cartao verificarCartaoExistente(Long id_cartao) {
-        Cartao cartao = cartaoDAO.buscarCartaoPorId(id_cartao)
+        Cartao cartao = cartaoDAO.findCartaoById(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
         return cartao;
     }

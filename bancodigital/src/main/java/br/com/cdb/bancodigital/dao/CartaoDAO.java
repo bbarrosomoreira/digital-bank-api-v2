@@ -59,12 +59,12 @@ public class CartaoDAO {
 		cartao.setId(id);
 		return cartao;
 	}
-	// READ - buscar todos
+	// READ - buscar cartões
 	public List<Cartao> buscarTodosCartoes() {
 		String sql = "SELECT * FROM cartao";
 		return jdbcTemplate.query(sql, cartaoMapper);
 	}
-	public Optional<Cartao> buscarCartaoPorId(Long id) {
+	public Optional<Cartao> findCartaoById(Long id) {
 		String sql = "SELECT * FROM cartao WHERE id = ?";
 		try {
 			Cartao cartao = jdbcTemplate.queryForObject(sql, cartaoMapper, id);
@@ -73,7 +73,7 @@ public class CartaoDAO {
 			return Optional.empty();
 		}
 	}
-	public List<Cartao> buscarCartoesPorContaId(Long contaId) {
+	public List<Cartao> findByContaId(Long contaId) {
 		String sql = "SELECT * FROM cartao WHERE conta_id = ?";
 		return jdbcTemplate.query(sql, cartaoMapper, contaId);
 	}
@@ -114,7 +114,7 @@ public class CartaoDAO {
 		return jdbcTemplate.query(sql, cartaoMapper, clienteId);
 	}
 	// Listar cartões por tipo para um cliente
-	public List<Cartao> buscarCartoesPorTipoPorCliente(Long clienteId, String tipoCartao) {
+	public List<Cartao> buscarCartoesPorTipoECliente(Long clienteId, String tipoCartao) {
 		String sql = """
             SELECT c.* FROM cartao c
             JOIN conta conta ON c.conta_id = conta.id
