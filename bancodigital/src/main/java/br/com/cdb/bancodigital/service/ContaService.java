@@ -36,19 +36,19 @@ import br.com.cdb.bancodigital.dto.response.TransferenciaResponse;
 @Service
 public class ContaService {
 	
-	private static final Logger log = LoggerFactory.getLogger(CartaoService.class);
+	private static final Logger log = LoggerFactory.getLogger(ContaService.class);
 
 	@Autowired
-	private ContaDAO contaRepository;
+	private ContaDAO contaDAO;
 
 	@Autowired
-	private ClienteDAO clienteRepository;
+	private ClienteDAO clienteDAO;
 	
 	@Autowired
-	private CartaoDAO cartaoRepository;
+	private CartaoDAO cartaoDAO;
 
 	@Autowired
-	private PoliticaDeTaxasDAO politicaDeTaxaRepository;
+	private PoliticaDeTaxasDAO politicaDeTaxaDAO;
 	
 	@Autowired
 	private ConversorMoedasService conversorMoedasService;	
@@ -64,7 +64,7 @@ public class ContaService {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		securityService.validateAccess(usuarioLogado, cliente);
 		Conta contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
-		contaRepository.save(contaNova);
+		contaDAO.salvar(contaNova);
 		
 		return toResponse(contaNova);
 	}
@@ -113,13 +113,13 @@ public class ContaService {
 
 	// get contas
 	public List<ContaResponse> getContas() {
-		List<Conta> contas = contaRepository.findAll();
+		List<Conta> contas = contaDAO.buscarTodasContas();
 		return contas.stream().map(this::toResponse).toList();
 	}
 
 	// get conta por usuário
 	public List<ContaResponse> listarPorUsuario(Usuario usuarioLogado) {
-		List<Conta> contas = contaRepository.findByClienteUsuario(usuarioLogado);
+		List<Conta> contas = contaDAO.buscarPorClienteUsuario(usuarioLogado);
 		return contas.stream().map(this::toResponse).toList();
 	}
 	
@@ -127,7 +127,7 @@ public class ContaService {
 	public List<ContaResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		securityService.validateAccess(usuarioLogado, cliente);
-		List<Conta> contas = contaRepository.findByClienteId(id_cliente);
+		List<Conta> contas = contaDAO.buscarPorClienteId(id_cliente);
 		return contas.stream().map(this::toResponse).toList();
 	}
 
@@ -142,7 +142,7 @@ public class ContaService {
 	// deletar contas de cliente
 	@Transactional
 	public void deleteContasByCliente(Long id_cliente) {
-		List<Conta> contas = contaRepository.findByClienteId(id_cliente);
+		List<Conta> contas = contaDAO.buscarPorClienteId(id_cliente);
 		if (contas.isEmpty()) {
 			log.info("Cliente Id {} não possui contas.", id_cliente);
 			return;
@@ -152,7 +152,7 @@ public class ContaService {
 				verificarCartoesVinculados(conta);
 				verificaSaldoRemanescente(conta);
 				Long id = conta.getId();
-				contaRepository.delete(conta);
+				contaDAO.deletarContaPorId(conta.getId());
 				log.info("Conta ID {} deletado com sucesso", id);
 				
 			} catch (DataIntegrityViolationException e) {
@@ -171,8 +171,8 @@ public class ContaService {
 		securityService.validateAccess(usuarioLogado, cliente);
 		verificaSaldoSuficiente(valor, origem.getSaldo());
 		origem.transferir(destino, valor);
-		contaRepository.save(origem);
-		contaRepository.save(destino);
+		contaDAO.salvar(origem);
+		contaDAO.salvar(destino);
 		return TransferenciaResponse.toTransferenciaResponse(origem.getNumeroConta(), destino.getNumeroConta(), valor);
 
 		// Registrar a transação
@@ -187,8 +187,8 @@ public class ContaService {
 		securityService.validateAccess(usuarioLogado, cliente);
 		verificaSaldoSuficiente(valor, origem.getSaldo());
 		origem.pix(destino, valor);
-		contaRepository.save(origem);
-		contaRepository.save(destino);
+		contaDAO.salvar(origem);
+		contaDAO.salvar(destino);
 		return PixResponse.toPixResponse(origem.getNumeroConta(), destino.getNumeroConta(), valor);
 
 //		// Registrar a transação
@@ -207,7 +207,7 @@ public class ContaService {
 	public DepositoResponse depositar(Long id_conta, BigDecimal valor) {
 		Conta conta = verificarContaExitente(id_conta);
 		conta.depositar(valor);
-		contaRepository.save(conta);
+		contaDAO.salvar(conta);
 		return DepositoResponse.toDepositoResponse(conta.getNumeroConta(), valor, conta.getSaldo());
 
 //		// Registrar a transação
@@ -222,7 +222,7 @@ public class ContaService {
 		securityService.validateAccess(usuarioLogado, cliente);
 		verificaSaldoSuficiente(valor, conta.getSaldo());
 		conta.sacar(valor);
-		contaRepository.save(conta);
+		contaDAO.salvar(conta);
 		return SaqueResponse.toSaqueResponse(conta.getNumeroConta(), valor, conta.getSaldo());
 
 //		// Registrar a transação
@@ -231,23 +231,23 @@ public class ContaService {
 	// txmanutencao
 	@Transactional
 	public AplicarTxManutencaoResponse debitarTarifaManutencao(Long id_conta) {
-		Conta cc = contaRepository.findContaById(id_conta)
+		Conta cc = contaDAO.buscarContaPorId(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
 			
 		verificaSaldoSuficiente(cc.getTarifaManutencao(), cc.getSaldo());
 		cc.aplicarTarifaManutencao();
-		contaRepository.save(cc);
+		contaDAO.salvar(cc);
 		return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), cc.getTarifaManutencao(), cc.getSaldo());
 	}
 
 	// rendimento
 	@Transactional
 	public AplicarTxRendimentoResponse creditarRendimento(Long id_conta) {
-		Conta cp = contaRepository.findContaById(id_conta)
+		Conta cp = contaDAO.buscarContaPorId(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
 		
 		cp.aplicarRendimento();
-		contaRepository.save(cp);
+		contaDAO.salvar(cp);
 		return AplicarTxRendimentoResponse.toAplicarTxRendimentoResponse(cp.getNumeroConta(), cp.getTaxaRendimento(), cp.getSaldo());
 
 	}
@@ -276,20 +276,20 @@ public class ContaService {
 		if(conta.getSaldo() != null && conta.getSaldo().compareTo(BigDecimal.ZERO)>0) throw new InvalidInputParameterException("Não é possivel excluir uma conta com saldo remanescente.");	
 	}
 	public void verificarCartoesVinculados(Conta conta) {
-		if(cartaoRepository.existsByContaId(conta.getId())) throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
+		if(cartaoDAO.existsByContaId(conta.getId())) throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
 	}
 	public Conta verificarContaExitente(Long id_conta) {
-		Conta conta = contaRepository.findById(id_conta)
+		Conta conta = contaDAO.buscarContaPorId(id_conta)
 				.orElseThrow(() -> new ResourceNotFoundException("Conta com ID "+id_conta+" não encontrada."));
 		return conta;
 	}
 	public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
-		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
+		PoliticaDeTaxas parametros = politicaDeTaxaDAO.findByCategoria(categoria)
 		.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
 		return parametros;
 	}
 	public Cliente verificarClienteExistente(Long id_cliente) {
-		Cliente cliente = clienteRepository.findById(id_cliente)
+		Cliente cliente = clienteDAO.buscarClienteporId(id_cliente)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
 		return cliente;
 	}

@@ -28,7 +28,7 @@ public class ClienteMapper implements RowMapper<Cliente> {
         cliente.setCategoria(CategoriaCliente.fromString(rs.getString("categoria")));
         cliente.setDataNascimento(rs.getDate("data_nascimento").toLocalDate());
 
-        long usuarioId = rs.getLong("usuario_id");
+        Long usuarioId = rs.getLong("usuario_id");
         Usuario usuario = usuarioDAO.buscarUsuarioporId(usuarioId)
                         .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
         cliente.setUsuario(usuario);
