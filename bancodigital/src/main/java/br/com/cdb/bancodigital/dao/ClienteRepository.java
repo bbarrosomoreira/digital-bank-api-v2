@@ -26,7 +26,7 @@ public class ClienteRepository {
 
 	// CREATE | Criar cliente
 	public Cliente criarCliente(Cliente cliente) {
-		String sql = ""
+		String sql = "";
 	}
 
 	// READ | Listar clientes

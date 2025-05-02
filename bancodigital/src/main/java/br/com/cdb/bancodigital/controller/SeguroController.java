@@ -144,7 +144,7 @@ public class SeguroController {
 			Authentication authentication) {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		Seguro seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, dto.getValorFraude());
-		return ResponseEntity.ok(AcionarSeguroFraudeResponse.toSeguroFraudeResponse(seguro);
+		return ResponseEntity.ok(AcionarSeguroFraudeResponse.toSeguroFraudeResponse(seguro));
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
@@ -154,7 +154,7 @@ public class SeguroController {
 			Authentication authentication) {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		Seguro seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, BigDecimal.ZERO);
-		return ResponseEntity.ok(AcionarSeguroViagemResponse.toSeguroViagemResponse(seguro);
+		return ResponseEntity.ok(AcionarSeguroViagemResponse.toSeguroViagemResponse(seguro));
 	}
 	
 	// debitar premio seguro
