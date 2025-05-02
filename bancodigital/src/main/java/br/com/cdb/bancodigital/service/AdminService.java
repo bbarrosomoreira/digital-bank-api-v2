@@ -47,8 +47,11 @@ public class AdminService {
 	public ClienteResponse cadastrarCliente(ClienteUsuarioDTO dto) {
 		// Buscar dados do CEP na BrasilAPI
 		CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
+		//log
+
 		// Criar usuário para cliente
 		Usuario usuario = usuarioDAO.criarUsuario(dto.getEmail(), dto.getSenha(), dto.getRole());
+		//log
 
 		// Criar cliente
 		Cliente cliente = dto.transformaClienteParaObjeto();

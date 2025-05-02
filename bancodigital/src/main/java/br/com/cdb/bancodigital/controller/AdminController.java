@@ -1,6 +1,7 @@
 package br.com.cdb.bancodigital.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/admin")
 @AllArgsConstructor
+@Slf4j
 public class AdminController {
 	
 	private final AdminService adminService;
