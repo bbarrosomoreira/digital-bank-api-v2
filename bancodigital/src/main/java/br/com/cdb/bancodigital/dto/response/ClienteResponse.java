@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.dto.response;
 import java.time.LocalDate;
 import java.time.Period;
 
+import br.com.cdb.bancodigital.model.EnderecoCliente;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigital.model.Cliente;
@@ -40,12 +41,12 @@ public class ClienteResponse {
 	
 	//C
 	public ClienteResponse () {}
-	public ClienteResponse(Cliente cliente) {
+	public ClienteResponse(Cliente cliente, EnderecoCliente endereco) {
 		this.id = cliente.getId();
 		this.nome = cliente.getNome();
 		this.dataNascimento = cliente.getDataNascimento();
 		this.idade = Period.between(cliente.getDataNascimento(), LocalDate.now()).getYears();
-		this.endereco = new EnderecoResponse(cliente.getEndereco());
+		this.endereco = new EnderecoResponse(endereco);
 		this.categoria = cliente.getCategoria();
 	}
 	
