@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,27 +37,17 @@ import br.com.cdb.bancodigital.dto.response.RessetarLimiteDiarioResponse;
 import br.com.cdb.bancodigital.dto.response.StatusCartaoResponse;
 
 @Service
+@RequiredArgsConstructor
 public class CartaoService {
 
     private static final Logger log = LoggerFactory.getLogger(CartaoService.class);
 
-    @Autowired
-    private CartaoDAO cartaoRepository;
-
-    @Autowired
-    private ContaDAO contaRepository;
-
-    @Autowired
-    private ClienteDAO clienteRepository;
-
-    @Autowired
-    private SeguroDAO seguroRepository;
-
-    @Autowired
-    private PoliticaDeTaxasDAO politicaDeTaxaRepository;
-
-    @Autowired
-    private SecurityService securityService;
+    private final CartaoDAO cartaoDAO;
+    private final ContaDAO contaDAO;
+    private final ClienteDAO clienteDAO;
+    private final SeguroDAO seguroDAO;
+    private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
+    private final SecurityService securityService;
 
     // add cartao
     @Transactional
@@ -67,7 +58,7 @@ public class CartaoService {
         Conta conta = verificarContaExitente(id_conta);
         securityService.validateAccess(usuarioLogado, conta.getCliente());
         Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
-        cartaoRepository.save(cartaoNovo);
+        cartaoDAO.salvar(cartaoNovo);
 
         return toResponse(cartaoNovo);
     }
@@ -95,7 +86,7 @@ public class CartaoService {
 
     // get cartoes
     public List<CartaoResponse> getCartoes() {
-        List<Cartao> cartoes = cartaoRepository.findAll();
+        List<Cartao> cartoes = cartaoDAO.buscarTodosCartoes();
         return cartoes.stream().map(this::toResponse).toList();
     }
 
@@ -103,7 +94,7 @@ public class CartaoService {
     public List<CartaoResponse> listarPorConta(Long id_conta, Usuario usuarioLogado) {
         Conta conta = verificarContaExitente(id_conta);
         securityService.validateAccess(usuarioLogado, conta.getCliente());
-        List<Cartao> cartoes = cartaoRepository.findByContaId(id_conta);
+        List<Cartao> cartoes = cartaoDAO.buscarCartoesPorContaId(id_conta);
         return cartoes.stream().map(this::toResponse).toList();
     }
 
@@ -111,7 +102,7 @@ public class CartaoService {
     public List<CartaoResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
         Cliente cliente = verificarClienteExistente(id_cliente);
         securityService.validateAccess(usuarioLogado, cliente);
-        List<Cartao> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
+        List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
         return cartoes.stream().map(this::toResponse).toList();
     }
 
@@ -124,14 +115,14 @@ public class CartaoService {
 
     // get cartao por usuário
     public List<CartaoResponse> listarPorUsuario(Usuario usuario) {
-        List<Cartao> cartoes = cartaoRepository.findByContaClienteUsuario(usuario);
+        List<Cartao> cartoes = cartaoDAO.findByContaClienteUsuario(usuario);
         return cartoes.stream().map(this::toResponse).toList();
     }
 
     // deletar cartoes de cliente
     @Transactional
     public void deleteCartoesByCliente(Long id_cliente) {
-        List<Cartao> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
+        List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
         if (cartoes.isEmpty()) {
             log.info("Cliente Id {} não possui cartões.", id_cliente);
             return;
@@ -141,7 +132,7 @@ public class CartaoService {
                 verificarSegurosVinculados(cartao);
                 verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
                 Long id = cartao.getId();
-                cartaoRepository.delete(cartao);
+                cartaoDAO.deletarCartaoPorId(cartao.getId());
                 log.info("Cartão ID {} deletado com sucesso", id);
 
             } catch (DataIntegrityViolationException e) {
@@ -166,7 +157,7 @@ public class CartaoService {
         }
 
         cartao.realizarPagamento(valor);
-        cartaoRepository.save(cartao);
+        cartaoDAO.salvar(cartao);
         return PagamentoResponse.toPagamentoResponse(cartao, valor, descricao);
     }
 
@@ -182,7 +173,7 @@ public class CartaoService {
             throw new InvalidInputParameterException("Limite não pode ser alterado, pois o limite consumido é maior do que o novo valor de limite.");
 
         cartao.alterarLimite(valor);
-        cartaoRepository.save(cartao);
+        cartaoDAO.salvar(cartao);
         return LimiteResponse.toLimiteResponse(cartao, valor);
     }
 
@@ -197,7 +188,7 @@ public class CartaoService {
         }
 
         cartao.alterarStatus(statusNovo);
-        cartaoRepository.save(cartao);
+        cartaoDAO.salvar(cartao);
         return StatusCartaoResponse.toStatusCartaoResponse(cartao, statusNovo);
     }
 
@@ -211,12 +202,12 @@ public class CartaoService {
         verificarSenhaCorreta(senhaAntiga, cartao.getSenha());
 
         cartao.alterarSenha(senhaAntiga, senhaNova);
-        cartaoRepository.save(cartao);
+        cartaoDAO.salvar(cartao);
     }
 
     // get fatura
     public FaturaResponse getFatura(Long id_cartao, Usuario usuarioLogado) {
-        Cartao ccr = cartaoRepository.findCartaoById(id_cartao)
+        Cartao ccr = cartaoDAO.buscarCartaoPorId(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
         securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
         verificarCartaoAtivo(ccr.getStatus());
@@ -227,7 +218,7 @@ public class CartaoService {
     // ressetar limite credito
     @Transactional
     public FaturaResponse pagarFatura(Long id_cartao, Usuario usuarioLogado) {
-        Cartao ccr = cartaoRepository.findCartaoById(id_cartao)
+        Cartao ccr = cartaoDAO.buscarCartaoPorId(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
         securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
 
@@ -236,20 +227,20 @@ public class CartaoService {
             throw new InvalidInputParameterException("Saldo insuficiente para esta transação. Saldo atual: " + (ccr.getConta().getSaldo()));
 
         ccr.pagarFatura();
-        cartaoRepository.save(ccr);
+        cartaoDAO.salvar(ccr);
         return FaturaResponse.toFaturaResponse(ccr);
     }
 
     // ressetar limite diario
     @Transactional
     public RessetarLimiteDiarioResponse ressetarDebito(Long id_cartao) {
-        Cartao cdb = cartaoRepository.findCartaoById(id_cartao)
+        Cartao cdb = cartaoDAO.buscarCartaoPorId(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 
         verificarCartaoAtivo(cdb.getStatus());
 
         cdb.reiniciarLimiteDebito();
-        cartaoRepository.save(cdb);
+        cartaoDAO.salvar(cdb);
         return RessetarLimiteDiarioResponse.toRessetarLimiteDiarioResponse(cdb);
     }
 
@@ -266,7 +257,7 @@ public class CartaoService {
 
     public void verificarSegurosVinculados(Cartao cartao) {
         Long id = cartao.getId_cartao();
-        boolean existeSeguro = seguroRepository.existsByCartaoCreditoId(id);
+        boolean existeSeguro = seguroDAO.existsByCartaoCreditoId(id);
         log.info("Cartão ID {} possui seguro vinculado? {}", id, existeSeguro);
         if (existeSeguro) {
             throw new InvalidInputParameterException("Cartão não pode ser excluído com seguros vinculados.");
@@ -274,25 +265,25 @@ public class CartaoService {
     }
 
     public Conta verificarContaExitente(Long id_conta) {
-        Conta conta = contaRepository.findById(id_conta)
+        Conta conta = contaDAO.buscarContaPorId(id_conta)
                 .orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
         return conta;
     }
 
     public Cliente verificarClienteExistente(Long id_cliente) {
-        Cliente cliente = clienteRepository.findById(id_cliente)
+        Cliente cliente = clienteDAO.buscarClienteporId(id_cliente)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
         return cliente;
     }
 
     public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
-        PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
+        PoliticaDeTaxas parametros = politicaDeTaxaDAO.findByCategoria(categoria)
                 .orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
         return parametros;
     }
 
     public Cartao verificarCartaoExistente(Long id_cartao) {
-        Cartao cartao = cartaoRepository.findById(id_cartao)
+        Cartao cartao = cartaoDAO.buscarCartaoPorId(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
         return cartao;
     }

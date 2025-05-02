@@ -70,7 +70,7 @@ public class ContaDAO {
 			return Optional.empty();
 		}
 	}
-	public Optional<Conta> buscarPorNumeroConta(String numeroConta) {
+	public Optional<Conta> buscarContaPorNumeroConta(String numeroConta) {
 		String sql = "SELECT * FROM conta WHERE numero_conta = ?";
 		try {
 			Conta conta = jdbcTemplate.queryForObject(sql, contaMapper, numeroConta);
@@ -85,11 +85,11 @@ public class ContaDAO {
 		Integer count = jdbcTemplate.queryForObject(sql, Integer.class, clienteId);
 		return count != null && count > 0;
 	}
-	public List<Conta> buscarPorClienteId(Long clienteId) {
+	public List<Conta> buscarContaPorClienteId(Long clienteId) {
 		String sql = "SELECT * FROM conta WHERE cliente_id = ?";
 		return jdbcTemplate.query(sql, contaMapper, clienteId);
 	}
-	public List<Conta> buscarPorClienteUsuario(Usuario usuario) {
+	public List<Conta> buscarContaPorClienteUsuario(Usuario usuario) {
 		String sql = """
         SELECT c.* FROM conta c
         JOIN cliente cliente ON c.cliente_id = cl.id

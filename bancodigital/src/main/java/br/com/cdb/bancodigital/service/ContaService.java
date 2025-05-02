@@ -119,7 +119,7 @@ public class ContaService {
 
 	// get conta por usuário
 	public List<ContaResponse> listarPorUsuario(Usuario usuarioLogado) {
-		List<Conta> contas = contaDAO.buscarPorClienteUsuario(usuarioLogado);
+		List<Conta> contas = contaDAO.buscarContaPorClienteUsuario(usuarioLogado);
 		return contas.stream().map(this::toResponse).toList();
 	}
 	
@@ -127,7 +127,7 @@ public class ContaService {
 	public List<ContaResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		securityService.validateAccess(usuarioLogado, cliente);
-		List<Conta> contas = contaDAO.buscarPorClienteId(id_cliente);
+		List<Conta> contas = contaDAO.buscarContaPorClienteId(id_cliente);
 		return contas.stream().map(this::toResponse).toList();
 	}
 
@@ -142,7 +142,7 @@ public class ContaService {
 	// deletar contas de cliente
 	@Transactional
 	public void deleteContasByCliente(Long id_cliente) {
-		List<Conta> contas = contaDAO.buscarPorClienteId(id_cliente);
+		List<Conta> contas = contaDAO.buscarContaPorClienteId(id_cliente);
 		if (contas.isEmpty()) {
 			log.info("Cliente Id {} não possui contas.", id_cliente);
 			return;

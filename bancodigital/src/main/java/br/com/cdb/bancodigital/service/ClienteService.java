@@ -203,7 +203,7 @@ public class ClienteService {
     }
 
     public void atualizarTaxasDasContas(Long id_cliente, PoliticaDeTaxas parametros) {
-        List<Conta> contas = contaDAO.buscarPorClienteId(id_cliente);
+        List<Conta> contas = contaDAO.buscarContaPorClienteId(id_cliente);
 
         if (contas.isEmpty()) {
             log.info("Cliente ID {} não possui contas.", id_cliente);
