@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import br.com.cdb.bancodigital.dao.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -31,11 +31,6 @@ import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.dao.CartaoDAO;
-import br.com.cdb.bancodigital.dao.ClienteDAO;
-import br.com.cdb.bancodigital.dao.ContaDAO;
-import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
-import br.com.cdb.bancodigital.dao.SeguroDAO;
 import br.com.cdb.bancodigital.dto.response.ClienteResponse;
 
 @Service
@@ -45,6 +40,7 @@ public class ClienteService {
 	private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
 
 	private final ClienteDAO clienteDAO;
+	private final EnderecoClienteDAO enderecoClienteDAO;
 	private final ContaDAO contaDAO;
 	private final CartaoDAO cartaoDAO;
 	private final SeguroDAO seguroDAO;
@@ -57,17 +53,14 @@ public class ClienteService {
 	public ClienteResponse cadastrarCliente(ClienteDTO dto, Usuario usuario) {
 		CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
 		
-		Cliente cliente = dto.transformaParaObjeto();
+		Cliente cliente = dto.transformaClienteParaObjeto();
 		cliente.setCategoria(CategoriaCliente.COMUM);
 
-		cliente.getEndereco().setCep(dto.getCep());
-		cliente.getEndereco().setBairro(cepInfo.getNeighborhood());
-		cliente.getEndereco().setCidade(cepInfo.getCity());
-		cliente.getEndereco().setComplemento(dto.getComplemento());
-		cliente.getEndereco().setEnderecoPrincipal(true);
-		cliente.getEndereco().setEstado(cepInfo.getState());
-		cliente.getEndereco().setNumero(dto.getNumero());
-		cliente.getEndereco().setRua(cepInfo.getStreet());
+		EnderecoCliente enderecoCliente = dto.transformaEnderecoParaObjeto();
+		enderecoCliente.setBairro(cepInfo.getNeighborhood());
+		enderecoCliente.setCidade(cepInfo.getCity());
+		enderecoCliente.setEstado(cepInfo.getState());
+		enderecoCliente.setRua(cepInfo.getStreet());
 		
 		cliente.setUsuario(usuario);
 		

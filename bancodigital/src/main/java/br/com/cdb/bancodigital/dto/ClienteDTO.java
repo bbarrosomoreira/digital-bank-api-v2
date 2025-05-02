@@ -2,6 +2,8 @@ package br.com.cdb.bancodigital.dto;
 
 import java.time.LocalDate;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.br.CPF;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -14,6 +16,8 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+@Getter
+@Setter
 public class ClienteDTO {
 	
 	@NotBlank(message = "Nome é obrigatótio")
@@ -39,49 +43,21 @@ public class ClienteDTO {
 	@Size(max = 100, message = "Complemento deve ter no máximo 100 caracteres")
 	private String complemento;
 	
-	
-	//Getters and Setters
-	public String getNome() {
-		return nome;
+	public EnderecoCliente transformaEnderecoParaObjeto() {
+		EnderecoCliente enderecoCliente = new EnderecoCliente();
+		enderecoCliente.setCep(cep);
+		enderecoCliente.setNumero(numero);
+		enderecoCliente.setComplemento(complemento);
+		return enderecoCliente;
 	}
-	public void setNome(String nome) {
-		this.nome = nome;
+	public Cliente transformaClienteParaObjeto() {
+		Cliente cliente = new Cliente();
+		cliente.setNome(nome);
+		cliente.setCpf(cpf);
+		cliente.setDataNascimento(dataNascimento);
+		return cliente;
 	}
-	public String getCpf() {
-		return cpf;
-	}
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-	public LocalDate getDataNascimento() {
-		return dataNascimento;
-	}
-	public void setDataNascimento(LocalDate dataNascimento) {
-		this.dataNascimento = dataNascimento;
-	}
-	public String getCep() {
-		return cep;
-	}
-	public void setCep(String cep) {
-		this.cep = cep;
-	}
-	public int getNumero() {
-		return numero;
-	}
-	public void setNumero(int numero) {
-		this.numero = numero;
-	}
-	public String getComplemento() {
-		return complemento;
-	}
-	public void setComplemento(String complemento) {
-		this.complemento = complemento;
-	}
-	//metodo
-	public Cliente transformaParaObjeto() {
-		EnderecoCliente endereco = new EnderecoCliente();
-		return new Cliente(nome, cpf, dataNascimento, endereco);
-	}
+
 	public ClienteDTO() {}
 	
 

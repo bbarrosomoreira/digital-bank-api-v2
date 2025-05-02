@@ -98,7 +98,7 @@ public class ClienteDAO {
 	private Cliente atualizarCliente(Cliente cliente) {
 		String sql = "UPDATE cliente SET nome = ?, cpf = ?, categoria = ?, data_nascimento = ?, usuario_id = ? WHERE id = ?";
 
-		int rowsAffected = jdbcTemplate.update(
+		int linhasAfetadas = jdbcTemplate.update(
 				sql,
 				cliente.getNome(),
 				cliente.getCpf(),
@@ -108,7 +108,7 @@ public class ClienteDAO {
 				cliente.getId()
 		);
 
-		if (rowsAffected == 0) {
+		if (linhasAfetadas == 0) {
 			throw new ResourceNotFoundException("Cliente não encontrado para atualização com ID: " + cliente.getId());
 		}
 

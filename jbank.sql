@@ -45,7 +45,6 @@ CREATE TABLE IF NOT EXISTS endereco_cliente (
     bairro VARCHAR(100),
     cidade VARCHAR(100),
     estado CHAR(2),
-    endereco_principal BOOLEAN,
     cliente_id BIGINT NOT NULL,
     CONSTRAINT fk_endereco_cliente FOREIGN KEY (cliente_id) REFERENCES cliente(id)
 );

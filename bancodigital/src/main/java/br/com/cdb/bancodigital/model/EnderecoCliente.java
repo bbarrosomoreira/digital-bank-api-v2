@@ -43,7 +43,4 @@ public class EnderecoCliente {
     @Size(min = 2, max = 2, message = "Estado deve ter 2 caracteres (ex: SP)")
 	private String estado;
 
-	private boolean enderecoPrincipal;
-
-
 }

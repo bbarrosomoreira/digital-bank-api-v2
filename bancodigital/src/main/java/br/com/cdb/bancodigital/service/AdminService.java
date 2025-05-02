@@ -76,7 +76,6 @@ public class AdminService {
 		cliente.getEndereco().setBairro(cepInfo.getNeighborhood());
 		cliente.getEndereco().setCidade(cepInfo.getCity());
 		cliente.getEndereco().setComplemento(dto.getComplemento());
-		cliente.getEndereco().setEnderecoPrincipal(true);
 		cliente.getEndereco().setEstado(cepInfo.getState());
 		cliente.getEndereco().setNumero(dto.getNumero());
 		cliente.getEndereco().setRua(cepInfo.getStreet());
