@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class RegistroUsuarioDTO {
+public class UsuarioDTO {
 	@NotBlank
 	@Email
 	private String email;
@@ -36,7 +36,7 @@ public class RegistroUsuarioDTO {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	public RegistroUsuarioDTO() {}
+	public UsuarioDTO() {}
 	
 	
 

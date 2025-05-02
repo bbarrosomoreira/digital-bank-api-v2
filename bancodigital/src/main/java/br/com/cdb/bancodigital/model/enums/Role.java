@@ -1,5 +1,7 @@
 package br.com.cdb.bancodigital.model.enums;
 
+import java.util.Arrays;
+
 public enum Role {
 	
 	ADMIN,
@@ -9,14 +11,17 @@ public enum Role {
 
 	public static Role fromString(String roleStr) {
 		if (roleStr == null) {
-			return null;
+			throw new IllegalArgumentException("Role não pode ser nulo.");
 		}
 
-		try {
-			return Role.valueOf(roleStr.toUpperCase());
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Valor de role inválido: " + roleStr);
+		for (Role role : Role.values()) {
+			if (role.name().equalsIgnoreCase(roleStr)) {
+				return role;
+			}
 		}
+
+		throw new IllegalArgumentException("Valor de role inválido: " + roleStr +
+				". Valores permitidos: " + Arrays.toString(Role.values()));
 	}
 
 

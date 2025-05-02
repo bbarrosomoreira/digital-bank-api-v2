@@ -33,14 +33,12 @@ public class ClienteRepository {
 
 	// UPDATE | Atualizar clientes
 	private Cliente atualizarCliente(Cliente cliente) {
-		String sql = "UPDATE cliente SET nome = ?, email = ?, telefone = ?, categoria = ?, cpf = ?, usuario_id = ? " +
+		String sql = "UPDATE cliente SET nome = ?, categoria = ?, cpf = ?, usuario_id = ? " +
 				"WHERE id = ?";
 
 		int linhasAfetadas = jdbcTemplate.update(
 				sql,
 				cliente.getNome(),
-				cliente.getEmail(),
-				cliente.getTelefone(),
 				cliente.getCategoria().name(),
 				cliente.getCpf(),
 				cliente.getUsuario().getId(),

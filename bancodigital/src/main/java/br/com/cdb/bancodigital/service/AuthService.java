@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigital.dto.LoginDTO;
-import br.com.cdb.bancodigital.dto.RegistroUsuarioDTO;
+import br.com.cdb.bancodigital.dto.UsuarioDTO;
 import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
@@ -30,7 +30,7 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
-    public LoginResponse registrar(RegistroUsuarioDTO dto) {
+    public LoginResponse registrar(UsuarioDTO dto) {
         // verificar se email está em uso
 		try {
 			usuarioRepository.buscarUsuarioPorEmail(dto.getEmail());

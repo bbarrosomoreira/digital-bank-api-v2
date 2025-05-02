@@ -24,14 +24,19 @@ public enum CategoriaCliente {
     }
 
     @JsonCreator
-    public static CategoriaCliente fromString(String value) {
+    public static CategoriaCliente fromString(String categoriaStr) {
+        if (categoriaStr == null) {
+            throw new IllegalArgumentException("Categoria não pode ser nula.");
+        }
+
         for (CategoriaCliente categoria : CategoriaCliente.values()) {
-            if (categoria.name().equalsIgnoreCase(value)) {
+            if (categoria.name().equalsIgnoreCase(categoriaStr)) {
                 return categoria;
             }
         }
-        throw new IllegalArgumentException("Categoria inválida. Valores permitidos: " +
-                Arrays.toString(CategoriaCliente.values()));
+
+        throw new IllegalArgumentException("Categoria inválida: " + categoriaStr +
+                ". Valores permitidos: " + Arrays.toString(CategoriaCliente.values()));
     }
 	
 	public int getNivel() {

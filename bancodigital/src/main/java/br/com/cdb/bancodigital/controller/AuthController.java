@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigital.dto.LoginDTO;
-import br.com.cdb.bancodigital.dto.RegistroUsuarioDTO;
+import br.com.cdb.bancodigital.dto.UsuarioDTO;
 import br.com.cdb.bancodigital.dto.response.LoginResponse;
 import br.com.cdb.bancodigital.service.AuthService;
 import jakarta.validation.Valid;
@@ -24,7 +24,7 @@ public class AuthController {
 	 * Endpoint para cadastro de usuário (retorna token JWT após registro)
 	 */
 	@PostMapping("/signin")
-	public ResponseEntity<LoginResponse> registrar(@Valid @RequestBody RegistroUsuarioDTO dto) {
+	public ResponseEntity<LoginResponse> registrar(@Valid @RequestBody UsuarioDTO dto) {
 		LoginResponse response = authService.registrar(dto);
 		return ResponseEntity.ok(response);
 	}
