@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.service;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import br.com.cdb.bancodigital.dao.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +26,6 @@ import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.dao.CartaoDAO;
-import br.com.cdb.bancodigital.dao.ClienteDAO;
-import br.com.cdb.bancodigital.dao.ContaDAO;
-import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
-import br.com.cdb.bancodigital.dao.SeguroDAO;
-import br.com.cdb.bancodigital.dao.UsuarioRepository;
 import br.com.cdb.bancodigital.dto.response.CartaoResponse;
 import br.com.cdb.bancodigital.dto.response.ClienteResponse;
 import br.com.cdb.bancodigital.dto.response.ContaResponse;
@@ -40,7 +35,7 @@ import br.com.cdb.bancodigital.dto.response.SeguroResponse;
 public class AdminService {
 	
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UsuarioDAO usuarioDAO;
 	
 	@Autowired
 	private ClienteDAO clienteRepository;
@@ -74,7 +69,7 @@ public class AdminService {
 	public ClienteResponse cadastrarCliente(ClienteUsuarioDTO dto) {
 		CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
 		
-		Usuario usuario = usuarioRepository.criarUsuario(dto.getEmail(), dto.getSenha(), dto.getRole());
+		Usuario usuario = usuarioDAO.criarUsuario(dto.getEmail(), dto.getSenha(), dto.getRole());
 
 		Cliente cliente = dto.transformaParaClienteObjeto();
 		cliente.getEndereco().setCep(dto.getCep());
@@ -93,7 +88,7 @@ public class AdminService {
 		validarCpfUnico(cliente.getCpf());
 		validarMaiorIdade(cliente);
 
-		clienteRepository.save(cliente);
+		clienteRepository.salvar(cliente);
 		return toClienteResponse(cliente);
 	}
 	

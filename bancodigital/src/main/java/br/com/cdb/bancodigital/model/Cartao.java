@@ -17,7 +17,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString
-public abstract class Cartao implements CartaoBase {
+public class Cartao implements CartaoBase {
 	
 	private Long id;
 	private TipoCartao tipoCartao;

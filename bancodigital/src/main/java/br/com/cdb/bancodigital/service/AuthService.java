@@ -1,5 +1,7 @@
 package br.com.cdb.bancodigital.service;
 
+import br.com.cdb.bancodigital.dao.UsuarioDAO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,37 +13,30 @@ import br.com.cdb.bancodigital.dto.UsuarioDTO;
 import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.dao.UsuarioRepository;
 import br.com.cdb.bancodigital.dto.response.LoginResponse;
 import br.com.cdb.bancodigital.security.JwtService;
 
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
-	
-	@Autowired
-	private JwtService jwtService;
-	
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	private final AuthenticationManager authenticationManager;
+	private final JwtService jwtService;
+    private final UsuarioDAO usuarioDAO;
+    private final PasswordEncoder passwordEncoder;
     
     public LoginResponse registrar(UsuarioDTO dto) {
         // verificar se email está em uso
-		try {
-			usuarioRepository.buscarUsuarioPorEmail(dto.getEmail());
+		Optional<Usuario> usuarioExistente = usuarioDAO.buscarUsuarioPorEmail(dto.getEmail());
+		if (usuarioExistente.isPresent()) {
 			throw new ResourceAlreadyExistsException("E-mail já cadastrado");
-		} catch (ResourceNotFoundException e) {
-			//usuário não existe - segue com o registro
 		}
 
 		// criar novo usuário e salvar no banco
 		String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
-		Usuario novoUsuario = usuarioRepository.criarUsuario(dto.getEmail(), senhaCriptografada, dto.getRole());
+		Usuario novoUsuario = usuarioDAO.criarUsuario(dto.getEmail(), senhaCriptografada, dto.getRole());
 
 		// gerar token
     	String token = jwtService.gerarToken(novoUsuario);
@@ -55,7 +50,7 @@ public class AuthService {
     			new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha()));
     	
     	// buscar usuário
-    	Usuario usuario = usuarioRepository.buscarUsuarioPorEmail(dto.getEmail());
+    	Usuario usuario = usuarioDAO.buscarUsuarioPorEmailOuErro(dto.getEmail());
     	
     	// gerar token
     	String token = jwtService.gerarToken(usuario);

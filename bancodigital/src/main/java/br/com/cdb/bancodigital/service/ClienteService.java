@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,33 +39,19 @@ import br.com.cdb.bancodigital.dao.SeguroDAO;
 import br.com.cdb.bancodigital.dto.response.ClienteResponse;
 
 @Service
+@RequiredArgsConstructor
 public class ClienteService {
 
 	private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
 
-	@Autowired
-	private ClienteDAO clienteRepository;
-
-	@Autowired
-	private ContaDAO contaRepository;
-
-	@Autowired
-	private CartaoDAO cartaoRepository;
-
-	@Autowired
-	private SeguroDAO seguroRepository;
-
-	@Autowired
-	private PoliticaDeTaxasDAO politicaDeTaxaRepository;
-	
-	@Autowired
-	private ReceitaService receitaService;
-	
-	@Autowired
-	private SecurityService securityService;
-	
-	@Autowired
-    private BrasilApiService brasilApiService;
+	private final ClienteDAO clienteDAO;
+	private final ContaDAO contaDAO;
+	private final CartaoDAO cartaoDAO;
+	private final SeguroDAO seguroDAO;
+	private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
+	private final ReceitaService receitaService;
+	private final SecurityService securityService;
+    private final BrasilApiService brasilApiService;
 
 	// Cadastrar cliente
 	public ClienteResponse cadastrarCliente(ClienteDTO dto, Usuario usuario) {
@@ -71,6 +59,7 @@ public class ClienteService {
 		
 		Cliente cliente = dto.transformaParaObjeto();
 		cliente.setCategoria(CategoriaCliente.COMUM);
+
 		cliente.getEndereco().setCep(dto.getCep());
 		cliente.getEndereco().setBairro(cepInfo.getNeighborhood());
 		cliente.getEndereco().setCidade(cepInfo.getCity());
@@ -87,13 +76,13 @@ public class ClienteService {
 		validarCpfUnico(cliente.getCpf());
 		validarMaiorIdade(cliente);
 
-		clienteRepository.save(cliente);
+		clienteDAO.salvar(cliente);
 		return toResponse(cliente);
 	}
 
 	// Ver cliente(s)
 	public List<ClienteResponse> getClientes() throws AccessDeniedException { //só admin
-		List<Cliente> clientes = clienteRepository.findAll();
+		List<Cliente> clientes = clienteDAO.buscarTodosClientes();
 		return clientes.stream().map(this::toResponse).toList();
 	} 
 
@@ -103,7 +92,7 @@ public class ClienteService {
 		return cliente;
 	}
 	public ClienteResponse buscarClienteDoUsuario(Usuario usuario) {
-	    Cliente cliente = clienteRepository.findByUsuario(usuario)
+	    Cliente cliente = clienteDAO.buscarClienteporUsuario(usuario)
 	        .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado para o usuário logado."));
 	    return toResponse(cliente);
 	}
@@ -113,14 +102,14 @@ public class ClienteService {
 	public void deleteCliente(Long id_cliente) throws AccessDeniedException { //só admin
 		Cliente cliente = verificarClienteExistente(id_cliente);
 		
-		boolean temContas = contaRepository.existsByClienteId(id_cliente);
-		boolean temCartoes = cartaoRepository.existsByContaClienteId(id_cliente);
-		boolean temSeguros = seguroRepository.existsByCartaoCreditoContaClienteId(id_cliente);
+		boolean temContas = contaDAO.existsByClienteId(id_cliente);
+		boolean temCartoes = cartaoDAO.existsByContaClienteId(id_cliente);
+		boolean temSeguros = seguroDAO.existsByCartaoCreditoContaClienteId(id_cliente);
 
 		if (temContas || temCartoes || temSeguros) throw new ValidationException(
 					"Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.");
 
-		clienteRepository.delete(cliente);
+		clienteDAO.deletarClientePorId(cliente.getId());
 		log.info("Cliente ID {} deletado com sucesso", id_cliente);
 	}
 
@@ -159,7 +148,7 @@ public class ClienteService {
 			}
 		});
 		
-		clienteRepository.save(cliente);
+		clienteDAO.salvar(cliente);
 		return toResponse(cliente);
 	}
 
@@ -175,7 +164,7 @@ public class ClienteService {
 		validarCpfUnico(cliente.getCpf());
 		validarMaiorIdade(cliente);
 		
-		clienteRepository.save(cliente);
+		clienteDAO.salvar(cliente);
 		return toResponse(cliente);
 	}
 
@@ -213,7 +202,8 @@ public class ClienteService {
 		return new ClienteResponse(cliente);
 	}
 	private void validarCpfUnico(String cpf) {
-		if (clienteRepository.existsByCpf(cpf))
+		Optional<Cliente> clienteExistente = clienteDAO.buscarClienteporCPF(cpf);
+		if (clienteExistente.isPresent())
 			throw new ResourceAlreadyExistsException("CPF já cadastrado no sistema.");
 	}
 	private void validarMaiorIdade(Cliente cliente) {
@@ -221,7 +211,7 @@ public class ClienteService {
 			throw new ValidationException("Cliente deve ser maior de 18 anos para se cadastrar.");
 	}
 	public void atualizarTaxasDasContas(Long id_cliente, PoliticaDeTaxas parametros) {
-		List<Conta> contas = contaRepository.findByClienteId(id_cliente);
+		List<Conta> contas = contaDAO.findByClienteId(id_cliente);
 
 		if (contas.isEmpty()) {
 			log.info("Cliente ID {} não possui contas.", id_cliente);
@@ -240,11 +230,11 @@ public class ClienteService {
 					}
 				}
 			});
-			contaRepository.saveAll(contas);		
+			contaDAO.saveAll(contas);		
 		}
 	}
 	public void atualizarTaxasDosCartoes(Long id_cliente, PoliticaDeTaxas parametros) {
-		List<Cartao> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
+		List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
 
 		if (cartoes.isEmpty()) {
 			log.info("Cliente Id {} não possui cartões.", id_cliente);
@@ -260,11 +250,11 @@ public class ClienteService {
 					}
 				}
 			});
-			cartaoRepository.saveAll(cartoes);
+			cartaoDAO.saveAll(cartoes);
 		}
 	}
 	public void atualizarTaxasDosSeguros(Long id_cliente, PoliticaDeTaxas parametros) {
-		List<Seguro> seguros = seguroRepository.findByClienteId(id_cliente);
+		List<Seguro> seguros = seguroDAO.findByClienteId(id_cliente);
 
 		if (seguros.isEmpty()) {
 			log.info("Cliente Id {} não possui seguros.", id_cliente);
@@ -281,17 +271,17 @@ public class ClienteService {
 				}
 
 			});		
-			seguroRepository.saveAll(seguros);	
+			seguroDAO.saveAll(seguros);	
 		}
 	}
 	
 	public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
-		PoliticaDeTaxas parametros = politicaDeTaxaRepository.findByCategoria(categoria)
+		PoliticaDeTaxas parametros = politicaDeTaxaDAO.findByCategoria(categoria)
 		.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
 		return parametros;
 	}
 	public Cliente verificarClienteExistente(Long id_cliente) {
-		Cliente cliente = clienteRepository.findById(id_cliente)
+		Cliente cliente = clienteDAO.buscarClienteporId(id_cliente)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
 		return cliente;
 	}

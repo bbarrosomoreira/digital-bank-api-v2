@@ -4,7 +4,9 @@ import java.util.Arrays;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
 
+@Getter
 public enum CategoriaCliente {
 	COMUM("Comum", 0), //basic
 	SUPER("Super", 1), //standard
@@ -38,9 +40,5 @@ public enum CategoriaCliente {
         throw new IllegalArgumentException("Categoria inválida: " + categoriaStr +
                 ". Valores permitidos: " + Arrays.toString(CategoriaCliente.values()));
     }
-	
-	public int getNivel() {
-		return nivel;
-	}
 
 }

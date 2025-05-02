@@ -14,7 +14,7 @@ public record PagamentoResponse (
 	public static PagamentoResponse toPagamentoResponse (Cartao cartao, BigDecimal valor, String descricao) {
 		return new PagamentoResponse(
 				cartao.getNumeroCartao(),
-				cartao.getDescricaoTipoCartao(),
+				cartao.getTipoCartao().getDescricao(),
 				descricao,
 				valor,
                 cartao.getLimiteAtual());

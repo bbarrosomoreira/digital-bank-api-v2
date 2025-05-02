@@ -1,7 +1,10 @@
 package br.com.cdb.bancodigital.model.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
+@Getter
 public enum Role {
 	
 	ADMIN,

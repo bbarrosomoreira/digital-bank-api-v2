@@ -1,63 +1,65 @@
 package br.com.cdb.bancodigital.dao;
 
+import br.com.cdb.bancodigital.mapper.UsuarioMapper;
 import br.com.cdb.bancodigital.model.enums.Role;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 import br.com.cdb.bancodigital.model.Usuario;
+import org.springframework.stereotype.Service;
 
-@Repository
-public class UsuarioRepository {
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class UsuarioDAO {
 
 	private final JdbcTemplate jdbcTemplate;
-
-	public UsuarioRepository(JdbcTemplate jdbcTemplate) {
-		this.jdbcTemplate = jdbcTemplate;
-	}
+	private final UsuarioMapper usuarioMapper;
 
 	// CREATE | Criar usuário
 	public Usuario criarUsuario(String email, String senha, Role role) {
 		String sql = "INSERT INTO usuario (email, senha, role) VALUES (?, ?, ?) RETURNING id";
 
-		return jdbcTemplate.query(
+		Long id = jdbcTemplate.queryForObject(
 				sql,
-				ps -> {
-					ps.setString(1, email);
-					ps.setString(2, senha);
-					ps.setString(3, role.name());
-				},
-				rs -> {
-					if (rs.next()) {
-						long id = rs.getLong("id");
-						return new Usuario(id, email, senha, role);
-					} else {
-						throw new RuntimeException("Erro ao inserir usuário e recuperar o ID.");
-					}
-				}
+				Long.class,
+				email,
+				senha,
+				role.name()
 		);
+
+		return new Usuario(id, email, senha, role);
 	}
 
 	// READ | Listar usuários
-	public Usuario buscarUsuarioPorEmail(String email) {
+	public Optional<Usuario> buscarUsuarioPorEmail(String email) {
 		String sql = "SELECT * FROM usuario WHERE email = ?";
+		try {
+			Usuario usuario = jdbcTemplate.queryForObject(sql, usuarioMapper, email);
+			return Optional.of(usuario);
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
+	}
+	public Usuario buscarUsuarioPorEmailOuErro(String email) {
+		return buscarUsuarioPorEmail(email)
+				.orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com e-mail: " + email));
+	}
 
-		return jdbcTemplate.query(
-				sql,
-				ps -> ps.setString(1, email), // PreparedStatementSetter
-				rs -> {
-					if (rs.next()) {
-						return new Usuario(
-								rs.getLong("id"),
-								rs.getString("email"),
-								rs.getString("senha"),
-								Role.fromString(rs.getString("role"))
-						);
-					} else {
-						throw new ResourceNotFoundException("Usuário não encontrado com email: " + email);
-					}
-				}
-		);
+	// Encontrar usuário pelo ID
+	public Optional<Usuario> buscarUsuarioporId(Long id) {
+		String sql = "SELECT * FROM usuario WHERE id = ?";
+		try {
+			Usuario usuario = jdbcTemplate.queryForObject(sql, usuarioMapper, id);
+			return Optional.of(usuario);
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	// UPDATE | Atualizar usuários

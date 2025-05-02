@@ -14,6 +14,9 @@ import lombok.*;
 @ToString
 public class EnderecoCliente {
 
+	private Long id;
+	private Cliente cliente;
+
 	@NotBlank(message = "CEP é obrigatório")
 	@Pattern(regexp = "\\d{8}", message = "CEP deve estar no formato XXXXXXXX")
 	private String cep;

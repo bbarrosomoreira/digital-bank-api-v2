@@ -21,7 +21,6 @@ public class Cliente {
 	private String cpf;
 	private CategoriaCliente categoria;
 	private LocalDate dataNascimento;
-	private EnderecoCliente endereco;
 	private Usuario usuario;
 
 	public boolean isMaiorDeIdade() {

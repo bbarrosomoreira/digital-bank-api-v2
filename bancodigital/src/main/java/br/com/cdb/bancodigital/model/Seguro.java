@@ -17,7 +17,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString
-public abstract class Seguro implements SeguroBase {
+public class Seguro implements SeguroBase {
 	
 	private Long id;
 	private TipoSeguro tipoSeguro;
