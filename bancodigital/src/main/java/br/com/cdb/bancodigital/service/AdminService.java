@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import br.com.cdb.bancodigital.dao.*;
 import br.com.cdb.bancodigital.model.*;
+import br.com.cdb.bancodigital.resttemplate.BrasilApiRestTemplate;
+import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,15 +40,15 @@ public class AdminService {
 	private final SeguroDAO seguroDAO;
 	private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
 	private final SecurityService securityService;
-	private final ReceitaService receitaService;
-    private final BrasilApiService brasilApiService;
+	private final ReceitaFederalRestTemplate receitaFederalRestTemplate;
+    private final BrasilApiRestTemplate brasilApiRestTemplate;
 	private final ConversorMoedasService conversorMoedasService;
 
 
 	// Cadastrar cliente
 	public ClienteResponse cadastrarCliente(ClienteUsuarioDTO dto) {
 		// Buscar dados do CEP na BrasilAPI
-		CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
+		CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(dto.getCep());
 		//log
 
 		// Criar usuário para cliente
@@ -59,7 +61,7 @@ public class AdminService {
 		cliente.setUsuario(usuario);
 
 		// Validações
-		if (!receitaService.isCpfValidoEAtivo(cliente.getCpf()))
+		if (receitaFederalRestTemplate.isCpfInvalidoOuInativo(cliente.getCpf()))
 			throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
 		validarCpfUnico(cliente.getCpf());
 		validarMaiorIdade(cliente);

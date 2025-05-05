@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.security;
+package br.com.cdb.bancodigital.service;
 
 import java.security.Key;
 import java.util.Date;

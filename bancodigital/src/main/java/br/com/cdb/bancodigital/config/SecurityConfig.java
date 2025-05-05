@@ -19,8 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import br.com.cdb.bancodigital.security.JwtAuthFilter;
-import br.com.cdb.bancodigital.security.UsuarioDetailsService;
+import br.com.cdb.bancodigital.service.UsuarioDetailsService;
 
 @Configuration
 @EnableWebSecurity

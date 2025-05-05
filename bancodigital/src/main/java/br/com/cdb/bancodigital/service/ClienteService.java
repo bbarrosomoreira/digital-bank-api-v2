@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import br.com.cdb.bancodigital.dao.*;
 import br.com.cdb.bancodigital.dto.ClienteAtualizadoDTO;
+import br.com.cdb.bancodigital.resttemplate.BrasilApiRestTemplate;
+import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,14 +45,14 @@ public class ClienteService {
     private final CartaoDAO cartaoDAO;
     private final SeguroDAO seguroDAO;
     private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
-    private final ReceitaService receitaService;
+    private final ReceitaFederalRestTemplate receitaService;
     private final SecurityService securityService;
-    private final BrasilApiService brasilApiService;
+    private final BrasilApiRestTemplate brasilApiRestTemplate;
 
     // Cadastrar cliente
     public ClienteResponse cadastrarCliente(ClienteDTO dto, Usuario usuario) {
         // Buscar dados do CEP na BrasilAPI
-        CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
+        CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(dto.getCep());
 
         // Criar cliente
         Cliente cliente = dto.transformaClienteParaObjeto();
@@ -58,7 +60,7 @@ public class ClienteService {
         cliente.setUsuario(usuario);
 
         // Validações
-        if (!receitaService.isCpfValidoEAtivo(cliente.getCpf()))
+        if (receitaService.isCpfInvalidoOuInativo(cliente.getCpf()))
             throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
         validarCpfUnico(cliente.getCpf());
         validarMaiorIdade(cliente);
@@ -126,7 +128,7 @@ public class ClienteService {
             cliente.setNome(dto.getNome());
         }
         if (dto.getCpf() != null && !dto.getCpf().equals(cliente.getCpf())) {
-            if (!receitaService.isCpfValidoEAtivo(dto.getCpf())) {
+            if (receitaService.isCpfInvalidoOuInativo(dto.getCpf())) {
                 throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
             }
             validarCpfUnico(dto.getCpf());
@@ -293,7 +295,7 @@ public class ClienteService {
 
         // opcionalmente preencher bairro/cidade/estado via BrasilAPI se cep válido
         if (dto.getCep() != null) {
-            CEP2 cepInfo = brasilApiService.buscarEnderecoPorCep(dto.getCep());
+            CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(dto.getCep());
             endereco.setBairro(cepInfo.getNeighborhood());
             endereco.setCidade(cepInfo.getCity());
             endereco.setEstado(cepInfo.getState());

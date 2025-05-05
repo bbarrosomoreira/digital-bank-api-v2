@@ -12,7 +12,6 @@ import br.com.cdb.bancodigital.dto.UsuarioDTO;
 import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.dto.response.LoginResponse;
-import br.com.cdb.bancodigital.security.JwtService;
 
 import java.util.Optional;
 

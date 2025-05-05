@@ -1,7 +1,8 @@
-package br.com.cdb.bancodigital.security;
+package br.com.cdb.bancodigital.config;
 
 import java.io.IOException;
 
+import br.com.cdb.bancodigital.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.BadCredentialsException;

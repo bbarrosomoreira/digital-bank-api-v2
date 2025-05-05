@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.security;
+package br.com.cdb.bancodigital.service;
 
 import br.com.cdb.bancodigital.dao.UsuarioDAO;
 import lombok.RequiredArgsConstructor;
