@@ -44,7 +44,6 @@ public class Cartao implements CartaoBase {
 		this.dataEmissao = LocalDate.now();
 		this.dataVencimento = this.dataEmissao.plusYears(5);
 		this.status = Status.ATIVO;
-		this.limiteAtual = this.limite;
 		definirSenha(senha);
 		gerarNumeroCartao();
 	}

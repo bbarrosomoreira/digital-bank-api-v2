@@ -71,12 +71,14 @@ public class CartaoService {
             case CREDITO -> {
                 Cartao ccr = new Cartao(conta, senha, tipo);
                 ccr.setLimite(parametros.getLimiteCartaoCredito());
+                ccr.setLimiteAtual(ccr.getLimite());
                 ccr.setTotalFatura(BigDecimal.ZERO);
                 yield ccr;
             }
             case DEBITO -> {
                 Cartao cdb = new Cartao(conta, senha, tipo);
                 cdb.setLimite(parametros.getLimiteDiarioDebito());
+                cdb.setLimiteAtual(cdb.getLimite());
                 yield cdb;
             }
         };
