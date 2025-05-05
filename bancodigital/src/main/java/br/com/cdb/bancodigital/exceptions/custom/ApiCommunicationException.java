@@ -4,8 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class ApiCommunicationException extends ApiException {
 
-    public ApiCommunicationException(String message, Throwable cause) {
+    public ApiCommunicationException(String message) {
         super(message, HttpStatus.SERVICE_UNAVAILABLE);
-        initCause(cause);
     }
 }

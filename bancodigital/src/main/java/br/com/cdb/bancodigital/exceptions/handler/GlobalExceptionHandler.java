@@ -8,9 +8,8 @@ import br.com.cdb.bancodigital.exceptions.custom.ApiException;
 import br.com.cdb.bancodigital.dto.response.ErrorResponse;
 import br.com.cdb.bancodigital.dto.response.ValidationErrorResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,12 +22,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-	private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 	// Trata exceções customizadas da hierarquia ApiException
 	@ExceptionHandler(ApiException.class)
@@ -79,6 +78,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		);
 		
 		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+		String mensagem = String.format("O valor '%s' não é válido para o parâmetro '%s'.", ex.getValue(), ex.getName());
+		ErrorResponse response = new ErrorResponse(
+				LocalDateTime.now(),
+				HttpStatus.BAD_REQUEST.value(),
+				"Erro de tipo de argumento",
+				mensagem,
+				request.getDescription(false).replace("uri=", "")
+		);
+
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
 	// Fallback genérico
