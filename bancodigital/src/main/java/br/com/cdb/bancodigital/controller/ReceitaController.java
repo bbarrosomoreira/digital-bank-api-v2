@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cdb.bancodigital.dto.response.CpfValidationResponse;
-import br.com.cdb.bancodigital.service.ReceitaService;
+import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
 
 @RestController
 @RequestMapping("/receita-federal")
 @AllArgsConstructor
 public class ReceitaController {
 	
-	private final ReceitaService receitaService;
+	private final ReceitaFederalRestTemplate receitaFederalRestTemplate;
 	
 	// só admin pode verificar cpfs
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/consultar-cpf/{cpf}")
 	public ResponseEntity<CpfValidationResponse> consultarCpf(@PathVariable String cpf) {
-		CpfValidationResponse response = receitaService.consultarCpf(cpf);
+		CpfValidationResponse response = receitaFederalRestTemplate.consultarCpf(cpf);
 		
 		if (response == null || Boolean.FALSE.equals(response.isSuccess())) {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
