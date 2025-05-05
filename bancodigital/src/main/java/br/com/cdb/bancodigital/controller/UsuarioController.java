@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,16 +13,27 @@ import br.com.cdb.bancodigital.dto.response.UsuarioResponse;
 
 @RestController
 @RequestMapping("/usuario")
+@Slf4j
 public class UsuarioController {
 	
 	@GetMapping("/me")
 	public ResponseEntity<UsuarioResponse> getUsuarioLogado(@AuthenticationPrincipal Usuario usuario) {
+		long startTime = System.currentTimeMillis();
+		log.info("Buscando informações do usuário logado.");
+
 		UsuarioResponse dto = new UsuarioResponse(usuario);
-	    return ResponseEntity.ok(dto);
+		log.info("Informações do usuário logado obtidas com sucesso.");
+
+		long endTime = System.currentTimeMillis();
+		log.info("Busca de informações do usuário logado concluída em {} ms.", endTime - startTime);
+		return ResponseEntity.ok(dto);
 	}
 
 	@GetMapping("/me-teste")
 	public String getMe(Authentication authentication) {
-	    return authentication != null ? authentication.getName() : "usuario null";
+		log.info("Verificando autenticação do usuário.");
+		String result = authentication != null ? authentication.getName() : "Usuário não autenticado";
+		log.info("Resultado da verificação: {}.", result);
+		return result;
 	}
 }

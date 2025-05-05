@@ -1,7 +1,7 @@
 package br.com.cdb.bancodigital.controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,24 +15,22 @@ import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
 @RestController
 @RequestMapping("/receita-federal")
 @AllArgsConstructor
+@Slf4j
 public class ReceitaController {
 	
 	private final ReceitaFederalRestTemplate receitaFederalRestTemplate;
-	
-	// só admin pode verificar cpfs
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/consultar-cpf/{cpf}")
 	public ResponseEntity<CpfValidationResponse> consultarCpf(@PathVariable String cpf) {
+		long startTime = System.currentTimeMillis();
+		log.info("Iniciando consulta de CPF");
+
 		CpfValidationResponse response = receitaFederalRestTemplate.consultarCpf(cpf);
-		
-		if (response == null || Boolean.FALSE.equals(response.isSuccess())) {
-			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
-		}
-		
-		if (Boolean.FALSE.equals(response.isValid())) {
-			return ResponseEntity.badRequest().body(response);
-		} 
-		
+		log.info("Consulta de CPF concluída com sucesso.");
+
+		long endTime = System.currentTimeMillis();
+		log.info("Consulta de CPF concluída em {} ms.", endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 

@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.controller;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,28 +18,38 @@ import br.com.cdb.bancodigital.service.PoliticaDeTaxasService;
 @RestController
 @RequestMapping("/parametros")
 @AllArgsConstructor
+@Slf4j
 public class PoliticaDeTaxasController {
 	
 	private final PoliticaDeTaxasService parametrosService;
 	
-	// só admin pode verificar essas políticas
-	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{categoria}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<PoliticaDeTaxas> buscarPorCategoria(
-			@PathVariable String categoria){
-		try {
-			CategoriaCliente categoriaEnum = CategoriaCliente.valueOf(categoria.toUpperCase());
-			return ResponseEntity.ok(parametrosService.buscarParametosPorCategoria(categoriaEnum));
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.badRequest().body(null);
-		}
+			@PathVariable CategoriaCliente categoria){
+		long startTime = System.currentTimeMillis();
+		log.info("Iniciando busca de parâmetros para a categoria: {}.", categoria);
+
+		PoliticaDeTaxas parametros = parametrosService.buscarParametosPorCategoria(categoria);
+		log.info("Parâmetros encontrados para a categoria: {}.", categoria);
+
+		long endTime = System.currentTimeMillis();
+		log.info("Busca de parâmetros concluída em {} ms.", endTime - startTime);
+		return ResponseEntity.ok(parametros);
 	}
 	
-	// só admin pode verificar essas políticas
-	@PreAuthorize("hasRole('ADMIN')")
     @GetMapping
+	@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<PoliticaDeTaxas>> listarTodos() {
-        return ResponseEntity.ok(parametrosService.listarTodosParametros());
+		long startTime = System.currentTimeMillis();
+		log.info("Iniciando listagem de todos os parâmetros de taxas.");
+
+		List<PoliticaDeTaxas> parametros = parametrosService.listarTodosParametros();
+		log.info("Total de parâmetros encontrados: {}.", parametros.size());
+
+		long endTime = System.currentTimeMillis();
+		log.info("Listagem de parâmetros concluída em {} ms.", endTime - startTime);
+		return ResponseEntity.ok(parametros);
     }
 
 }
