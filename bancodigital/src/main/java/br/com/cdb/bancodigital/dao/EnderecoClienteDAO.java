@@ -4,6 +4,7 @@ import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.mapper.EnderecoClienteMapper;
 import br.com.cdb.bancodigital.model.Cliente;
 import br.com.cdb.bancodigital.model.EnderecoCliente;
+import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,9 +33,7 @@ public class EnderecoClienteDAO {
 
     // CREATE | Criar endereço
     public EnderecoCliente criarEndereco(EnderecoCliente endereco) {
-        String sql = "INSERT INTO endereco_cliente (cep, rua, numero, complemento, bairro, cidade, estado, cliente_id) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
-        Long id = jdbcTemplate.queryForObject(sql, Long.class,
+        Long id = jdbcTemplate.queryForObject(SqlQueries.SQL_CREATE_ENDERECO_CLIENTE, Long.class,
                 endereco.getCep(),
                 endereco.getRua(),
                 endereco.getNumero(),
@@ -50,14 +49,12 @@ public class EnderecoClienteDAO {
 
     // READ | Listar endereço
     public List<EnderecoCliente> listarEnderecosPorCliente(Long clienteId) {
-        String sql = "SELECT * FROM endereco_cliente WHERE cliente_id = ?";
-        return jdbcTemplate.query(sql, enderecoClienteMapper, clienteId);
+        return jdbcTemplate.query(SqlQueries.SQL_READ_ENDERECO_CLIENTE_BY_CLIENTE, enderecoClienteMapper, clienteId);
     }
 
     public Optional<EnderecoCliente> buscarEnderecoporCliente(Cliente cliente) {
-        String sql = "SELECT * FROM endereco_cliente WHERE cliente_id = ?";
         try {
-            EnderecoCliente endereco = jdbcTemplate.queryForObject(sql, enderecoClienteMapper, cliente.getId());
+            EnderecoCliente endereco = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_ENDERECO_CLIENTE_BY_CLIENTE, enderecoClienteMapper, cliente.getId());
             return Optional.of(endereco);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -70,9 +67,7 @@ public class EnderecoClienteDAO {
 
     // UPDATE | Atualizar endereço
     public EnderecoCliente atualizarEndereco(EnderecoCliente endereco) {
-        String sql = "UPDATE endereco_cliente SET cep = ?, rua = ?, numero = ?, complemento = ?, bairro = ?, cidade = ?, estado = ?" +
-                "WHERE id = ?";
-        int linhasAfetadas = jdbcTemplate.update(sql,
+        int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_ENDERECO_CLIENTE,
                 endereco.getCep(),
                 endereco.getRua(),
                 endereco.getNumero(),

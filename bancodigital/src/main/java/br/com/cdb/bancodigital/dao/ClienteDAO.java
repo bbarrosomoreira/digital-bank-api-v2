@@ -4,6 +4,7 @@ import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.mapper.ClienteMapper;
 import br.com.cdb.bancodigital.model.Cliente;
 import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,10 +33,8 @@ public class ClienteDAO {
 
 	// CREATE | Criar cliente
 	public Cliente criarCliente(Cliente cliente) {
-		String sql = "INSERT INTO cliente (nome, cpf, categoria, data_nascimento, usuario_id) VALUES (?, ?, ?, ?, ?) RETURNING id";
-
 		Long id = jdbcTemplate.queryForObject(
-				sql,
+				SqlQueries.SQL_CREATE_CLIENTE,
 				Long.class,
 				cliente.getNome(),
 				cliente.getCpf(),
@@ -50,40 +49,35 @@ public class ClienteDAO {
 
 	// READ | Listar clientes
 	public List<Cliente> buscarTodosClientes() {
-		String sql = "SELECT * FROM cliente";
-		return jdbcTemplate.query(sql, clienteMapper);
+		return jdbcTemplate.query(SqlQueries.SQL_READ_ALL_CLIENTES, clienteMapper);
 	}
 	public Optional<Cliente> buscarClienteporId(Long id) {
-		String sql = "SELECT * FROM cliente WHERE id = ?";
 		try {
-			Cliente cliente = jdbcTemplate.queryForObject(sql, clienteMapper, id);
+			Cliente cliente = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_ID, clienteMapper, id);
 			return Optional.of(cliente);
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		}
 	}
 	public Optional<Cliente> buscarClienteporUsuario(Usuario usuario) {
-		String sql = "SELECT * FROM cliente WHERE usuario_id = ?";
 		try {
-			Cliente cliente = jdbcTemplate.queryForObject(sql, clienteMapper, usuario.getId());
+			Cliente cliente = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_USUARIO, clienteMapper, usuario.getId());
 			return Optional.of(cliente);
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		}
 	}
 	public Optional<Cliente> buscarClienteporUsuarioId(Long id) {
-		String sql = "SELECT * FROM cliente WHERE usuario_id = ?";
 		try {
-			Cliente cliente = jdbcTemplate.queryForObject(sql, clienteMapper, id);
+			Cliente cliente = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_USUARIO, clienteMapper, id);
 			return Optional.of(cliente);
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		}
 	}
 	public Optional<Cliente> buscarClienteporCPF(String cpf) {
-		String sql = "SELECT * FROM cliente WHERE cpf = ?";
 		try {
-			Cliente cliente = jdbcTemplate.queryForObject(sql, clienteMapper, cpf);
+			Cliente cliente = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_CPF, clienteMapper, cpf);
 			return Optional.of(cliente);
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
@@ -91,25 +85,20 @@ public class ClienteDAO {
 	}
 	// Verificar se existe cliente com o CPF
 	public boolean existsByCpf(String cpf) {
-		String sql = "SELECT COUNT(*) FROM cliente WHERE cpf = ?";
-
 		// O resultado será o número de registros encontrados (1 ou mais)
-		int count = jdbcTemplate.queryForObject(sql, Integer.class, cpf);
+		int count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CLIENTE, Integer.class, cpf);
 
 		return count > 0;  // Retorna true se existir pelo menos um cliente com o CPF
 	}
 
 	// UPDATE | Atualizar clientes
 	private Cliente atualizarCliente(Cliente cliente) {
-		String sql = "UPDATE cliente SET nome = ?, cpf = ?, categoria = ?, data_nascimento = ?, usuario_id = ? WHERE id = ?";
-
 		int linhasAfetadas = jdbcTemplate.update(
-				sql,
+				SqlQueries.SQL_UPDATE_CLIENTE,
 				cliente.getNome(),
 				cliente.getCpf(),
 				cliente.getCategoria().name(),
 				cliente.getDataNascimento(),
-				cliente.getUsuario().getId(),
 				cliente.getId()
 		);
 
@@ -122,8 +111,7 @@ public class ClienteDAO {
 
 	// DELETE | Excluir clientes
 	public void deletarClientePorId(Long id) {
-		String sql = "DELETE FROM cliente WHERE id = ?";
-		int linhasAfetadas = jdbcTemplate.update(sql, id);
+		int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_DELETE_CLIENTE, id);
 
 		if (linhasAfetadas == 0) {
 			throw new ResourceNotFoundException("Cliente com ID " + id + " não encontrado para exclusão.");

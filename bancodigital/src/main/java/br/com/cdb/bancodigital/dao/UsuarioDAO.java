@@ -3,15 +3,14 @@ package br.com.cdb.bancodigital.dao;
 import br.com.cdb.bancodigital.mapper.UsuarioMapper;
 import br.com.cdb.bancodigital.model.enums.Role;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
+import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import br.com.cdb.bancodigital.model.Usuario;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,10 +22,8 @@ public class UsuarioDAO {
 
 	// CREATE | Criar usuário
 	public Usuario criarUsuario(String email, String senha, Role role) {
-		String sql = "INSERT INTO usuario (email, senha, role) VALUES (?, ?, ?) RETURNING id";
-
 		Long id = jdbcTemplate.queryForObject(
-				sql,
+				SqlQueries.SQL_CREATE_USUARIO,
 				Long.class,
 				email,
 				senha,
@@ -38,9 +35,8 @@ public class UsuarioDAO {
 
 	// READ | Listar usuários
 	public Optional<Usuario> buscarUsuarioPorEmail(String email) {
-		String sql = "SELECT * FROM usuario WHERE email = ?";
 		try {
-			Usuario usuario = jdbcTemplate.queryForObject(sql, usuarioMapper, email);
+			Usuario usuario = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_USUARIO_BY_EMAIL, usuarioMapper, email);
 			return Optional.of(usuario);
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
@@ -53,9 +49,8 @@ public class UsuarioDAO {
 
 	// Encontrar usuário pelo ID
 	public Optional<Usuario> buscarUsuarioporId(Long id) {
-		String sql = "SELECT * FROM usuario WHERE id = ?";
 		try {
-			Usuario usuario = jdbcTemplate.queryForObject(sql, usuarioMapper, id);
+			Usuario usuario = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_USUARIO_BY_ID, usuarioMapper, id);
 			return Optional.of(usuario);
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
@@ -64,9 +59,7 @@ public class UsuarioDAO {
 
 	// UPDATE | Atualizar usuários
 	public void atualizarUsuario(Long id, String email, String senha, Role role) {
-		String sql = "UPDATE usuario SET email = ?, senha = ?, role = ? WHERE id = ?";
-
-		int linhasAfetadas = jdbcTemplate.update(sql, email, senha, role.name(), id);
+		int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_USUARIO, email, senha, role.name(), id);
 
 		if (linhasAfetadas == 0) {
 			throw new ResourceNotFoundException("Usuário com ID " + id + " não encontrado para atualização.");
@@ -75,8 +68,7 @@ public class UsuarioDAO {
 
 	// DELETE | Excluir usuários
 	public void deletarUsuarioPorId(Long id) {
-		String sql = "DELETE FROM usuario WHERE id = ?";
-		int linhasAfetadas = jdbcTemplate.update(sql, id);
+		int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_DELETE_USUARIO, id);
 
 		if (linhasAfetadas == 0) {
 			throw new ResourceNotFoundException("Usuário com ID " + id + " não encontrado para exclusão.");
