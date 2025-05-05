@@ -14,20 +14,17 @@ public enum TipoConta {
 	INTERNACIONAL ("Conta Internacional");
 	
 	private final String descricao;
-	
+
 	@JsonCreator
 	public static TipoConta fromString(String tipoContaStr) {
 		if (tipoContaStr == null) {
 			throw new IllegalArgumentException("Tipo de conta não pode ser nulo.");
 		}
-		for (TipoConta tipoConta : TipoConta.values()) {
-			if (tipoConta.name().equalsIgnoreCase(tipoContaStr)) {
-				return tipoConta;
-			}
-		}
-		throw new IllegalArgumentException("Tipo de conta inválido: " + tipoContaStr +
-				". Valores permitidos: " + Arrays.toString(TipoConta.values()));
-
+		return Arrays.stream(TipoConta.values())
+				.filter(tipoConta -> tipoConta.name().equalsIgnoreCase(tipoContaStr))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Tipo de conta inválido: " + tipoContaStr +
+						". Valores permitidos: " + Arrays.toString(TipoConta.values())));
 	}
 
 }

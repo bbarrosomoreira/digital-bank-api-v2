@@ -13,19 +13,16 @@ public enum TipoCartao {
 	DEBITO ("Cartão de Débito");
 	
 	private final String descricao;
-	
+
 	@JsonCreator
 	public static TipoCartao fromString(String tipoCartaoStr) {
 		if (tipoCartaoStr == null) {
 			throw new IllegalArgumentException("Tipo de cartão não pode ser nulo.");
 		}
-		for (TipoCartao tipoCartao : TipoCartao.values()) {
-			if (tipoCartao.name().equalsIgnoreCase(tipoCartaoStr)) {
-				return tipoCartao;
-			}
-		}
-		throw new IllegalArgumentException("Tipo de cartão inválido: " + tipoCartaoStr +
-				". Valores permitidos: " + Arrays.toString(TipoCartao.values()));
-
+		return Arrays.stream(TipoCartao.values())
+				.filter(tipoCartao -> tipoCartao.name().equalsIgnoreCase(tipoCartaoStr))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Tipo de cartão inválido: " + tipoCartaoStr +
+						". Valores permitidos: " + Arrays.toString(TipoCartao.values())));
 	}
 }

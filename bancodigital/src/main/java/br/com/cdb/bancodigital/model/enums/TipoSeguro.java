@@ -16,18 +16,15 @@ public enum TipoSeguro {
 	private final String condicoes;
 
 	@JsonCreator
-	public static TipoSeguro fromString (String tipoSeguroStr) {
+	public static TipoSeguro fromString(String tipoSeguroStr) {
 		if (tipoSeguroStr == null) {
 			throw new IllegalArgumentException("Tipo de seguro não pode ser nulo.");
 		}
-		for (TipoSeguro tipoSeguro : TipoSeguro.values()) {
-			if (tipoSeguro.name().equalsIgnoreCase(tipoSeguroStr)) {
-				return tipoSeguro;
-			}
-		}
-		throw new IllegalArgumentException("Tipo de seguro inválido: " + tipoSeguroStr +
-				". Valores permitidos: " + Arrays.toString(TipoSeguro.values()));
-
+		return Arrays.stream(TipoSeguro.values())
+				.filter(tipoSeguro -> tipoSeguro.name().equalsIgnoreCase(tipoSeguroStr))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Tipo de seguro inválido: " + tipoSeguroStr +
+						". Valores permitidos: " + Arrays.toString(TipoSeguro.values())));
 	}
 
 }

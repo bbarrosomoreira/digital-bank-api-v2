@@ -13,19 +13,16 @@ public enum Status {
 	INATIVO(2);
 	
 	private final int codigo;
-	
+
     @JsonCreator
     public static Status fromString(String statusStr) {
         if (statusStr == null) {
             throw new IllegalArgumentException("Status não pode ser nulo.");
         }
-        for (Status status : Status.values()) {
-            if (status.name().equalsIgnoreCase(statusStr)) {
-                return status;
-            }
-        }
-        throw new IllegalArgumentException("Status inválido: " + statusStr +
-                ". Valores permitidos: " + Arrays.toString(Status.values()));
-
+        return Arrays.stream(Status.values())
+                .filter(status -> status.name().equalsIgnoreCase(statusStr))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Status inválido: " + statusStr +
+                        ". Valores permitidos: " + Arrays.toString(Status.values())));
     }
 }
