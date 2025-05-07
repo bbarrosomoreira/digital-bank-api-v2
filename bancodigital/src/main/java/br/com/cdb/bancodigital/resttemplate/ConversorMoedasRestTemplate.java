@@ -1,7 +1,7 @@
 package br.com.cdb.bancodigital.resttemplate;
 
 import br.com.cdb.bancodigital.dto.response.ApiConversorMoedasResponse;
-import br.com.cdb.bancodigital.exceptions.custom.ApiCommunicationException;
+import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
 import br.com.cdb.bancodigital.model.enums.Moeda;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,7 @@ public class ConversorMoedasRestTemplate {
             return response.getBody();
         } catch (Exception e) {
             log.error("Erro ao chamar a API de conversão de moedas. URL: {}, Erro: {}", url, e.getMessage());
-            throw new ApiCommunicationException("Erro ao chamar a API de conversão de moedas");
+            throw new CommunicationException("Erro ao chamar a API de conversão de moedas", e);
         }
     }
 

@@ -1,7 +1,7 @@
 package br.com.cdb.bancodigital.resttemplate;
 
 import br.com.cdb.bancodigital.dto.response.CpfValidationResponse;
-import br.com.cdb.bancodigital.exceptions.custom.ApiCommunicationException;
+import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +31,7 @@ public class ReceitaFederalRestTemplateImpl implements ReceitaFederalRestTemplat
             return response.getBody();
         } catch (Exception e) {
             log.error("Erro ao consultar CPF na API que simula a da Receita Federal", e);
-            throw new ApiCommunicationException("Erro ao consultar CPF");
+            throw new CommunicationException("Erro ao consultar CPF", e);
         }
     }
 
