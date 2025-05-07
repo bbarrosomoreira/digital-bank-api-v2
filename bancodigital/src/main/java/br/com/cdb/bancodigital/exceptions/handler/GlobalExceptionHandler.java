@@ -32,6 +32,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	// Trata exceções customizadas da hierarquia ApiException
 	@ExceptionHandler(ApiException.class)
 	public ResponseEntity<ErrorResponse> handleApiException(ApiException ex, WebRequest request) {
+		log.error("Erro tratado - Status: {}, Caminho: {}, Mensagem: {}",
+				ex.getStatus(), request.getDescription(false), ex.getMessage());
+
 		ErrorResponse response = new ErrorResponse(
 				LocalDateTime.now(), 
 				ex.getStatus().value(),
