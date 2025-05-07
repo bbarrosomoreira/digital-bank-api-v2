@@ -31,7 +31,7 @@ public class ReceitaFederalRestTemplateImpl implements ReceitaFederalRestTemplat
             return response.getBody();
         } catch (Exception e) {
             log.error("Erro ao consultar CPF na API que simula a da Receita Federal", e);
-            throw new CommunicationException("Erro ao consultar CPF", e);
+            throw new CommunicationException("Erro ao consultar CPF");
         }
     }
 

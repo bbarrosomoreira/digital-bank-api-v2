@@ -47,7 +47,7 @@ public class ConversorMoedasRestTemplate {
             return response.getBody();
         } catch (Exception e) {
             log.error("Erro ao chamar a API de conversão de moedas. URL: {}, Erro: {}", url, e.getMessage());
-            throw new CommunicationException("Erro ao chamar a API de conversão de moedas", e);
+            throw new CommunicationException("Erro ao chamar a API de conversão de moedas");
         }
     }
 
