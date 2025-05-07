@@ -80,7 +80,7 @@ public class ClienteController {
 		log.info("Iniciando busca de todos os clientes.");
 
 		List<ClienteResponse> clientes = clienteService.getClientes();
-		log.info("Total de clientes encontrados: {}.", clientes.size());
+		log.info("Clientes encontrados");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de todos os clientes concluída em {} ms.", endTime - startTime);

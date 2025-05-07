@@ -2,11 +2,12 @@ package br.com.cdb.bancodigital.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
+import br.com.cdb.bancodigital.exceptions.custom.SystemException;
+import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +20,7 @@ import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.model.enums.Status;
 import br.com.cdb.bancodigital.model.enums.TipoCartao;
-import br.com.cdb.bancodigital.exceptions.ErrorMessages;
 import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigital.dao.CartaoDAO;
 import br.com.cdb.bancodigital.dao.ClienteDAO;
@@ -37,35 +36,49 @@ import br.com.cdb.bancodigital.dto.response.StatusCartaoResponse;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CartaoService {
-
-    private static final Logger log = LoggerFactory.getLogger(CartaoService.class);
 
     private final CartaoDAO cartaoDAO;
     private final ContaDAO contaDAO;
     private final ClienteDAO clienteDAO;
     private final SeguroDAO seguroDAO;
-    private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
+    private final PoliticaDeTaxasDAO politicaDeTaxasDAO;
     private final SecurityService securityService;
 
     // add cartao
     @Transactional
     public CartaoResponse emitirCartao(Long id_conta, Usuario usuarioLogado, TipoCartao tipo, String senha) {
-        Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
-        Objects.requireNonNull(senha, "A senha do cartão não pode ser nula");
+        log.info("Iniciando emissão de cartão para conta ID {}", id_conta);
 
-        Conta conta = verificarContaExitente(id_conta);
+        // Busca e validações
+        Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);
+        log.info("Conta encontrada: ID {}", conta.getId());
+
         securityService.validateAccess(usuarioLogado, conta.getCliente());
-        Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
-        cartaoDAO.salvar(cartaoNovo);
+        log.info("Acesso validado para usuário ID {}", usuarioLogado.getId());
 
+        // Lógica de criação
+        Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
+        log.info("Cartão criado: ID {}", cartaoNovo.getId());
+
+        try {
+            cartaoDAO.salvar(cartaoNovo);
+            log.info("Cartão salvo no banco de dados: ID {}", cartaoNovo.getId());
+        } catch (DataAccessException e) {
+            log.error("Erro ao salvar o cartão no banco de dados", e);
+            throw new SystemException("Erro interno ao salvar o cartão. Tente novamente mais tarde.");
+        }
+
+        log.info("Emissão de cartão realizada com sucesso");
         return toResponse(cartaoNovo);
     }
 
     public Cartao criarCartaoPorTipo(TipoCartao tipo, Conta conta, String senha) {
-
+        log.info("Verificando política de taxas");
         CategoriaCliente categoria = conta.getCliente().getCategoria();
-        PoliticaDeTaxas parametros = verificarPolitiaExitente(categoria);
+        PoliticaDeTaxas parametros = Validator.verificarPolitiaExitente(politicaDeTaxasDAO, categoria);
+        log.info("Política de taxas encontrada");
 
         return switch (tipo) {
             case CREDITO -> {
@@ -84,42 +97,45 @@ public class CartaoService {
         };
 
     }
-
     // get cartoes
     public List<CartaoResponse> getCartoes() {
+        log.info("Buscando todos os cartões");
         List<Cartao> cartoes = cartaoDAO.buscarTodosCartoes();
         return cartoes.stream().map(this::toResponse).toList();
     }
-
     // get cartoes por conta
     public List<CartaoResponse> listarPorConta(Long id_conta, Usuario usuarioLogado) {
-        Conta conta = verificarContaExitente(id_conta);
+        log.info("Buscando cartões por conta ID: {}", id_conta);
+        Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);
+        log.info("Conta encontrada: ID {}", conta.getId());
         securityService.validateAccess(usuarioLogado, conta.getCliente());
+        log.info("Acesso validado");
+        log.info("Buscando cartões vinculados à conta ID: {}", id_conta);
         List<Cartao> cartoes = cartaoDAO.findByContaId(id_conta);
         return cartoes.stream().map(this::toResponse).toList();
     }
-
     // get cartao por cliente
     public List<CartaoResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
-        Cliente cliente = verificarClienteExistente(id_cliente);
+        log.info("Buscando cartões por cliente ID: {}", id_cliente);
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
+        log.info("Cliente encontrado: ID {}", cliente.getId());
         securityService.validateAccess(usuarioLogado, cliente);
+        log.info("Acesso validado");
+        log.info("Buscando cartões vinculados ao cliente ID: {}", id_cliente);
         List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
         return cartoes.stream().map(this::toResponse).toList();
     }
-
     // get um cartao
     public CartaoResponse getCartaoById(Long id_cartao, Usuario usuarioLogado) {
-        Cartao cartao = verificarCartaoExistente(id_cartao);
+        Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
         securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
         return toResponse(cartao);
     }
-
     // get cartão por usuário
     public List<CartaoResponse> listarPorUsuario(Usuario usuario) {
         List<Cartao> cartoes = cartaoDAO.findByContaClienteUsuario(usuario);
         return cartoes.stream().map(this::toResponse).toList();
     }
-
     // deletar cartoes de cliente
     @Transactional
     public void deleteCartoesByCliente(Long id_cliente) {
@@ -130,8 +146,8 @@ public class CartaoService {
         }
         for (Cartao cartao : cartoes) {
             try {
-                verificarSegurosVinculados(cartao);
-                verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
+                Validator.verificarSegurosVinculados(seguroDAO, cartao);
+                Validator.verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
                 Long id = cartao.getId();
                 cartaoDAO.deletarCartaoPorId(cartao.getId());
                 log.info("Cartão ID {} deletado com sucesso", id);
@@ -142,15 +158,14 @@ public class CartaoService {
             }
         }
     }
-
     // pagar
     @Transactional
     public PagamentoResponse pagar(Long id_cartao, Usuario usuarioLogado, BigDecimal valor, String senha, String descricao) {
-        Cartao cartao = verificarCartaoExistente(id_cartao);
+        Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
         securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
-        verificarCartaoAtivo(cartao.getStatus());
-        verificarSenhaCorreta(senha, cartao.getSenha());
-        verificarLimiteSuficiente(valor, cartao.getLimiteAtual());
+        Validator.verificarCartaoAtivo(cartao.getStatus());
+        Validator.verificarSenhaCorreta(senha, cartao.getSenha());
+        Validator.verificarLimiteSuficiente(valor, cartao.getLimiteAtual());
 
         if (cartao.getTipoCartao().equals(TipoCartao.DEBITO)) {
             if (valor.compareTo(cartao.getConta().getSaldo()) > 0)
@@ -161,12 +176,11 @@ public class CartaoService {
         cartaoDAO.salvar(cartao);
         return PagamentoResponse.toPagamentoResponse(cartao, valor, descricao);
     }
-
     // alter limite
     @Transactional
     public LimiteResponse alterarLimite(Long id_cartao, BigDecimal valor) {
-        Cartao cartao = verificarCartaoExistente(id_cartao);
-        verificarCartaoAtivo(cartao.getStatus());
+        Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
+        Validator.verificarCartaoAtivo(cartao.getStatus());
 
         BigDecimal limiteConsumido = cartao.getLimite().subtract(cartao.getLimiteAtual());
 
@@ -177,53 +191,47 @@ public class CartaoService {
         cartaoDAO.salvar(cartao);
         return LimiteResponse.toLimiteResponse(cartao, valor);
     }
-
     // alter status cartao
     @Transactional
     public StatusCartaoResponse alterarStatus(Long id_cartao, Usuario usuarioLogado, Status statusNovo) {
-        Cartao cartao = verificarCartaoExistente(id_cartao);
+        Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
         securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 
         if (statusNovo.equals(Status.INATIVO)) {
-            verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
+            Validator.verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
         }
 
         cartao.alterarStatus(statusNovo);
         cartaoDAO.salvar(cartao);
         return StatusCartaoResponse.toStatusCartaoResponse(cartao, statusNovo);
     }
-
     // alter senha
     @Transactional
     public void alterarSenha(Long id_cartao, Usuario usuarioLogado, String senhaAntiga, String senhaNova) {
-        Cartao cartao = verificarCartaoExistente(id_cartao);
+        Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
         securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 
-        verificarCartaoAtivo(cartao.getStatus());
-        verificarSenhaCorreta(senhaAntiga, cartao.getSenha());
+        Validator.verificarCartaoAtivo(cartao.getStatus());
+        Validator.verificarSenhaCorreta(senhaAntiga, cartao.getSenha());
 
         cartao.alterarSenha(senhaAntiga, senhaNova);
         cartaoDAO.salvar(cartao);
     }
-
     // get fatura
     public FaturaResponse getFatura(Long id_cartao, Usuario usuarioLogado) {
-        Cartao ccr = cartaoDAO.findCartaoById(id_cartao)
-                .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+        Cartao ccr = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
         securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
-        verificarCartaoAtivo(ccr.getStatus());
+        Validator.verificarCartaoAtivo(ccr.getStatus());
 
         return FaturaResponse.toFaturaResponse(ccr);
     }
-
     // ressetar limite credito
     @Transactional
     public FaturaResponse pagarFatura(Long id_cartao, Usuario usuarioLogado) {
-        Cartao ccr = cartaoDAO.findCartaoById(id_cartao)
-                .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+        Cartao ccr = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
         securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
 
-        verificarCartaoAtivo(ccr.getStatus());
+        Validator.verificarCartaoAtivo(ccr.getStatus());
         if (ccr.getTotalFatura().compareTo(ccr.getConta().getSaldo()) > 0)
             throw new InvalidInputParameterException("Saldo insuficiente para esta transação. Saldo atual: " + (ccr.getConta().getSaldo()));
 
@@ -231,71 +239,18 @@ public class CartaoService {
         cartaoDAO.salvar(ccr);
         return FaturaResponse.toFaturaResponse(ccr);
     }
-
     // ressetar limite diario
     @Transactional
     public RessetarLimiteDiarioResponse ressetarDebito(Long id_cartao) {
-        Cartao cdb = cartaoDAO.findCartaoById(id_cartao)
-                .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+        Cartao cdb = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
 
-        verificarCartaoAtivo(cdb.getStatus());
-
+        Validator.verificarCartaoAtivo(cdb.getStatus());
         cdb.reiniciarLimiteDebito();
         cartaoDAO.salvar(cdb);
         return RessetarLimiteDiarioResponse.toRessetarLimiteDiarioResponse(cdb);
     }
-
-    // M
     public CartaoResponse toResponse(Cartao cartao) {
         return new CartaoResponse(cartao.getId(), cartao.getNumeroCartao(), cartao.getTipoCartao(),
                 cartao.getStatus(), cartao.getConta().getNumeroConta(), cartao.getDataVencimento(), cartao.getLimite());
-    }
-
-    public void verificaSeTemFaturaAbertaDeCartaoCredito(Cartao cartao) {
-        if (cartao.getTotalFatura().compareTo(BigDecimal.ZERO) > 0)
-            throw new InvalidInputParameterException("Cartão não pode ser desativado com fatura em aberto.");
-    }
-
-    public void verificarSegurosVinculados(Cartao cartao) {
-        Long id = cartao.getId();
-        boolean existeSeguro = seguroDAO.existsByCartaoId(id);
-        log.info("Cartão ID {} possui seguro vinculado? {}", id, existeSeguro);
-        if (existeSeguro) {
-            throw new InvalidInputParameterException("Cartão não pode ser excluído com seguros vinculados.");
-        }
-    }
-
-    public Conta verificarContaExitente(Long id_conta) {
-        return contaDAO.buscarContaPorId(id_conta)
-                .orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
-    }
-
-    public Cliente verificarClienteExistente(Long id_cliente) {
-        return clienteDAO.buscarClienteporId(id_cliente)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-    }
-
-    public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
-        return politicaDeTaxaDAO.findByCategoria(categoria)
-                .orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
-    }
-
-    public Cartao verificarCartaoExistente(Long id_cartao) {
-        return cartaoDAO.findCartaoById(id_cartao)
-                .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
-    }
-
-    public void verificarCartaoAtivo(Status status) {
-        if (status.equals(Status.INATIVO))
-            throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
-    }
-
-    public void verificarSenhaCorreta(String senhaDigitada, String senhaCartao) {
-        if (!senhaDigitada.equals(senhaCartao)) throw new ValidationException("A senha informada está incorreta!");
-    }
-
-    public void verificarLimiteSuficiente(BigDecimal valor, BigDecimal limiteAtual) {
-        if (valor.compareTo(limiteAtual) > 0)
-            throw new InvalidInputParameterException("Limite insuficiente para esta transação. Limite atual: " + (limiteAtual));
     }
 }

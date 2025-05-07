@@ -70,7 +70,8 @@ public class SeguroController {
 		List<TipoSeguroResponse> tipos = Arrays.stream(TipoSeguro.values())
 				.map(seguro -> new TipoSeguroResponse(seguro.getNome(), seguro.getDescricao(), seguro.getCondicoes()))
 				.toList();
-		log.info("Total de tipos de seguros encontrados: {}.", tipos.size());
+		log.info("Tipos de seguros encontrados");
+
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de tipos de seguros concluída em {} ms.", endTime - startTime);
 		return ResponseEntity.ok(tipos);
@@ -84,7 +85,7 @@ public class SeguroController {
 		log.info("Iniciando busca de todos os seguros.");
 
 		List<SeguroResponse> seguros = seguroService.getSeguros();
-		log.info("Total de seguros encontrados: {}.", seguros.size());
+		log.info("Seguros encontrados");
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de seguros concluída em {} ms.", endTime - startTime);
 		return ResponseEntity.ok(seguros);
@@ -102,7 +103,7 @@ public class SeguroController {
 		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
 
 		List<SeguroResponse> seguros = seguroService.getSeguroByCartaoId(id_cartao, usuarioLogado);
-		log.info("Total de seguros encontrados: {}.", seguros.size());
+		log.info("Seguros encontrados");
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de seguro concluída em {} ms.", endTime - startTime);
 		return ResponseEntity.ok(seguros);
@@ -120,7 +121,7 @@ public class SeguroController {
 		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
 
 		List<SeguroResponse> seguros = seguroService.getSeguroByClienteId(id_cliente, usuarioLogado);
-		log.info("Total de seguros encontrados: {}.", seguros.size());
+		log.info("Seguros encontrados");
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de seguro concluída em {} ms.", endTime - startTime);
 		return ResponseEntity.ok(seguros);
@@ -156,7 +157,7 @@ public class SeguroController {
 		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
 
 		List<SeguroResponse> seguros = seguroService.listarPorUsuario(usuarioLogado);
-		log.info("Total de seguros encontrados: {}.", seguros.size());
+		log.info("Seguros encontrados");
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de seguros concluída em {} ms.", endTime - startTime);
 		return ResponseEntity.ok(seguros);

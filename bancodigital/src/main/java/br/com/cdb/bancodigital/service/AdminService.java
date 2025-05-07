@@ -1,15 +1,16 @@
 package br.com.cdb.bancodigital.service;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 import br.com.cdb.bancodigital.dao.*;
+import br.com.cdb.bancodigital.exceptions.custom.*;
 import br.com.cdb.bancodigital.model.*;
 import br.com.cdb.bancodigital.resttemplate.BrasilApiRestTemplate;
 import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +21,6 @@ import br.com.cdb.bancodigital.model.enums.Moeda;
 import br.com.cdb.bancodigital.model.enums.TipoCartao;
 import br.com.cdb.bancodigital.model.enums.TipoConta;
 import br.com.cdb.bancodigital.model.enums.TipoSeguro;
-import br.com.cdb.bancodigital.exceptions.ErrorMessages;
-import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.dto.response.CartaoResponse;
 import br.com.cdb.bancodigital.dto.response.ClienteResponse;
 import br.com.cdb.bancodigital.dto.response.ContaResponse;
@@ -39,7 +37,7 @@ public class AdminService {
     private final ContaDAO contaDAO;
     private final CartaoDAO cartaoDAO;
     private final SeguroDAO seguroDAO;
-    private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
+    private final PoliticaDeTaxasDAO politicaDeTaxasDAO;
     private final SecurityService securityService;
     private final ReceitaFederalRestTemplate receitaFederalRestTemplate;
     private final BrasilApiRestTemplate brasilApiRestTemplate;
@@ -48,87 +46,169 @@ public class AdminService {
 
     // Cadastrar cliente
     public ClienteResponse cadastrarCliente(ClienteUsuarioDTO dto) {
-        try {
-            log.info("Iniciando cadastro de cliente");
-            // Buscar dados do CEP na BrasilAPI
-            CEP2 cepInfo = buscarDadosCep(dto.getCep());
-            Usuario usuario = criarUsuario(dto);
-            Cliente cliente = criarCliente(dto, usuario);
-            validarCliente(cliente);
-            Cliente clienteSalvo = salvarCliente(cliente);
-            salvarEndereco(dto, clienteSalvo, cepInfo);
+        log.info("Iniciando cadastro de cliente");
 
-            log.info("Cadastro de cliente realizado com sucesso");
-            return toClienteResponse(clienteSalvo);
-        } catch (Exception e) {
-            log.error("Erro ao cadastrar cliente: {}", e.getMessage());
-            throw new InvalidInputParameterException("Erro ao cadastrar cliente: " + e.getMessage());
+        CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(dto.getCep());
+        log.info("Dados do CEP encontrados com sucesso");
+
+        Usuario usuario = criarUsuario(dto);
+        log.info("Usuário criado: ID {}", usuario.getId());
+
+        Cliente cliente = criarCliente(dto, usuario);
+        log.info("Cliente criado: ID {}", cliente.getId());
+
+        validarCliente(cliente);
+        log.info("Validação do cliente concluída");
+
+        try {
+            salvarCliente(cliente);
+            log.info("Cliente salvo no banco de dados: ID {}", cliente.getId());
+
+            salvarEndereco(dto, cliente, cepInfo);
+            log.info("Endereço salvo no banco de dados para cliente ID {}", cliente.getId());
+        } catch (DataAccessException e) {
+            log.error("Erro ao salvar cliente no banco: {}", e.getMessage(), e);
+            throw new SystemException("Erro interno ao salvar o cliente. Tente novamente mais tarde.");
         }
+        log.info("Cadastro de cliente realizado com sucesso");
+        return toClienteResponse(cliente);
     }
 
-    // addConta de forma genérica
+    // Adicionar conta
     @Transactional
     public ContaResponse abrirConta(Long id_cliente, Usuario usuarioLogado, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito) {
-        Objects.requireNonNull(tipo, "Tipo de conta não pode ser nulo");
+        log.info("Iniciando abertura de conta");
 
-        Cliente cliente = verificarClienteExistente(id_cliente);
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
+        log.info("Cliente encontrado: ID {}", cliente.getId());
+
         securityService.validateAccess(usuarioLogado, cliente);
-        Conta contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
-        contaDAO.salvar(contaNova);
+        log.info("Acesso validado");
 
+        Conta contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
+        log.info("Conta criada: ID {}", contaNova.getId());
+
+        try {
+            contaDAO.salvar(contaNova);
+            log.info("Conta salva no banco de dados: ID {}", contaNova.getId());
+        } catch (Exception e) {
+            log.error("Erro ao abrir conta: {}", e.getMessage());
+            throw new SystemException("Erro interno ao criar a conta. Tente novamente mais tarde.");
+        }
+        log.info("Abertura de conta realizada com sucesso");
         return toContaResponse(contaNova);
     }
 
-    // add cartao
+    // Emitir cartao
     @Transactional
     public CartaoResponse emitirCartao(Long id_conta, Usuario usuarioLogado, TipoCartao tipo, String senha) {
-        Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
-        Objects.requireNonNull(senha, "A senha do cartão não pode ser nula");
+        log.info("Iniciando emissão de cartão para conta ID {}", id_conta);
 
-        Conta conta = verificarContaExistente(id_conta);
+        Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);
+        log.info("Conta encontrada: ID {}", conta.getId());
+
         securityService.validateAccess(usuarioLogado, conta.getCliente());
-        Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
-        cartaoDAO.salvar(cartaoNovo);
+        log.info("Acesso validado para usuário ID {}", usuarioLogado.getId());
 
+        Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
+        log.info("Cartão criado: ID {}", cartaoNovo.getId());
+
+        try {
+            cartaoDAO.salvar(cartaoNovo);
+            log.info("Cartão salvo no banco de dados: ID {}", cartaoNovo.getId());
+        } catch (DataAccessException e) {
+            log.error("Erro ao salvar o cartão no banco de dados", e);
+            throw new SystemException("Erro interno ao salvar o cartão. Tente novamente mais tarde.");
+        }
+        log.info("Emissão de cartão realizada com sucesso");
         return toCartaoResponse(cartaoNovo);
     }
 
-    // contrataSeguro
+    // Contratar seguro
     @Transactional
     public SeguroResponse contratarSeguro(Long id_cartao, Usuario usuarioLogado, TipoSeguro tipo) {
-        Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
-        Cartao ccr = cartaoDAO.findCartaoById(id_cartao)
-                .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+        log.info("Iniciando contratação de seguro");
+
+        Cartao ccr = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
+        log.info("Cartão encontrado: ID {}", ccr.getId());
+
         securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
+        log.info("Acesso validado");
 
         Seguro seguroNovo = contratarSeguroPorTipo(tipo, ccr);
-        seguroDAO.salvar(seguroNovo);
+        log.info("Seguro criado: ID {}", seguroNovo.getId());
+
+        try {
+            seguroDAO.salvar(seguroNovo);
+            log.info("Seguro salvo no banco de dados: ID {}", seguroNovo.getId());
+        } catch (Exception e) {
+            log.error("Erro ao contratar seguro: {}", e.getMessage());
+            throw new SystemException("Erro interno ao contratar o seguro. Tente novamente mais tarde.");
+        }
+        log.info("Contratação de seguro realizada com sucesso");
         return toSeguroResponse(seguroNovo);
     }
 
     public Cliente getClienteById(Long id_cliente, Usuario usuarioLogado) {
-        Cliente cliente = verificarClienteExistente(id_cliente);
+        log.info("Buscando cliente por ID: {}", id_cliente);
+
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
+        log.info("Cliente encontrado: ID {}", cliente.getId());
+
         securityService.validateAccess(usuarioLogado, cliente);
+        log.info("Acesso validado");
+
         return cliente;
     }
 
-    public Cliente verificarClienteExistente(Long id_cliente) {
-        return clienteDAO.buscarClienteporId(id_cliente)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
+    private Usuario criarUsuario(ClienteUsuarioDTO dto) {
+        log.info("Criando usuário");
+
+        return usuarioDAO.criarUsuario(dto.getEmail(), dto.getSenha(), dto.getRole());
     }
 
-    public Conta verificarContaExistente(Long id_conta) {
-        return contaDAO.buscarContaPorId(id_conta)
-                .orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
+    private Cliente criarCliente(ClienteUsuarioDTO dto, Usuario usuario) {
+        log.info("Criando cliente");
+        Cliente cliente = dto.transformaClienteParaObjeto();
+        cliente.setCategoria(CategoriaCliente.COMUM);
+        cliente.setUsuario(usuario);
+
+        return cliente;
     }
 
-    public ClienteResponse toClienteResponse(Cliente cliente) {
-        EnderecoCliente endereco = enderecoClienteDAO.buscarEnderecoporClienteOuErro(cliente);
-        return new ClienteResponse(cliente, endereco);
+    private void salvarCliente(Cliente cliente) {
+        log.info("Salvando cliente no banco de dados");
+        clienteDAO.salvar(cliente);
+    }
+
+    private void salvarEndereco(ClienteUsuarioDTO dto, Cliente cliente, CEP2 cepInfo) {
+        log.info("Salvando endereço para o cliente");
+        EnderecoCliente enderecoCliente = dto.transformaEnderecoParaObjeto();
+        enderecoCliente.setCliente(cliente);
+        enderecoCliente.setBairro(cepInfo.getNeighborhood());
+        enderecoCliente.setCidade(cepInfo.getCity());
+        enderecoCliente.setEstado(cepInfo.getState());
+        enderecoCliente.setRua(cepInfo.getStreet());
+        enderecoClienteDAO.salvar(enderecoCliente);
+    }
+
+    public void validarCliente(Cliente cliente) {
+        if (receitaFederalRestTemplate.isCpfInvalidoOuInativo(cliente.getCpf())) {
+            log.error("CPF inválido ou inativo na Receita Federal");
+            throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
+        }
+        Validator.validarCpfUnico(clienteDAO, cliente.getCpf());
+        log.info("Cpf válido e único");
+
+        Validator.validarMaiorIdade(cliente);
+        log.info("Cliente maior de idade");
     }
 
     private Conta criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
-        PoliticaDeTaxas parametros = verificarPoliticaExitente(cliente.getCategoria());
+        log.info("Verificando política de taxas");
+
+        PoliticaDeTaxas parametros = Validator.verificarPolitiaExitente(politicaDeTaxasDAO, cliente.getCategoria());
+        log.info("Política de taxas encontrada");
 
         return switch (tipo) {
             case CORRENTE -> {
@@ -148,6 +228,7 @@ public class AdminService {
         cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
         cc.setMoeda(moeda);
         cc.setSaldo(valorDeposito);
+
         return cc;
     }
 
@@ -156,6 +237,7 @@ public class AdminService {
         cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
         cp.setMoeda(moeda);
         cp.setSaldo(valorDeposito);
+
         return cp;
     }
 
@@ -166,12 +248,65 @@ public class AdminService {
         ci.setSaldoEmReais(valorDeposito);
         BigDecimal saldoMoedaExtrangeira = conversorMoedasService.converterDeBrl(ci.getMoeda(), ci.getSaldoEmReais());
         ci.setSaldo(saldoMoedaExtrangeira);
+
         return ci;
     }
 
-    public PoliticaDeTaxas verificarPoliticaExitente(CategoriaCliente categoria) {
-        return politicaDeTaxaDAO.findByCategoria(categoria)
-                .orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
+    public Cartao criarCartaoPorTipo(TipoCartao tipo, Conta conta, String senha) {
+        log.info("Verificando política de taxas");
+
+        CategoriaCliente categoria = conta.getCliente().getCategoria();
+        PoliticaDeTaxas parametros = Validator.verificarPolitiaExitente(politicaDeTaxasDAO, categoria);
+        log.info("Política de taxas encontrada");
+
+        return switch (tipo) {
+            case CREDITO -> {
+                Cartao ccr = new Cartao(conta, senha, tipo);
+                ccr.setLimite(parametros.getLimiteCartaoCredito());
+                ccr.setLimiteAtual(ccr.getLimite());
+                ccr.setTotalFatura(BigDecimal.ZERO);
+                yield ccr;
+            }
+            case DEBITO -> {
+                Cartao cdb = new Cartao(conta, senha, tipo);
+                cdb.setLimite(parametros.getLimiteDiarioDebito());
+                cdb.setLimiteAtual(cdb.getLimite());
+                yield cdb;
+            }
+        };
+
+    }
+
+    public Seguro contratarSeguroPorTipo(TipoSeguro tipo, Cartao ccr) {
+        log.info("Verificando política de taxas");
+
+        CategoriaCliente categoria = ccr.getConta().getCliente().getCategoria();
+        PoliticaDeTaxas parametros = Validator.verificarPolitiaExitente(politicaDeTaxasDAO, categoria);
+        log.info("Política de taxas encontrada");
+
+        return switch (tipo) {
+            case FRAUDE -> {
+                Seguro sf = new Seguro(ccr);
+                sf.setValorApolice(parametros.getValorApoliceFraude());
+                sf.setPremioApolice(parametros.getTarifaSeguroFraude());
+                sf.setDescricaoCondicoes(TipoSeguro.FRAUDE.getDescricao());
+                yield sf;
+            }
+            case VIAGEM -> {
+                Seguro sv = new Seguro(ccr);
+                sv.setValorApolice(parametros.getValorApoliceViagem());
+                sv.setPremioApolice(parametros.getTarifaSeguroViagem());
+                sv.setDescricaoCondicoes(TipoSeguro.VIAGEM.getDescricao());
+                yield sv;
+            }
+        };
+    }
+
+    public ClienteResponse toClienteResponse(Cliente cliente) {
+        EnderecoCliente endereco = enderecoClienteDAO.buscarEnderecoporClienteOuErro(cliente);
+        log.info("Endereço encontrado: ID {}", endereco.getId());
+
+        return new ClienteResponse(cliente, endereco);
     }
 
     public ContaResponse toContaResponse(Conta conta) {
@@ -199,94 +334,7 @@ public class AdminService {
                 cartao.getStatus(), cartao.getConta().getNumeroConta(), cartao.getDataVencimento(), cartao.getLimite());
     }
 
-    public Cartao criarCartaoPorTipo(TipoCartao tipo, Conta conta, String senha) {
-
-        CategoriaCliente categoria = conta.getCliente().getCategoria();
-        PoliticaDeTaxas parametros = verificarPoliticaExitente(categoria);
-
-        return switch (tipo) {
-            case CREDITO -> {
-                Cartao ccr = new Cartao(conta, senha, tipo);
-                ccr.setLimite(parametros.getLimiteCartaoCredito());
-                yield ccr;
-            }
-            case DEBITO -> {
-                Cartao cdb = new Cartao(conta, senha, tipo);
-                cdb.setLimite(parametros.getLimiteDiarioDebito());
-                yield cdb;
-            }
-        };
-
-    }
-
-    public Seguro contratarSeguroPorTipo(TipoSeguro tipo, Cartao ccr) {
-
-        CategoriaCliente categoria = ccr.getConta().getCliente().getCategoria();
-
-        PoliticaDeTaxas parametros = politicaDeTaxaDAO.findByCategoria(categoria)
-                .orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
-
-        return switch (tipo) {
-            case FRAUDE -> {
-                Seguro sf = new Seguro(ccr);
-                sf.setValorApolice(parametros.getValorApoliceFraude());
-                sf.setPremioApolice(parametros.getTarifaSeguroFraude());
-                sf.setDescricaoCondicoes(TipoSeguro.FRAUDE.getDescricao());
-                yield sf;
-            }
-            case VIAGEM -> {
-                Seguro sv = new Seguro(ccr);
-                sv.setValorApolice(parametros.getValorApoliceViagem());
-                sv.setPremioApolice(parametros.getTarifaSeguroViagem());
-                sv.setDescricaoCondicoes(TipoSeguro.VIAGEM.getDescricao());
-                yield sv;
-            }
-        };
-    }
-
     public SeguroResponse toSeguroResponse(Seguro seguro) {
         return SeguroResponse.toSeguroResponse(seguro);
-    }
-
-    private Usuario criarUsuario(ClienteUsuarioDTO dto) {
-        log.info("Criando usuário para o email: {}", dto.getEmail());
-        return usuarioDAO.criarUsuario(dto.getEmail(), dto.getSenha(), dto.getRole());
-    }
-
-    private Cliente criarCliente(ClienteUsuarioDTO dto, Usuario usuario) {
-        Cliente cliente = dto.transformaClienteParaObjeto();
-        cliente.setCategoria(CategoriaCliente.COMUM);
-        cliente.setUsuario(usuario);
-        return cliente;
-    }
-
-    private void validarCliente(Cliente cliente) {
-        if (receitaFederalRestTemplate.isCpfInvalidoOuInativo(cliente.getCpf())) {
-            log.error("CPF inválido ou inativo: {}", cliente.getCpf());
-            throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
-        }
-        Validator.validarCpfUnico(clienteDAO, cliente.getCpf());
-        Validator.validarMaiorIdade(cliente);
-    }
-
-    private Cliente salvarCliente(Cliente cliente) {
-        log.info("Salvando cliente no banco de dados");
-        return clienteDAO.salvar(cliente);
-    }
-
-    private void salvarEndereco(ClienteUsuarioDTO dto, Cliente cliente, CEP2 cepInfo) {
-        log.info("Salvando endereço para o cliente: {}", cliente.getId());
-        EnderecoCliente enderecoCliente = dto.transformaEnderecoParaObjeto();
-        enderecoCliente.setCliente(cliente);
-        enderecoCliente.setBairro(cepInfo.getNeighborhood());
-        enderecoCliente.setCidade(cepInfo.getCity());
-        enderecoCliente.setEstado(cepInfo.getState());
-        enderecoCliente.setRua(cepInfo.getStreet());
-        enderecoClienteDAO.salvar(enderecoCliente);
-    }
-
-    private CEP2 buscarDadosCep(String cep) {
-        log.info("Buscando dados do CEP");
-        return brasilApiRestTemplate.buscarEnderecoPorCep(cep);
     }
 }

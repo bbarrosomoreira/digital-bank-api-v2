@@ -25,7 +25,7 @@ public class ConexaoPGadmin {
         try{
             return dataSource.getConnection();
         } catch (SQLException e) {
-            throw new CommunicationException(ConstantUtils.ERRO_CONEXAO_BANCO, e);
+            throw new CommunicationException(ConstantUtils.ERRO_CONEXAO_BANCO);
         }
     }
 }

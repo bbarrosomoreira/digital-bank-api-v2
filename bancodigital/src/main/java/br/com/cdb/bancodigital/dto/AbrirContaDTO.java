@@ -25,6 +25,4 @@ public class AbrirContaDTO {
 	
 	@Digits(integer = 19, fraction = 2)
 	private BigDecimal valorDeposito;
-
-
 }

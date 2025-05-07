@@ -45,7 +45,7 @@ public class PoliticaDeTaxasController {
 		log.info("Iniciando listagem de todos os parâmetros de taxas.");
 
 		List<PoliticaDeTaxas> parametros = parametrosService.listarTodosParametros();
-		log.info("Total de parâmetros encontrados: {}.", parametros.size());
+		log.info("Parametros encontrados");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Listagem de parâmetros concluída em {} ms.", endTime - startTime);

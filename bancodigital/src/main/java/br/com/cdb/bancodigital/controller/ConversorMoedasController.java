@@ -35,7 +35,7 @@ public class ConversorMoedasController {
 		response.setValorOriginal(dto.getValor());
 		response.setValorConvertido(valorConvertido);
 
-		log.info("Conversão concluída com sucesso. Valor original: {}, Valor convertido: {}.", dto.getValor(), valorConvertido);
+		log.info("Conversão concluída com sucesso.");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Conversão para BRL concluída em {} ms.", endTime - startTime);
@@ -46,8 +46,7 @@ public class ConversorMoedasController {
 	public ResponseEntity<ApiConversorMoedasResponse> fazerConversao (
 			@RequestBody ConversorMoedasDTO dto){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando conversão de moedas. Moeda origem: {}, Moeda destino: {}, Valor: {}.",
-				dto.getMoedaOrigem(), dto.getMoedaDestino(), dto.getValor());
+		log.info("Iniciando conversão de moedas.");
 
 		return conversorMoedasService.fazerConversao(dto.getMoedaOrigem(), dto.getMoedaDestino(), dto.getValor())
 				.map(response -> {

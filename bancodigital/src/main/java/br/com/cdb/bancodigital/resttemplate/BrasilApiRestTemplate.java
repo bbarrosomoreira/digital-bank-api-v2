@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.resttemplate;
 
+import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,7 @@ import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 @Slf4j
 public class BrasilApiRestTemplate {
 
-	public CEP2 buscarEnderecoPorCep(String cep) {
+	public CEP2 buscarEnderecoPorCep(String cep) throws ValidationException {
         if (cep == null || cep.isBlank()) {
             log.error("CEP inválido: valor nulo ou vazio.");
             throw new ValidationException("CEP não pode ser nulo ou vazio.");
@@ -28,7 +29,7 @@ public class BrasilApiRestTemplate {
             }
 			
 			log.error("CEP inválido ou erro inesperado", e);
-			throw new ValidationException("CEP inválido ou erro inesperado");
+			throw new CommunicationException("CEP inválido ou erro inesperado");
 		}
 	}
     private boolean isApiError(Exception e) {

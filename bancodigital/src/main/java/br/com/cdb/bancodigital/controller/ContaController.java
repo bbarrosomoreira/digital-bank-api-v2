@@ -79,7 +79,7 @@ public class ContaController {
 		log.info("Iniciando busca de todas as contas.");
 
 		List<ContaResponse> contas = contaService.getContas();
-		log.info("Total de contas encontradas: {}.", contas.size());
+		log.info("Contas encontradas");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de contas concluída em {} ms.", endTime - startTime);
@@ -98,7 +98,7 @@ public class ContaController {
 		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
 
 		List<ContaResponse> contas = contaService.listarPorUsuario(usuarioLogado);
-		log.info("Total de contas encontradas para o usuário logado: {}.", contas.size());
+		log.info("Contas encontradas");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de contas do usuário logado concluída em {} ms.", endTime - startTime);
@@ -117,7 +117,7 @@ public class ContaController {
 		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
 
 		List<ContaResponse> contas = contaService.listarPorCliente(id_cliente, usuarioLogado);
-		log.info("Total de contas encontradas para cliente : {}.", contas.size());
+		log.info("Contas encontradas");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de contas por cliente concluída em {} ms.", endTime - startTime);

@@ -89,7 +89,7 @@ public class CartaoController {
 		log.info("Iniciando busca de todos os cartões.");
 
 		List<CartaoResponse> cartoes = cartaoService.getCartoes();
-		log.info("Total de cartões encontrados: {}.", cartoes.size());
+		log.info("Cartões encontrados");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de cartões concluída em {} ms.", endTime - startTime);
@@ -108,7 +108,7 @@ public class CartaoController {
 		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorCliente(id_cliente, usuarioLogado);
-		log.info("Total de cartões encontrados para cliente: {}.", cartoes.size());
+		log.info("Cartões encontrados");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de cartões por cliente concluída em {} ms.", endTime - startTime);
@@ -127,7 +127,7 @@ public class CartaoController {
 		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorConta(id_conta, usuarioLogado);
-		log.info("Total de cartões encontrados para conta: {}.", cartoes.size());
+		log.info("Cartões encontrados");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de cartões por conta concluída em {} ms.", endTime - startTime);
@@ -146,7 +146,7 @@ public class CartaoController {
 		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorUsuario(usuarioLogado);
-		log.info("Total de cartões encontrados para o usuário logado: {}.", cartoes.size());
+		log.info("Cartões encontrados");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de cartões do usuário logado concluída em {} ms.", endTime - startTime);
@@ -186,7 +186,7 @@ public class CartaoController {
 		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
 
 		PagamentoResponse response = cartaoService.pagar(id_cartao, usuarioLogado, dto.getValor(), dto.getSenha(), dto.getDescricao());
-		log.info("Pagamento realizado com sucesso: Valor: {}, Descrição: {}.", dto.getValor(), dto.getDescricao());
+		log.info("Pagamento realizado com sucesso");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Pagamento concluído em {} ms.", endTime - startTime);
@@ -245,7 +245,7 @@ public class CartaoController {
 		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
 
 		cartaoService.alterarSenha(id_cartao, usuarioLogado, dto.getSenhaAntiga(), dto.getSenhaNova());
-		log.info("Senha alterada com sucesso para cartão ID: {}.", id_cartao);
+		log.info("Senha alterada com sucesso");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Alteração de senha concluída em {} ms.", endTime - startTime);
@@ -259,16 +259,16 @@ public class CartaoController {
 			@PathVariable Long id_cartao,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando pagamento de fatura para cartão ID: {}.", id_cartao);
+		log.info("Iniciando leitura de fatura para cartão ID: {}.", id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
 
-		FaturaResponse response = cartaoService.pagarFatura(id_cartao, usuarioLogado);
-		log.info("Fatura paga com sucesso para cartão ID: {}.", id_cartao);
+		FaturaResponse response = cartaoService.getFatura(id_cartao, usuarioLogado);
+		log.info("Fatura obtida com sucesso");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Pagamento de fatura concluído em {} ms.", endTime - startTime);
+		log.info("Leitura de fatura concluída em {} ms.", endTime - startTime);
 		return ResponseEntity.ok(response);
 		
 	}
@@ -286,7 +286,7 @@ public class CartaoController {
 		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
 
 		FaturaResponse response = cartaoService.pagarFatura(id_cartao, usuarioLogado);
-		log.info("Fatura paga com sucesso para cartão ID: {}.", id_cartao);
+		log.info("Fatura paga com sucesso");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Pagamento de fatura concluído em {} ms.", endTime - startTime);
@@ -302,7 +302,7 @@ public class CartaoController {
 		log.info("Iniciando reset de limite diário para cartão ID: {}.", id_cartao);
 
 		RessetarLimiteDiarioResponse response = cartaoService.ressetarDebito(id_cartao);
-		log.info("Limite diário resetado com sucesso para cartão ID: {}.", id_cartao);
+		log.info("Limite diário redefinido com sucesso");
 
 		long endTime = System.currentTimeMillis();
 		log.info("Reset de limite diário concluído em {} ms.", endTime - startTime);

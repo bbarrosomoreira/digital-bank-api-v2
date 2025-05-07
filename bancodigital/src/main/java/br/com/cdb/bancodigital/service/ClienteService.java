@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.cdb.bancodigital.dao.*;
 import br.com.cdb.bancodigital.dto.ClienteAtualizadoDTO;
+import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.resttemplate.BrasilApiRestTemplate;
 import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
 import br.com.cdb.bancodigital.utils.Validator;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,7 +28,6 @@ import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigital.model.Seguro;
 import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
-import br.com.cdb.bancodigital.exceptions.ErrorMessages;
 import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
@@ -50,35 +51,29 @@ public class ClienteService {
 
     // Cadastrar cliente
     public ClienteResponse cadastrarCliente(ClienteDTO dto, Usuario usuario) {
-        // Buscar dados do CEP na BrasilAPI
+        log.info("Iniciando cadastro de cliente");
+
         CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(dto.getCep());
+        log.info("Dados do CEP encontrados com sucesso");
 
-        // Criar cliente
-        Cliente cliente = dto.transformaClienteParaObjeto();
-        cliente.setCategoria(CategoriaCliente.COMUM);
-        cliente.setUsuario(usuario);
+        Cliente cliente = criarCliente(dto, usuario);
+        log.info("Cliente criado: ID {}", cliente.getId());
 
-        // Validações
-        if (receitaService.isCpfInvalidoOuInativo(cliente.getCpf()))
-            throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
-        Validator.validarCpfUnico(clienteDAO, cliente.getCpf());
-        Validator.validarMaiorIdade(cliente);
+        validarCliente(cliente);
+        log.info("Validação do cliente concluída");
 
-        // Salvar cliente no banco
-        Cliente clienteSalvo = clienteDAO.salvar(cliente);
+        try {
+            salvarCliente(cliente);
+            log.info("Cliente salvo no banco de dados: ID {}", cliente.getId());
 
-        // Criar endereço
-        EnderecoCliente enderecoCliente = dto.transformaEnderecoParaObjeto();
-        enderecoCliente.setCliente(clienteSalvo);
-        enderecoCliente.setBairro(cepInfo.getNeighborhood());
-        enderecoCliente.setCidade(cepInfo.getCity());
-        enderecoCliente.setEstado(cepInfo.getState());
-        enderecoCliente.setRua(cepInfo.getStreet());
-
-        // Salvar endereço no banco
-        enderecoClienteDAO.salvar(enderecoCliente);
-
-        return toResponse(clienteSalvo);
+            salvarEndereco(dto, cliente, cepInfo);
+            log.info("Endereço salvo no banco de dados para cliente ID {}", cliente.getId());
+        } catch (DataAccessException e) {
+            log.error("Erro ao salvar cliente no banco: {}", e.getMessage(), e);
+            throw new SystemException("Erro interno ao salvar o cliente. Tente novamente mais tarde.");
+        }
+        log.info("Cadastro de cliente realizado com sucesso");
+        return toResponse(cliente);
     }
 
     // Ver cliente(s)
@@ -88,7 +83,7 @@ public class ClienteService {
     }
 
     public Cliente getClienteById(Long id_cliente, Usuario usuarioLogado) {
-        Cliente cliente = verificarClienteExistente(id_cliente);
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
         securityService.validateAccess(usuarioLogado, cliente);
         return cliente;
     }
@@ -102,7 +97,7 @@ public class ClienteService {
     // deletar cadastro de cliente
     @Transactional
     public void deleteCliente(Long id_cliente) throws AccessDeniedException { //só admin
-        Cliente cliente = verificarClienteExistente(id_cliente);
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
 
         boolean temContas = contaDAO.existsByClienteId(id_cliente);
         boolean temCartoes = cartaoDAO.existsByContaClienteId(id_cliente);
@@ -119,7 +114,7 @@ public class ClienteService {
     @Transactional
     public ClienteResponse atualizarCliente(Long id_cliente, ClienteAtualizadoDTO dto, Usuario usuarioLogado) {
         // Validações
-        Cliente cliente = verificarClienteExistente(id_cliente);
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
         securityService.validateAccess(usuarioLogado, cliente);
 
         // Atualizar dados pessoais
@@ -159,7 +154,7 @@ public class ClienteService {
 
     @Transactional
     public ClienteResponse updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) throws AccessDeniedException { // só admin
-        Cliente cliente = verificarClienteExistente(id_cliente);
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
         if (cliente.getCategoria().equals(novaCategoria))
             throw new InvalidInputParameterException("Cliente ID " + id_cliente + " já está na categoria "
                     + novaCategoria + ". Nenhuma atualização necessária.");
@@ -260,11 +255,6 @@ public class ClienteService {
         return politicaDeTaxaDAO.findByCategoria(categoria)
                 .orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
     }
-
-    public Cliente verificarClienteExistente(Long id_cliente) {
-        return clienteDAO.buscarClienteporId(id_cliente)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
-    }
     private boolean possuiDadosDeEndereco(ClienteAtualizadoDTO dto) {
         return dto.getRua() != null || dto.getNumero() != null || dto.getComplemento() != null ||
                 dto.getBairro() != null || dto.getCidade() != null || dto.getEstado() != null || dto.getCep() != null;
@@ -301,6 +291,43 @@ public class ClienteService {
         if (dto.getCidade() != null) endereco.setCidade(dto.getCidade());
         if (dto.getEstado() != null) endereco.setEstado(dto.getEstado());
         if (dto.getCep() != null) endereco.setCep(dto.getCep());
+    }
+
+    private Cliente criarCliente(ClienteDTO dto, Usuario usuario) {
+        log.info("Criando cliente");
+        Cliente cliente = dto.transformaClienteParaObjeto();
+        cliente.setCategoria(CategoriaCliente.COMUM);
+        cliente.setUsuario(usuario);
+
+        return cliente;
+    }
+
+    private void salvarCliente(Cliente cliente) {
+        log.info("Salvando cliente no banco de dados");
+        clienteDAO.salvar(cliente);
+    }
+
+    private void salvarEndereco(ClienteDTO dto, Cliente cliente, CEP2 cepInfo) {
+        log.info("Salvando endereço para o cliente");
+        EnderecoCliente enderecoCliente = dto.transformaEnderecoParaObjeto();
+        enderecoCliente.setCliente(cliente);
+        enderecoCliente.setBairro(cepInfo.getNeighborhood());
+        enderecoCliente.setCidade(cepInfo.getCity());
+        enderecoCliente.setEstado(cepInfo.getState());
+        enderecoCliente.setRua(cepInfo.getStreet());
+        enderecoClienteDAO.salvar(enderecoCliente);
+    }
+
+    public void validarCliente(Cliente cliente) {
+        if (receitaService.isCpfInvalidoOuInativo(cliente.getCpf())) {
+            log.error("CPF inválido ou inativo na Receita Federal");
+            throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
+        }
+        Validator.validarCpfUnico(clienteDAO, cliente.getCpf());
+        log.info("Cpf válido e único");
+
+        Validator.validarMaiorIdade(cliente);
+        log.info("Cliente maior de idade");
     }
 
 
