@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
+import br.com.cdb.bancodigital.utils.NumberGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigital.model.enums.Moeda;
@@ -34,7 +35,7 @@ public class Conta implements ContaBase {
 		this.tipoConta = tipoConta;
 		this.cliente = cliente;
 		this.dataCriacao = LocalDate.now();
-		gerarNumeroConta();
+		this.numeroConta = NumberGenerator.gerarNumeroConta(tipoConta);
 	}
 
 	@Override
@@ -68,21 +69,6 @@ public class Conta implements ContaBase {
 				BigDecimal valorSaque = valor.add(BigDecimal.TWO);
 				BigDecimal novoSaldo = this.getSaldo().subtract(valorSaque);
 				this.setSaldo(novoSaldo);
-			}
-		}
-
-	}
-
-	private void gerarNumeroConta() {
-		switch (tipoConta) {
-			case CORRENTE -> {
-				this.numeroConta = "CC-" + (1000 + (int) (Math.random() * 9000));
-			}
-			case POUPANCA -> {
-				this.numeroConta = "CP-" + (5000 + (int)(Math.random() *9000));
-			}
-			case INTERNACIONAL -> {
-				this.numeroConta = "CI-" + (10000 + (int) (Math.random() * 9000));
 			}
 		}
 

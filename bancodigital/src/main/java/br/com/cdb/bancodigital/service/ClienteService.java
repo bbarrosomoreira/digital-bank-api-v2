@@ -1,12 +1,12 @@
 package br.com.cdb.bancodigital.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import br.com.cdb.bancodigital.dao.*;
 import br.com.cdb.bancodigital.dto.ClienteAtualizadoDTO;
 import br.com.cdb.bancodigital.resttemplate.BrasilApiRestTemplate;
 import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
+import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,6 @@ import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.exceptions.ErrorMessages;
 import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigital.dto.response.ClienteResponse;
@@ -62,8 +61,8 @@ public class ClienteService {
         // Validações
         if (receitaService.isCpfInvalidoOuInativo(cliente.getCpf()))
             throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
-        validarCpfUnico(cliente.getCpf());
-        validarMaiorIdade(cliente);
+        Validator.validarCpfUnico(clienteDAO, cliente.getCpf());
+        Validator.validarMaiorIdade(cliente);
 
         // Salvar cliente no banco
         Cliente clienteSalvo = clienteDAO.salvar(cliente);
@@ -131,14 +130,14 @@ public class ClienteService {
             if (receitaService.isCpfInvalidoOuInativo(dto.getCpf())) {
                 throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
             }
-            validarCpfUnico(dto.getCpf());
+            Validator.validarCpfUnico(clienteDAO, dto.getCpf());
             cliente.setCpf(dto.getCpf());
         }
         if (dto.getDataNascimento() != null) {
             cliente.setDataNascimento(dto.getDataNascimento());
         }
 
-        validarMaiorIdade(cliente);
+        Validator.validarMaiorIdade(cliente);
         clienteDAO.salvar(cliente);
 
         // Atualizar ou criar endereço
@@ -191,17 +190,6 @@ public class ClienteService {
     public ClienteResponse toResponse(Cliente cliente) {
         EnderecoCliente endereco = enderecoClienteDAO.buscarEnderecoporClienteOuErro(cliente);
         return new ClienteResponse(cliente, endereco);
-    }
-
-    private void validarCpfUnico(String cpf) {
-        Optional<Cliente> clienteExistente = clienteDAO.buscarClienteporCPF(cpf);
-        if (clienteExistente.isPresent())
-            throw new ResourceAlreadyExistsException("CPF já cadastrado no sistema.");
-    }
-
-    private void validarMaiorIdade(Cliente cliente) {
-        if (cliente.isMenorDeIdade())
-            throw new ValidationException("Cliente deve ser maior de 18 anos para se cadastrar.");
     }
 
     public void atualizarTaxasDasContas(Long id_cliente, PoliticaDeTaxas parametros) {

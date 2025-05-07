@@ -2,8 +2,8 @@ package br.com.cdb.bancodigital.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Random;
 
+import br.com.cdb.bancodigital.utils.NumberGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigital.model.enums.Status;
@@ -45,7 +45,7 @@ public class Cartao implements CartaoBase {
 		this.dataVencimento = this.dataEmissao.plusYears(5);
 		this.status = Status.ATIVO;
 		definirSenha(senha);
-		gerarNumeroCartao();
+		this.numeroCartao = NumberGenerator.gerarNumeroCartao();
 	}
 
 	public void realizarPagamento(BigDecimal valor) {
@@ -65,23 +65,6 @@ public class Cartao implements CartaoBase {
 
 	public void alterarLimite(BigDecimal limiteNovo) {
 		this.setLimite(limiteNovo);
-	}
-	
-	protected void gerarNumeroCartao() {
-	    Random random = new Random();
-	    StringBuilder numeroCartao = new StringBuilder();
-
-	    // Define o primeiro dígito (Visa = 4, Mastercard = 5)
-	    int primeiroDigito = random.nextBoolean() ? 4 : 5; 
-	    numeroCartao.append(primeiroDigito);
-
-	    // Gera os outros 15 dígitos
-	    for (int i = 1; i < 16; i++) {
-	        numeroCartao.append(random.nextInt(10)); // Números de 0 a 9
-	    }
-
-	    // Aplica a formatação para "XXXX XXXX XXXX XXXX"
-	    this.numeroCartao = numeroCartao.toString().replaceAll("(.{4})", "$1 ").trim();
 	}
 	
 	@Override

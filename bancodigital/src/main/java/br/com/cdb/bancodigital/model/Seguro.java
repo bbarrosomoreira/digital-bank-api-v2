@@ -2,8 +2,8 @@ package br.com.cdb.bancodigital.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
+import br.com.cdb.bancodigital.utils.NumberGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigital.model.enums.Status;
@@ -39,12 +39,9 @@ public class Seguro implements SeguroBase {
 		this.cartao = cartao;
 		this.statusSeguro = Status.ATIVO;
 		this.dataContratacao = LocalDate.now();
-		this.numApolice = gerarNumeroApolice();
+		this.numApolice = NumberGenerator.gerarNumeroApolice();
 	}
 
-	private String gerarNumeroApolice() {
-		return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-	}
 	public void setarStatusSeguro(Status statusNovo) {
 		this.setStatusSeguro(statusNovo);
 	}
