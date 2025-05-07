@@ -3,7 +3,6 @@ package br.com.cdb.bancodigital.model.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 
