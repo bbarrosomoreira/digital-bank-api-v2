@@ -4,6 +4,7 @@ import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.mapper.SeguroMapper;
 import br.com.cdb.bancodigital.model.Seguro;
 import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,15 +33,7 @@ public class SeguroDAO {
 
 	// CREATE
 	public Seguro criarSeguro(Seguro seguro) {
-		String sql = """
-            INSERT INTO seguro (tipo_seguro, num_apolice, cartao_id, data_contratacao,
-                                valor_apolice, descricao_condicoes, premio_apolice,
-                                status_seguro, data_acionamento, valor_fraude)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            RETURNING id
-        """;
-
-		Long id = jdbcTemplate.queryForObject(sql, Long.class,
+		Long id = jdbcTemplate.queryForObject(SqlQueries.SQL_CREATE_SEGURO, Long.class,
 				seguro.getTipoSeguro().name(),
 				seguro.getNumApolice(),
 				seguro.getCartao().getId(),
@@ -59,77 +52,41 @@ public class SeguroDAO {
 
 	// READ - buscar seguros
 	public List<Seguro> buscarTodosSeguros() {
-		String sql = "SELECT * FROM seguro";
-		return jdbcTemplate.query(sql, seguroMapper);
+		return jdbcTemplate.query(SqlQueries.SQL_READ_ALL_SEGUROS, seguroMapper);
 	}
 	public Optional<Seguro> buscarSeguroPorId(Long id) {
-		String sql = "SELECT * FROM seguro WHERE id = ?";
 		try {
-			Seguro seguro = jdbcTemplate.queryForObject(sql, seguroMapper, id);
+			Seguro seguro = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_SEGURO_BY_ID, seguroMapper, id);
 			return Optional.of(seguro);
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		}
 	}
 	public List<Seguro> findByCartaoId(Long cartaoId) {
-		String sql = "SELECT * FROM seguro WHERE cartao_id = ?";
-		return jdbcTemplate.query(sql, seguroMapper, cartaoId);
+		return jdbcTemplate.query(SqlQueries.SQL_READ_SEGURO_BY_CARTAO, seguroMapper, cartaoId);
 	}
 	public List<Seguro> buscarSegurosPorTipoECliente(Long clienteId, String tipoSeguro) {
-		String sql = """
-            SELECT s.* FROM seguro s
-            JOIN cartao c ON s.cartao_id = c.id
-            JOIN conta ct ON c.conta_id = ct.id
-            WHERE ct.cliente_id = ? AND s.tipo_seguro = ?
-        """;
-		return jdbcTemplate.query(sql, seguroMapper, clienteId, tipoSeguro);
+		return jdbcTemplate.query(SqlQueries.SQL_READ_SEGURO_BY_TIPO_CLIENTE, seguroMapper, clienteId, tipoSeguro);
 	}
 	// Verifica se existe seguro vinculado ao cartão
 	public boolean existsByCartaoId(Long cartaoId) {
-		String sql = "SELECT COUNT(*) FROM seguro WHERE cartao_id = ?";
-		Integer count = jdbcTemplate.queryForObject(sql, Integer.class, cartaoId);
+		Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_SEGURO_CARTAO, Integer.class, cartaoId);
 		return count != null && count > 0;
 	}
 	public boolean existsByCartaoContaClienteId(Long clienteId) {
-		String sql = """
-            SELECT COUNT(*) FROM seguro s
-            JOIN cartao c ON s.cartao_id = c.id
-            JOIN conta co ON c.conta_id = co.id
-            WHERE co.cliente_id = ?
-        """;
-		Integer count = jdbcTemplate.queryForObject(sql, Integer.class, clienteId);
+		Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_SEGURO_CLIENTE, Integer.class, clienteId);
 		return count != null && count > 0;
 	}
 	public List<Seguro> findSegurosByClienteId(Long clienteId) {
-		String sql = """
-            SELECT s.* FROM seguro s
-            JOIN cartao c ON s.cartao_id = c.id
-            JOIN conta co ON c.conta_id = co.id
-            WHERE co.cliente_id = ?
-        """;
-		return jdbcTemplate.query(sql, seguroMapper, clienteId);
+		return jdbcTemplate.query(SqlQueries.SQL_READ_SEGURO_BY_CARTAO_CLIENTE_ID, seguroMapper, clienteId);
 	}
 	public List<Seguro> findByCartaoContaClienteUsuario(Usuario usuario) {
-		String sql = """
-            SELECT s.* FROM seguro s
-            JOIN cartao c ON s.cartao_id = c.id
-            JOIN conta co ON c.conta_id = co.id
-            JOIN cliente cl ON co.cliente_id = cl.id
-            WHERE cl.usuario_id = ?
-        """;
-		return jdbcTemplate.query(sql, seguroMapper, usuario.getId());
+		return jdbcTemplate.query(SqlQueries.SQL_READ_SEGURO_BY_CARTAO_CLIENTE_USUARIO, seguroMapper, usuario.getId());
 	}
 
 	// UPDATE
 	public Seguro atualizarSeguro(Seguro seguro) {
-		String sql = """
-            UPDATE seguro SET tipo_seguro = ?, num_apolice = ?, cartao_id = ?, data_contratacao = ?,
-                              valor_apolice = ?, descricao_condicoes = ?, premio_apolice = ?,
-                              status_seguro = ?, data_acionamento = ?, valor_fraude = ?
-            WHERE id = ?
-        """;
-
-		int linhasAfetadas = jdbcTemplate.update(sql,
+		int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_SEGURO,
 				seguro.getTipoSeguro().name(),
 				seguro.getNumApolice(),
 				seguro.getCartao().getId(),
@@ -152,8 +109,7 @@ public class SeguroDAO {
 
 	// DELETE
 	public void deletarSeguroPorId(Long id) {
-		String sql = "DELETE FROM seguro WHERE id = ?";
-		int linhasAfetadas = jdbcTemplate.update(sql, id);
+		int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_DELETE_SEGURO, id);
 
 		if (linhasAfetadas == 0) {
 			throw new ResourceNotFoundException("Seguro com ID " + id + " não encontrado para exclusão.");

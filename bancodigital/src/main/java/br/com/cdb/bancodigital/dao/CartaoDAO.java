@@ -7,6 +7,7 @@ import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.mapper.CartaoMapper;
 import br.com.cdb.bancodigital.model.Cartao;
 import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -33,15 +34,7 @@ public class CartaoDAO {
 
 	// CREATE
 	public Cartao criarCartao(Cartao cartao) {
-		String sql = """
-            INSERT INTO cartao (tipo_cartao, numero_cartao, conta_id, status, senha,
-                                data_emissao, data_vencimento, taxa_utilizacao,
-                                limite, limite_atual, total_fatura, total_fatura_paga)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            RETURNING id
-        """;
-
-		Long id = jdbcTemplate.queryForObject(sql, Long.class,
+		Long id = jdbcTemplate.queryForObject(SqlQueries.SQL_CREATE_CARTAO, Long.class,
 				cartao.getTipoCartao().name(),
 				cartao.getNumeroCartao(),
 				cartao.getConta().getId(),
@@ -61,78 +54,41 @@ public class CartaoDAO {
 	}
 	// READ - buscar cartões
 	public List<Cartao> buscarTodosCartoes() {
-		String sql = "SELECT * FROM cartao";
-		return jdbcTemplate.query(sql, cartaoMapper);
+		return jdbcTemplate.query(SqlQueries.SQL_READ_ALL_CARTOES, cartaoMapper);
 	}
 	public Optional<Cartao> findCartaoById(Long id) {
-		String sql = "SELECT * FROM cartao WHERE id = ?";
 		try {
-			Cartao cartao = jdbcTemplate.queryForObject(sql, cartaoMapper, id);
+			Cartao cartao = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CARTAO_BY_ID, cartaoMapper, id);
 			return Optional.of(cartao);
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		}
 	}
 	public List<Cartao> findByContaId(Long contaId) {
-		String sql = "SELECT * FROM cartao WHERE conta_id = ?";
-		return jdbcTemplate.query(sql, cartaoMapper, contaId);
+		return jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_CONTA, cartaoMapper, contaId);
 	}
 	public boolean existsByContaId(Long contaId) {
-		String sql = "SELECT COUNT(*) FROM cartao WHERE conta_id = ?";
-		Integer count = jdbcTemplate.queryForObject(sql, Integer.class, contaId);
+		Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CARTAO_CONTA, Integer.class, contaId);
 		return count != null && count > 0;
 	}
 	public boolean existsByContaClienteId(Long clienteId) {
-		String sql = """
-            SELECT COUNT(*) FROM cartao cartao
-            JOIN conta conta ON cartao.conta_id = conta.id
-            WHERE conta.cliente_id = ?
-        """;
-		Integer count = jdbcTemplate.queryForObject(sql, Integer.class, clienteId);
-		return count != null && count > 0;
-	}
-	public boolean existsByNumeroCartao(String numeroCartao) {
-		String sql = "SELECT COUNT(*) FROM cartao WHERE numero_cartao = ?";
-		Integer count = jdbcTemplate.queryForObject(sql, Integer.class, numeroCartao);
+		Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CARTAO_CLIENTE, Integer.class, clienteId);
 		return count != null && count > 0;
 	}
 	public List<Cartao> findByContaClienteUsuario(Usuario usuario) {
-		String sql = """
-            SELECT c.* FROM cartao c
-            JOIN conta conta ON c.conta_id = conta.id
-            JOIN cliente cliente ON conta.cliente_id = cliente.id
-            WHERE cliente.usuario_id = ?
-        """;
-		return jdbcTemplate.query(sql, cartaoMapper, usuario.getId());
+		return jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_CONTA_CLIENTE_USUARIO, cartaoMapper, usuario.getId());
 	}
 	public List<Cartao> findByContaClienteId(Long clienteId) {
-		String sql = """
-            SELECT c.* FROM cartao c
-            JOIN conta conta ON c.conta_id = conta.id
-            WHERE conta.cliente_id = ?
-        """;
-		return jdbcTemplate.query(sql, cartaoMapper, clienteId);
+		return jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_CONTA_CLIENTE_ID, cartaoMapper, clienteId);
 	}
 	// Listar cartões por tipo para um cliente
 	public List<Cartao> buscarCartoesPorTipoECliente(Long clienteId, String tipoCartao) {
-		String sql = """
-            SELECT c.* FROM cartao c
-            JOIN conta conta ON c.conta_id = conta.id
-            WHERE conta.cliente_id = ? AND c.tipo_cartao = ?
-        """;
-		return jdbcTemplate.query(sql, cartaoMapper, clienteId, tipoCartao);
+		return jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_TIPO_CLIENTE, cartaoMapper, clienteId, tipoCartao);
 	}
 
 	// UPDATE
 	public Cartao atualizarCartao(Cartao cartao) {
-		String sql = """
-            UPDATE cartao SET tipo_cartao = ?, numero_cartao = ?, conta_id = ?, status = ?, senha = ?,
-                              data_emissao = ?, data_vencimento = ?, taxa_utilizacao = ?,
-                              limite = ?, limite_atual = ?, total_fatura = ?, total_fatura_paga = ?
-            WHERE id = ?
-        """;
-
-		int linhasAfetadas = jdbcTemplate.update(sql,
+		int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_CARTAO,
 				cartao.getTipoCartao().name(),
 				cartao.getNumeroCartao(),
 				cartao.getConta().getId(),
@@ -157,8 +113,7 @@ public class CartaoDAO {
 
 	// DELETE
 	public void deletarCartaoPorId(Long id) {
-		String sql = "DELETE FROM cartao WHERE id = ?";
-		int linhasAfetadas = jdbcTemplate.update(sql, id);
+		int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_DELETE_CARTAO, id);
 
 		if (linhasAfetadas == 0) {
 			throw new ResourceNotFoundException("Cartão com ID " + id + " não encontrado para exclusão.");
