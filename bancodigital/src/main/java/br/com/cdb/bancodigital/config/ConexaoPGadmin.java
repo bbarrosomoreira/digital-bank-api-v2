@@ -1,9 +1,10 @@
 package br.com.cdb.bancodigital.config;
 
+import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -24,9 +25,7 @@ public class ConexaoPGadmin {
         try{
             return dataSource.getConnection();
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao conectar ao banco PostgreSQL", e);
+            throw new CommunicationException(ConstantUtils.ERRO_CONEXAO_BANCO, e);
         }
     }
-
-
 }
