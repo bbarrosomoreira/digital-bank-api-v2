@@ -2,6 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -50,7 +51,7 @@ public class CartaoController {
 		log.info("Iniciando emissão de cartão para conta ID: {}.", dto.getId_conta());
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		CartaoResponse response = cartaoService.emitirCartao(dto.getId_conta(), usuarioLogado, dto.getTipoCartao(), dto.getSenha());
 		log.info("Cartão emitido com sucesso.");
@@ -70,7 +71,7 @@ public class CartaoController {
 		log.info("Buscando informações do cartão ID: {}.", id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		CartaoResponse cartao = cartaoService.getCartaoById(id_cartao, usuarioLogado);
 		log.info("Informações do cartão obtidas com sucesso.");
@@ -89,7 +90,7 @@ public class CartaoController {
 		log.info("Iniciando busca de todos os cartões.");
 
 		List<CartaoResponse> cartoes = cartaoService.getCartoes();
-		log.info("Cartões encontrados");
+		log.info(ConstantUtils.CARTAO_ENCONTRADO);
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de cartões concluída em {} ms.", endTime - startTime);
@@ -105,10 +106,10 @@ public class CartaoController {
 		log.info("Buscando cartões para cliente ID: {}.", id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorCliente(id_cliente, usuarioLogado);
-		log.info("Cartões encontrados");
+		log.info(ConstantUtils.CARTAO_ENCONTRADO);
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de cartões por cliente concluída em {} ms.", endTime - startTime);
@@ -124,10 +125,10 @@ public class CartaoController {
 		log.info("Buscando cartões para conta ID: {}.", id_conta);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorConta(id_conta, usuarioLogado);
-		log.info("Cartões encontrados");
+		log.info(ConstantUtils.CARTAO_ENCONTRADO);
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de cartões por conta concluída em {} ms.", endTime - startTime);
@@ -143,10 +144,10 @@ public class CartaoController {
 		log.info("Buscando cartões do usuário logado.");
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorUsuario(usuarioLogado);
-		log.info("Cartões encontrados");
+		log.info(ConstantUtils.CARTAO_ENCONTRADO);
 
 		long endTime = System.currentTimeMillis();
 		log.info("Busca de cartões do usuário logado concluída em {} ms.", endTime - startTime);
@@ -183,7 +184,7 @@ public class CartaoController {
 		log.info("Iniciando pagamento com cartão ID: {}.", id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		PagamentoResponse response = cartaoService.pagar(id_cartao, usuarioLogado, dto.getValor(), dto.getSenha(), dto.getDescricao());
 		log.info("Pagamento realizado com sucesso");
@@ -220,7 +221,7 @@ public class CartaoController {
 		log.info("Iniciando alteração de status para cartão ID: {}.", id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		StatusCartaoResponse response = cartaoService.alterarStatus(id_cartao, usuarioLogado, dto.getStatus());
 		log.info("Status alterado com sucesso.");
@@ -242,7 +243,7 @@ public class CartaoController {
 		log.info("Iniciando alteração de senha para cartão ID: {}.", id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		cartaoService.alterarSenha(id_cartao, usuarioLogado, dto.getSenhaAntiga(), dto.getSenhaNova());
 		log.info("Senha alterada com sucesso");
@@ -262,7 +263,7 @@ public class CartaoController {
 		log.info("Iniciando leitura de fatura para cartão ID: {}.", id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		FaturaResponse response = cartaoService.getFatura(id_cartao, usuarioLogado);
 		log.info("Fatura obtida com sucesso");
@@ -283,7 +284,7 @@ public class CartaoController {
 		log.info("Iniciando pagamento de fatura para cartão ID: {}.", id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		FaturaResponse response = cartaoService.pagarFatura(id_cartao, usuarioLogado);
 		log.info("Fatura paga com sucesso");

@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.controller;
 import java.util.Arrays;
 import java.util.List;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -55,7 +56,7 @@ public class ContaController {
 		log.info("Iniciando abertura de conta.");
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ContaResponse response = contaService.abrirConta(dto.getId_cliente(), usuarioLogado, dto.getTipoConta(), dto.getMoeda(), dto.getValorDeposito());
 		log.info("Conta criada com sucesso.");
@@ -95,7 +96,7 @@ public class ContaController {
 		log.info("Buscando contas do usuário logado.");
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<ContaResponse> contas = contaService.listarPorUsuario(usuarioLogado);
 		log.info("Contas encontradas");
@@ -114,7 +115,7 @@ public class ContaController {
 		log.info("Buscando contas para cliente ID: {}.", id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<ContaResponse> contas = contaService.listarPorCliente(id_cliente, usuarioLogado);
 		log.info("Contas encontradas");
@@ -133,7 +134,7 @@ public class ContaController {
 		log.info("Buscando informações da conta ID: {}.", id_conta);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ContaResponse conta = contaService.getContaById(id_conta, usuarioLogado);
 		log.info("Informações da conta obtidas com sucesso.");
@@ -170,7 +171,7 @@ public class ContaController {
 		log.info("Iniciando transferência da conta ID: {}.", id_contaOrigem);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		TransferenciaResponse response = contaService.transferir(id_contaOrigem, usuarioLogado, dto.getId_contaDestino(), dto.getValor());
 		log.info("Transferência realizada com sucesso.");
@@ -190,7 +191,7 @@ public class ContaController {
 		log.info("Iniciando pagamento PIX da conta ID: {}.", id_contaOrigem);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		PixResponse response = contaService.pix(id_contaOrigem, usuarioLogado, dto.getId_contaDestino(), dto.getValor());
 		log.info("Pagamento PIX realizado com sucesso.");
@@ -209,7 +210,7 @@ public class ContaController {
 		log.info("Consultando saldo da conta ID: {}.", id_conta);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		SaldoResponse response = contaService.getSaldo(id_conta, usuarioLogado);
 		log.info("Saldo consultado com sucesso.");
@@ -245,7 +246,7 @@ public class ContaController {
 		log.info("Iniciando saque da conta ID: {}.", id_conta);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		SaqueResponse response = contaService.sacar(id_conta, usuarioLogado, dto.getValor());
 		log.info("Saque realizado com sucesso.");

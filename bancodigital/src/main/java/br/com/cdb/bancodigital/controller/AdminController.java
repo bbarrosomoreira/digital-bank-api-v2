@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.controller;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -57,10 +58,10 @@ public class AdminController {
 		log.info("Iniciando abertura de conta para cliente ID: {}.", id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		Usuario usuarioCliente = adminService.getClienteById(id_cliente, usuarioLogado).getUsuario();
-		log.info("Cliente alvo encontrado");
+		log.info(ConstantUtils.CLIENTE_ENCONTRADO);
 
 		ContaResponse response = adminService.abrirConta(dto.getId_cliente(), usuarioCliente, dto.getTipoConta(), dto.getMoeda(), dto.getValorDeposito());
 		log.info("Conta criada com sucesso para cliente ID: {}.", id_cliente);
@@ -80,10 +81,10 @@ public class AdminController {
 		log.info("Iniciando emissão de cartão para cliente ID: {}.", id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		Usuario usuarioCliente = adminService.getClienteById(id_cliente, usuarioLogado).getUsuario();
-		log.info("Cliente alvo encontrado");
+		log.info(ConstantUtils.CLIENTE_ENCONTRADO);
 
 		CartaoResponse response = adminService.emitirCartao(dto.getId_conta(), usuarioCliente, dto.getTipoCartao(), dto.getSenha());
 		log.info("Cartão emitido com sucesso para cliente ID: {}.", id_cliente);
@@ -103,10 +104,10 @@ public class AdminController {
 		log.info("Iniciando contratação de seguro para cliente ID: {}.", id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		Usuario usuarioCliente = adminService.getClienteById(id_cliente, usuarioLogado).getUsuario();
-		log.info("Cliente alvo encontrado");
+		log.info(ConstantUtils.CLIENTE_ENCONTRADO);
 
 		SeguroResponse response = adminService.contratarSeguro(dto.getId_cartao(), usuarioCliente, dto.getTipo());
 		log.info("Seguro contratado com sucesso para cliente ID: {}.", id_cliente);

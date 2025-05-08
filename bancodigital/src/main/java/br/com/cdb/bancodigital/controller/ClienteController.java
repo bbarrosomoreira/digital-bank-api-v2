@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.controller;
 import java.util.List;
 
 import br.com.cdb.bancodigital.dto.ClienteAtualizadoDTO;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -44,7 +45,7 @@ public class ClienteController {
 		log.info("Iniciando cadastro de cliente.");
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse response = clienteService.cadastrarCliente(dto, usuarioLogado);
 		log.info("Cliente cadastrado com sucesso.");
@@ -63,7 +64,7 @@ public class ClienteController {
 		log.info("Buscando informações do cliente logado.");
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse cliente = clienteService.buscarClienteDoUsuario(usuarioLogado);
 		log.info("Informações do cliente logado obtidas com sucesso.");
@@ -96,7 +97,7 @@ public class ClienteController {
 		log.info("Buscando informações do cliente ID: {}.", id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse cliente = clienteService.toResponse(clienteService.getClienteById(id_cliente, usuarioLogado));
 		log.info("Informações do cliente obtidas com sucesso.");
@@ -131,7 +132,7 @@ public class ClienteController {
 		log.info("Iniciando atualização do cliente ID: {}.", id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse atualizado = clienteService.atualizarCliente(id_cliente, clienteAtualizado, usuarioLogado);
 		log.info("Cliente ID: {} atualizado com sucesso.", id_cliente);
@@ -151,7 +152,7 @@ public class ClienteController {
 		log.info("Iniciando atualização parcial do cliente ID: {}.", id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}.", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse atualizado = clienteService.atualizarCliente(id_cliente, clienteAtualizado, usuarioLogado);
 		log.info("Cliente ID: {} atualizado parcialmente com sucesso.", id_cliente);

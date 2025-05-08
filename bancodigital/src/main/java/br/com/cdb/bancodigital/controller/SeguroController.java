@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -51,7 +52,7 @@ public class SeguroController {
 		log.info("Iniciando contratação de seguro.");
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		SeguroResponse response = seguroService.contratarSeguro(dto.getId_cartao(), usuarioLogado, dto.getTipo());
 		log.info("Seguro contratado com sucesso.");
@@ -100,7 +101,7 @@ public class SeguroController {
 		log.info("Iniciando busca de seguros do cartão ID: {}.", id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<SeguroResponse> seguros = seguroService.getSeguroByCartaoId(id_cartao, usuarioLogado);
 		log.info("Seguros encontrados");
@@ -118,7 +119,7 @@ public class SeguroController {
 		log.info("Iniciando busca de seguros do cliente ID: {}.", id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<SeguroResponse> seguros = seguroService.getSeguroByClienteId(id_cliente, usuarioLogado);
 		log.info("Seguros encontrados");
@@ -136,7 +137,7 @@ public class SeguroController {
 		log.info("Iniciando busca de seguro ID: {}.", id_seguro);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		SeguroResponse seguro = seguroService.getSeguroById(id_seguro, usuarioLogado);
 		log.info("Informações do seguro obtidas com sucesso.");
@@ -154,7 +155,7 @@ public class SeguroController {
 		log.info("Iniciando busca de seguros do usuário logado.");
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<SeguroResponse> seguros = seguroService.listarPorUsuario(usuarioLogado);
 		log.info("Seguros encontrados");
@@ -172,7 +173,7 @@ public class SeguroController {
 		log.info("Iniciando cancelamento de seguro ID: {}.", id_seguro);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		CancelarSeguroResponse response = seguroService.cancelarSeguro(id_seguro, usuarioLogado);
 		log.info("Seguro cancelado com sucesso.");
@@ -206,7 +207,7 @@ public class SeguroController {
 		log.info("Iniciando acionamento de seguro de fraude.");
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		Seguro seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, dto.getValorFraude());
 		log.info("Seguro de fraude acionado com sucesso.");
@@ -224,7 +225,7 @@ public class SeguroController {
 		log.info("Iniciando acionamento de seguro de viagem.");
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
-		log.info("Usuário logado: ID: {}", usuarioLogado.getId());
+		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		Seguro seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, BigDecimal.ZERO);
 		log.info("Seguro de viagem acionado com sucesso.");

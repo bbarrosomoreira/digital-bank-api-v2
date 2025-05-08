@@ -28,12 +28,4 @@ public class UsuarioController {
 		log.info("Busca de informações do usuário logado concluída em {} ms.", endTime - startTime);
 		return ResponseEntity.ok(dto);
 	}
-
-	@GetMapping("/me-teste")
-	public String getMe(Authentication authentication) {
-		log.info("Verificando autenticação do usuário.");
-		String result = authentication != null ? authentication.getName() : "Usuário não autenticado";
-		log.info("Resultado da verificação: {}.", result);
-		return result;
-	}
 }
