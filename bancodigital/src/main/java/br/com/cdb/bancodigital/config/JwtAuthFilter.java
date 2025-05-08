@@ -40,47 +40,46 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			final String token = authHeader.substring(7);
 			
 			try {
-				final String username = jwtService.extrairUsername(token);
-				
-				if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-					UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-					
-					if(jwtService.tokenValido(token, userDetails)) {
-						UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-								userDetails, null, userDetails.getAuthorities());
-						authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-						
-						SecurityContextHolder.getContext().setAuthentication(authToken);
-					} else {
-						throw new BadCredentialsException("Token inválido");
-					}
-				}
+				processTokenAuthentication(request, response, token);
 			} catch (ExpiredJwtException e) {
-	            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
-	            response.getWriter().write("Token expirado");
-	            return;
-
-	        } catch (UnsupportedJwtException | MalformedJwtException e) {
-	            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
-	            response.getWriter().write("Token malformado ou não suportado");
-	            return;
-
-	        } catch (SignatureException e) {
-	            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
-	            response.getWriter().write("Assinatura inválida do token");
-	            return;
-
-	        } catch (Exception e) {
-	            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
-	            response.getWriter().write("Erro na autenticação: " + e.getMessage());
-	            return;
-	        }
+				handleException(response, HttpServletResponse.SC_UNAUTHORIZED, "Token expirado");
+				return;
+			} catch (UnsupportedJwtException | MalformedJwtException e) {
+				handleException(response, HttpServletResponse.SC_BAD_REQUEST, "Token malformado ou não suportado");
+				return;
+			} catch (SignatureException e) {
+				handleException(response, HttpServletResponse.SC_UNAUTHORIZED, "Assinatura inválida do token");
+				return;
+			} catch (Exception e) {
+				handleException(response, HttpServletResponse.SC_UNAUTHORIZED, "Erro na autenticação: " + e.getMessage());
+				return;
+			}
 	    }
-
 	    filterChain.doFilter(request, response);
-		
 	}
-	
+
+	private void processTokenAuthentication(HttpServletRequest request, HttpServletResponse response, String token) {
+		final String username = jwtService.extrairUsername(token);
+
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+			if (jwtService.tokenValido(token, userDetails)) {
+				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+						userDetails, null, userDetails.getAuthorities());
+				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+				SecurityContextHolder.getContext().setAuthentication(authToken);
+			} else {
+				throw new BadCredentialsException("Token inválido");
+			}
+		}
+	}
+
+	private void handleException(HttpServletResponse response, int status, String message) throws IOException {
+		response.setStatus(status);
+		response.getWriter().write(message);
+	}
 	
 
 }
