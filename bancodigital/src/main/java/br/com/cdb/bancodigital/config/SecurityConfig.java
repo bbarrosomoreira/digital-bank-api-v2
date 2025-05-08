@@ -1,6 +1,8 @@
 package br.com.cdb.bancodigital.config;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,6 +26,7 @@ import br.com.cdb.bancodigital.service.UsuarioDetailsService;
 @EnableWebSecurity
 @EnableMethodSecurity()
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 	
 	private final UsuarioDetailsService usuarioDetailsService;
@@ -31,33 +34,43 @@ public class SecurityConfig {
 	
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { //configura as rotas que precisam de login
+        log.info(ConstantUtils.SECURITY_FILTER_CHAIN);
         http
         	.csrf(AbstractHttpConfigurer::disable)
-        	.authorizeHttpRequests(auth -> auth
-        			.requestMatchers(HttpMethod.POST, "/auth/**").permitAll() //libera login/cadastro
-        			.anyRequest().authenticated() // Exige autenticação para todas as outras rotas
-        			)
-        			.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        	.authorizeHttpRequests(auth -> {
+                        log.info(ConstantUtils.ACESSO_PUBLICO);
+                auth.requestMatchers(HttpMethod.POST, ConstantUtils.ROTAS_LIBERADAS).permitAll() //libera login/cadastro
+                                .anyRequest().authenticated(); // Exige autenticação para todas as outras rotas
+                    })
+        			.sessionManagement(sess -> {
+                        log.info(ConstantUtils.POLITICA_SESSION_STATELESS);
+                        sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    })
         			.authenticationProvider(authenticationProvider())
-        			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); 
+        			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        log.info(ConstantUtils.SUCESSO_SECURITY_FILTER_CHAIN);
         return http.build();
     }
     
     @Bean
     public AuthenticationProvider authenticationProvider() {
+        log.info(ConstantUtils.AUTENTICACAO_PROVIDER);
     	DaoAuthenticationProvider provider =  new DaoAuthenticationProvider();
     	provider.setUserDetailsService(usuarioDetailsService);
     	provider.setPasswordEncoder(passwordEncoder());
+        log.info(ConstantUtils.SUCESSO_AUTENTICACAO_PROVIDER);
     	return provider;
     }
     
     @Bean
     public PasswordEncoder passwordEncoder() {
-    	return new BCryptPasswordEncoder();
+        log.info(ConstantUtils.CRIANDO_PASSWORD_ENCODER);
+        return new BCryptPasswordEncoder();
     }
     
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        log.info(ConstantUtils.AUTHENTICACAO_MANAGER);
         return config.getAuthenticationManager();
     }
 

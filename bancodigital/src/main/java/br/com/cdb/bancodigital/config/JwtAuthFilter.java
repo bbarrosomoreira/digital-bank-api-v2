@@ -3,7 +3,9 @@ package br.com.cdb.bancodigital.config;
 import java.io.IOException;
 
 import br.com.cdb.bancodigital.service.JwtService;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 	
 	private final JwtService jwtService;
@@ -34,31 +37,40 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request,
 									@NotNull HttpServletResponse response,
 									@NotNull FilterChain filterChain) throws ServletException, IOException {
-		final String authHeader = request.getHeader("Authorization");
+		log.info(ConstantUtils.INICIO_FILTRO_JWT);
+		final String authHeader = request.getHeader(ConstantUtils.HEATHER_AUTHORIZATION);
 		
-		if (authHeader != null && authHeader.startsWith("Bearer")) {
+		if (authHeader != null && authHeader.startsWith(ConstantUtils.HEADER_BEARER)) {
+			log.info(ConstantUtils.HEADER_AUTENTICACAO_ENCONTRADO);
 			final String token = authHeader.substring(7);
 			
 			try {
-				processTokenAuthentication(request, response, token);
+				log.info(ConstantUtils.PROCESSANDO_TOKEN);
+				processTokenAuthentication(request, token);
+				log.info(ConstantUtils.SUCESSO_TOKEN_PROCESSADO);
 			} catch (ExpiredJwtException e) {
-				handleException(response, HttpServletResponse.SC_UNAUTHORIZED, "Token expirado");
+				log.error(ConstantUtils.TOKEN_EXPIRADO, e.getMessage());
+				handleException(response, HttpServletResponse.SC_UNAUTHORIZED, ConstantUtils.TOKEN_EXPIRADO);
 				return;
 			} catch (UnsupportedJwtException | MalformedJwtException e) {
-				handleException(response, HttpServletResponse.SC_BAD_REQUEST, "Token malformado ou não suportado");
+				log.error(ConstantUtils.TOKEN_INVALIDO, e.getMessage());
+				handleException(response, HttpServletResponse.SC_BAD_REQUEST, ConstantUtils.TOKEN_MALFORMADO);
 				return;
 			} catch (SignatureException e) {
-				handleException(response, HttpServletResponse.SC_UNAUTHORIZED, "Assinatura inválida do token");
+				log.error(ConstantUtils.ASSINATURA_INVALIDA, e.getMessage());
+				handleException(response, HttpServletResponse.SC_UNAUTHORIZED, ConstantUtils.ASSINATURA_INVALIDA);
 				return;
 			} catch (Exception e) {
-				handleException(response, HttpServletResponse.SC_UNAUTHORIZED, "Erro na autenticação: " + e.getMessage());
+				log.error(ConstantUtils.ERRO_AUTENTICACAO, e.getMessage());
+				handleException(response, HttpServletResponse.SC_UNAUTHORIZED, ConstantUtils.ERRO_AUTENTICACAO + e.getMessage());
 				return;
 			}
 	    }
 	    filterChain.doFilter(request, response);
+		log.info(ConstantUtils.FIM_FILTRO_JWT);
 	}
 
-	private void processTokenAuthentication(HttpServletRequest request, HttpServletResponse response, String token) {
+	private void processTokenAuthentication(HttpServletRequest request, String token) {
 		final String username = jwtService.extrairUsername(token);
 
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -71,7 +83,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 			} else {
-				throw new BadCredentialsException("Token inválido");
+				throw new BadCredentialsException(ConstantUtils.TOKEN_INVALIDO);
 			}
 		}
 	}
