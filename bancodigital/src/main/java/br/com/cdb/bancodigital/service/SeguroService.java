@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.model.enums.Status;
 import br.com.cdb.bancodigital.model.enums.TipoSeguro;
-import br.com.cdb.bancodigital.exceptions.ErrorMessages;
 import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
@@ -125,7 +125,7 @@ public class SeguroService {
 				
 			} catch (DataIntegrityViolationException e) {
 	            log.error("Falha ao deletar seguro ID {}", seguro.getId(), e);
-	            throw new ValidationException("Erro ao deletar seguro: " + e.getMessage());
+	            throw new ValidationException("Erro ao deletar o seguro devido a uma violação de integridade de dados.");
 	        }
 		}
 	}
@@ -185,7 +185,7 @@ public class SeguroService {
 	}
 	public Cliente verificarClienteExistente(Long id_cliente) {
 		return clienteDAO.buscarClienteporId(id_cliente)
-				.orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
+				.orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_CLIENTE_NAO_ENCONTRADO, id_cliente)));
 	}
 	public Cartao verificarCartaoExistente(Long id_cartao) {
 		return cartaoDAO.findCartaoById(id_cartao)

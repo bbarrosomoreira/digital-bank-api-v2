@@ -1,11 +1,13 @@
 package br.com.cdb.bancodigital.dao;
 
+import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.mapper.ClienteMapper;
 import br.com.cdb.bancodigital.model.Cliente;
 import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -67,28 +69,17 @@ public class ClienteDAO {
 			return Optional.empty();
 		}
 	}
-	public Optional<Cliente> buscarClienteporUsuarioId(Long id) {
-		try {
-			Cliente cliente = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_USUARIO, clienteMapper, id);
-			return Optional.of(cliente);
-		} catch (EmptyResultDataAccessException e) {
-			return Optional.empty();
-		}
-	}
-	public Optional<Cliente> buscarClienteporCPF(String cpf) {
-		try {
-			Cliente cliente = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_CPF, clienteMapper, cpf);
-			return Optional.of(cliente);
-		} catch (EmptyResultDataAccessException e) {
-			return Optional.empty();
-		}
-	}
 	// Verificar se existe cliente com o CPF
 	public boolean existsByCpf(String cpf) {
 		// O resultado será o número de registros encontrados (1 ou mais)
-		int count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CLIENTE, Integer.class, cpf);
-
-		return count > 0;  // Retorna true se existir pelo menos um cliente com o CPF
+		try {
+			Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CLIENTE, Integer.class, cpf);
+			return count != null && count > 0;
+		} catch (EmptyResultDataAccessException e) {
+			return false;  // Retorna false se não houver registros
+		} catch (DataAccessException e) {
+			throw new CommunicationException("Erro ao acessar o banco de dados: " + e.getMessage());
+		}
 	}
 
 	// UPDATE | Atualizar clientes

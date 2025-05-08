@@ -97,12 +97,14 @@ public class CartaoService {
         };
 
     }
+
     // get cartoes
     public List<CartaoResponse> getCartoes() {
         log.info("Buscando todos os cartões");
         List<Cartao> cartoes = cartaoDAO.buscarTodosCartoes();
         return cartoes.stream().map(this::toResponse).toList();
     }
+
     // get cartoes por conta
     public List<CartaoResponse> listarPorConta(Long id_conta, Usuario usuarioLogado) {
         log.info("Buscando cartões por conta ID: {}", id_conta);
@@ -114,6 +116,7 @@ public class CartaoService {
         List<Cartao> cartoes = cartaoDAO.findByContaId(id_conta);
         return cartoes.stream().map(this::toResponse).toList();
     }
+
     // get cartao por cliente
     public List<CartaoResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
         log.info("Buscando cartões por cliente ID: {}", id_cliente);
@@ -125,17 +128,20 @@ public class CartaoService {
         List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
         return cartoes.stream().map(this::toResponse).toList();
     }
+
     // get um cartao
     public CartaoResponse getCartaoById(Long id_cartao, Usuario usuarioLogado) {
         Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
         securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
         return toResponse(cartao);
     }
+
     // get cartão por usuário
     public List<CartaoResponse> listarPorUsuario(Usuario usuario) {
         List<Cartao> cartoes = cartaoDAO.findByContaClienteUsuario(usuario);
         return cartoes.stream().map(this::toResponse).toList();
     }
+
     // deletar cartoes de cliente
     @Transactional
     public void deleteCartoesByCliente(Long id_cliente) {
@@ -158,6 +164,7 @@ public class CartaoService {
             }
         }
     }
+
     // pagar
     @Transactional
     public PagamentoResponse pagar(Long id_cartao, Usuario usuarioLogado, BigDecimal valor, String senha, String descricao) {
@@ -167,15 +174,15 @@ public class CartaoService {
         Validator.verificarSenhaCorreta(senha, cartao.getSenha());
         Validator.verificarLimiteSuficiente(valor, cartao.getLimiteAtual());
 
-        if (cartao.getTipoCartao().equals(TipoCartao.DEBITO)) {
-            if (valor.compareTo(cartao.getConta().getSaldo()) > 0)
-                throw new InvalidInputParameterException("Saldo insuficiente para esta transação. Saldo atual: " + cartao.getConta().getSaldo());
+        if (cartao.getTipoCartao().equals(TipoCartao.DEBITO) && cartao.getLimiteAtual().compareTo(valor) < 0) {
+            throw new InvalidInputParameterException("Saldo insuficiente para esta transação. Saldo atual: " + cartao.getConta().getSaldo());
         }
 
         cartao.realizarPagamento(valor);
         cartaoDAO.salvar(cartao);
         return PagamentoResponse.toPagamentoResponse(cartao, valor, descricao);
     }
+
     // alter limite
     @Transactional
     public LimiteResponse alterarLimite(Long id_cartao, BigDecimal valor) {
@@ -191,6 +198,7 @@ public class CartaoService {
         cartaoDAO.salvar(cartao);
         return LimiteResponse.toLimiteResponse(cartao, valor);
     }
+
     // alter status cartao
     @Transactional
     public StatusCartaoResponse alterarStatus(Long id_cartao, Usuario usuarioLogado, Status statusNovo) {
@@ -205,6 +213,7 @@ public class CartaoService {
         cartaoDAO.salvar(cartao);
         return StatusCartaoResponse.toStatusCartaoResponse(cartao, statusNovo);
     }
+
     // alter senha
     @Transactional
     public void alterarSenha(Long id_cartao, Usuario usuarioLogado, String senhaAntiga, String senhaNova) {
@@ -217,6 +226,7 @@ public class CartaoService {
         cartao.alterarSenha(senhaAntiga, senhaNova);
         cartaoDAO.salvar(cartao);
     }
+
     // get fatura
     public FaturaResponse getFatura(Long id_cartao, Usuario usuarioLogado) {
         Cartao ccr = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
@@ -225,6 +235,7 @@ public class CartaoService {
 
         return FaturaResponse.toFaturaResponse(ccr);
     }
+
     // ressetar limite credito
     @Transactional
     public FaturaResponse pagarFatura(Long id_cartao, Usuario usuarioLogado) {
@@ -239,6 +250,7 @@ public class CartaoService {
         cartaoDAO.salvar(ccr);
         return FaturaResponse.toFaturaResponse(ccr);
     }
+
     // ressetar limite diario
     @Transactional
     public RessetarLimiteDiarioResponse ressetarDebito(Long id_cartao) {
@@ -249,6 +261,7 @@ public class CartaoService {
         cartaoDAO.salvar(cdb);
         return RessetarLimiteDiarioResponse.toRessetarLimiteDiarioResponse(cdb);
     }
+
     public CartaoResponse toResponse(Cartao cartao) {
         return new CartaoResponse(cartao.getId(), cartao.getNumeroCartao(), cartao.getTipoCartao(),
                 cartao.getStatus(), cartao.getConta().getNumeroConta(), cartao.getDataVencimento(), cartao.getLimite());

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.cdb.bancodigital.model.*;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import br.com.cdb.bancodigital.model.Conta;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.model.enums.Moeda;
 import br.com.cdb.bancodigital.model.enums.TipoConta;
-import br.com.cdb.bancodigital.exceptions.ErrorMessages;
 import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
@@ -147,7 +147,7 @@ public class ContaService {
 
             } catch (DataIntegrityViolationException e) {
                 log.error("Falha ao deletar conta ID {}", conta.getId(), e);
-                throw new ValidationException("Erro ao deletar cartão: " + e.getMessage());
+                throw new ValidationException("Erro ao deletar a conta devido a uma violação de integridade de dados.");
             }
         }
     }
@@ -285,7 +285,7 @@ public class ContaService {
 
     public Cliente verificarClienteExistente(Long id_cliente) {
         return clienteDAO.buscarClienteporId(id_cliente)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.CLIENTE_NAO_ENCONTRADO, id_cliente)));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_CLIENTE_NAO_ENCONTRADO, id_cliente)));
     }
 
     public void verificaSaldoSuficiente(BigDecimal valor, BigDecimal saldo) {

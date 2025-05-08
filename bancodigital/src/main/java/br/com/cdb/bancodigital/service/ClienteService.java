@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brasilapi.api.CEP2;
@@ -96,60 +95,83 @@ public class ClienteService {
 
     // deletar cadastro de cliente
     @Transactional
-    public void deleteCliente(Long id_cliente) throws AccessDeniedException { //só admin
-        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
+    public void deleteCliente(Long id_cliente) throws AccessDeniedException {
+        log.info("Deletando cliente ID {}", id_cliente);
+        try {
+            Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
+            log.info("Cliente encontrado: ID {}", cliente.getId());
 
-        boolean temContas = contaDAO.existsByClienteId(id_cliente);
-        boolean temCartoes = cartaoDAO.existsByContaClienteId(id_cliente);
-        boolean temSeguros = seguroDAO.existsByCartaoContaClienteId(id_cliente);
+            boolean temContas = contaDAO.existsByClienteId(id_cliente);
+            boolean temCartoes = cartaoDAO.existsByContaClienteId(id_cliente);
+            boolean temSeguros = seguroDAO.existsByCartaoContaClienteId(id_cliente);
 
-        if (temContas || temCartoes || temSeguros) throw new ValidationException(
-                "Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.");
+            if (temContas || temCartoes || temSeguros) throw new ValidationException(
+                    "Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado."); {
+                        log.warn("Cliente ID {} possui vínculos com contas, cartões ou seguros", id_cliente);
+            }
 
-        clienteDAO.deletarClientePorId(cliente.getId());
-        log.info("Cliente ID {} deletado com sucesso", id_cliente);
+            log.info("Cliente sem vínculos e pronto para ser deletado.");
+
+            clienteDAO.deletarClientePorId(cliente.getId());
+            log.info("Cliente ID {} deletado com sucesso", id_cliente);
+        } catch (ValidationException e) {
+            log.warn("Erro de validação ao deletar cliente ID {}: {}", id_cliente, e.getMessage());
+            throw new ValidationException("Erro de validação ao deletar cliente");
+        } catch (DataAccessException e) {
+            log.error("Erro ao acessar o banco de dados ao deletar cliente ID {}: {}", id_cliente, e.getMessage(), e);
+            throw new SystemException("Erro interno ao deletar o cliente. Tente novamente mais tarde.");
+        } catch (Exception e) {
+            log.error("Erro inesperado ao deletar cliente ID {}: {}", id_cliente, e.getMessage(), e);
+            throw new SystemException("Erro inesperado ao deletar o cliente.");
+        }
     }
 
     // Atualizações de cliente
     @Transactional
     public ClienteResponse atualizarCliente(Long id_cliente, ClienteAtualizadoDTO dto, Usuario usuarioLogado) {
-        // Validações
-        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
-        securityService.validateAccess(usuarioLogado, cliente);
+        try {
+            Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
+            securityService.validateAccess(usuarioLogado, cliente);
 
-        // Atualizar dados pessoais
-        if (dto.getNome() != null) {
-            cliente.setNome(dto.getNome());
-        }
-        if (dto.getCpf() != null && !dto.getCpf().equals(cliente.getCpf())) {
-            if (receitaService.isCpfInvalidoOuInativo(dto.getCpf())) {
-                throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
+            if (dto.getNome() != null) {
+                cliente.setNome(dto.getNome());
             }
-            Validator.validarCpfUnico(clienteDAO, dto.getCpf());
-            cliente.setCpf(dto.getCpf());
-        }
-        if (dto.getDataNascimento() != null) {
-            cliente.setDataNascimento(dto.getDataNascimento());
-        }
-
-        Validator.validarMaiorIdade(cliente);
-        clienteDAO.salvar(cliente);
-
-        // Atualizar ou criar endereço
-        if (possuiDadosDeEndereco(dto)) {
-            EnderecoCliente enderecoExistente = enderecoClienteDAO.buscarEnderecoporCliente(cliente).orElse(null);
-            if (enderecoExistente == null) {
-                EnderecoCliente novoEndereco = construirEndereco(dto, cliente);
-                enderecoClienteDAO.salvar(novoEndereco);
-            } else {
-                atualizarEnderecoExistente(enderecoExistente, dto);
-                enderecoClienteDAO.atualizarEndereco(enderecoExistente);
+            if (dto.getCpf() != null && !dto.getCpf().equals(cliente.getCpf())) {
+                if (receitaService.isCpfInvalidoOuInativo(dto.getCpf())) {
+                    throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
+                }
+                Validator.validarCpfUnico(clienteDAO, dto.getCpf());
+                cliente.setCpf(dto.getCpf());
             }
+            if (dto.getDataNascimento() != null) {
+                cliente.setDataNascimento(dto.getDataNascimento());
+            }
+
+            Validator.validarMaiorIdade(cliente);
+            clienteDAO.salvar(cliente);
+
+            if (possuiDadosDeEndereco(dto)) {
+                EnderecoCliente enderecoExistente = enderecoClienteDAO.buscarEnderecoporCliente(cliente).orElse(null);
+                if (enderecoExistente == null) {
+                    EnderecoCliente novoEndereco = construirEndereco(dto, cliente);
+                    enderecoClienteDAO.salvar(novoEndereco);
+                } else {
+                    atualizarEnderecoExistente(enderecoExistente, dto);
+                    enderecoClienteDAO.atualizarEndereco(enderecoExistente);
+                }
+            }
+
+            return toResponse(cliente);
+        } catch (InvalidInputParameterException e) {
+            log.warn("Erro de validação ao atualizar cliente ID {}: {}", id_cliente, e.getMessage());
+            throw e;
+        } catch (DataAccessException e) {
+            log.error("Erro ao acessar o banco de dados ao atualizar cliente ID {}: {}", id_cliente, e.getMessage(), e);
+            throw new SystemException("Erro interno ao atualizar o cliente. Tente novamente mais tarde.");
+        } catch (Exception e) {
+            log.error("Erro inesperado ao atualizar cliente ID {}: {}", id_cliente, e.getMessage(), e);
+            throw new SystemException("Erro inesperado ao atualizar o cliente.");
         }
-
-        enderecoClienteDAO.buscarEnderecoporCliente(cliente);
-
-        return toResponse(cliente);
     }
 
     @Transactional
@@ -166,7 +188,7 @@ public class ClienteService {
         return toResponse(cliente);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void atualizarTaxasDoCliente(Long id_cliente, CategoriaCliente novaCategoria) {
         try {
             PoliticaDeTaxas parametros = verificarPolitiaExitente(novaCategoria);
@@ -175,9 +197,15 @@ public class ClienteService {
             atualizarTaxasDosCartoes(id_cliente, parametros);
             atualizarTaxasDosSeguros(id_cliente, parametros);
 
+        } catch (InvalidInputParameterException e) {
+            log.warn("Erro de validação ao ao atualizar Política de Taxas do cliente ID {}: {}", id_cliente, e.getMessage());
+            throw e;
+        } catch (DataAccessException e) {
+            log.error("Erro ao acessar o banco de dados ao ao atualizar Política de Taxas do cliente ID {}: {}", id_cliente, e.getMessage(), e);
+            throw new SystemException("Erro interno ao ao atualizar Política de Taxas do cliente. Tente novamente mais tarde.");
         } catch (Exception e) {
             log.error("Falha ao atualizar Política de Taxas do cliente ID {}", id_cliente, e);
-            throw e;
+            throw new SystemException("Falha ao atualizar Política de Taxas do cliente");
         }
     }
 
@@ -186,7 +214,7 @@ public class ClienteService {
         EnderecoCliente endereco = enderecoClienteDAO.buscarEnderecoporClienteOuErro(cliente);
         return new ClienteResponse(cliente, endereco);
     }
-
+    @Transactional
     public void atualizarTaxasDasContas(Long id_cliente, PoliticaDeTaxas parametros) {
         List<Conta> contas = contaDAO.buscarContaPorClienteId(id_cliente);
 
@@ -209,7 +237,7 @@ public class ClienteService {
             });
         }
     }
-
+    @Transactional
     public void atualizarTaxasDosCartoes(Long id_cliente, PoliticaDeTaxas parametros) {
         List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
 
@@ -229,7 +257,7 @@ public class ClienteService {
             });
         }
     }
-
+    @Transactional
     public void atualizarTaxasDosSeguros(Long id_cliente, PoliticaDeTaxas parametros) {
         List<Seguro> seguros = seguroDAO.findSegurosByClienteId(id_cliente);
 
