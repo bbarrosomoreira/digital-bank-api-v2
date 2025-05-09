@@ -112,10 +112,10 @@ public class ClienteController {
 	@DeleteMapping(ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<Void> deleteCliente(@PathVariable Long id_cliente){
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_EXCLUSAO_CLIENTE, id_cliente);
+		log.info(ConstantUtils.INICIO_DELETE_CLIENTE, id_cliente);
 
 		clienteService.deleteCliente(id_cliente);
-		log.info(ConstantUtils.SUCESSO_EXCLUSAO_CLIENTE, id_cliente);
+		log.info(ConstantUtils.SUCESSO_DELETE_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);

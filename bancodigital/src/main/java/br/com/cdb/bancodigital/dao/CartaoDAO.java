@@ -4,18 +4,22 @@ import java.util.List;
 import java.util.Optional;
 
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
+import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.mapper.CartaoMapper;
 import br.com.cdb.bancodigital.model.Cartao;
 import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CartaoDAO {
 
 	private final JdbcTemplate jdbcTemplate;
@@ -23,101 +27,187 @@ public class CartaoDAO {
 
 	// SAVE | Criar ou atualizar cartão
 	public Cartao salvar(Cartao cartao) {
-		if (cartao.getId() == null) {
-			// Se não tiver ID, é um novo cartão (INSERT)
-			return criarCartao(cartao);
-		} else {
-			// Se tiver ID, é um cartão existente (UPDATE)
-			return atualizarCartao(cartao);
+		log.info(ConstantUtils.INICIO_SALVAR_CARTAO);
+		try {
+			if (cartao.getId() == null) {
+				// Se não tiver ID, é um novo cartão (INSERT)
+				return criarCartao(cartao);
+			} else {
+				// Se tiver ID, é um cartão existente (UPDATE)
+				return atualizarCartao(cartao);
+			}
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_SALVAR_CARTAO, e);
+			throw new SystemException(ConstantUtils.ERRO_SALVAR_CARTAO);
 		}
 	}
 
 	// CREATE
 	public Cartao criarCartao(Cartao cartao) {
-		Long id = jdbcTemplate.queryForObject(SqlQueries.SQL_CREATE_CARTAO, Long.class,
-				cartao.getTipoCartao().name(),
-				cartao.getNumeroCartao(),
-				cartao.getConta().getId(),
-				cartao.getStatus().name(),
-				cartao.getSenha(),
-				cartao.getDataEmissao(),
-				cartao.getDataVencimento(),
-				cartao.getTaxaUtilizacao(),
-				cartao.getLimite(),
-				cartao.getLimiteAtual(),
-				cartao.getTotalFatura(),
-				cartao.getTotalFaturaPaga()
-		);
-
-		cartao.setId(id);
-		return cartao;
+		log.info(ConstantUtils.INICIO_CRIAR_CARTAO_BANCO_DADOS);
+		try {
+			Long id = jdbcTemplate.queryForObject(SqlQueries.SQL_CREATE_CARTAO, Long.class,
+					cartao.getTipoCartao().name(),
+					cartao.getNumeroCartao(),
+					cartao.getConta().getId(),
+					cartao.getStatus().name(),
+					cartao.getSenha(),
+					cartao.getDataEmissao(),
+					cartao.getDataVencimento(),
+					cartao.getTaxaUtilizacao(),
+					cartao.getLimite(),
+					cartao.getLimiteAtual(),
+					cartao.getTotalFatura(),
+					cartao.getTotalFaturaPaga()
+			);
+			cartao.setId(id);
+			log.info(ConstantUtils.SUCESSO_CRIAR_CARTAO_BANCO_DADOS);
+			return cartao;
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_CRIAR_CARTAO_BANCO_DADOS, e);
+			throw new SystemException(ConstantUtils.ERRO_CRIAR_CARTAO_BANCO_DADOS);
+		}
 	}
 	// READ - buscar cartões
 	public List<Cartao> buscarTodosCartoes() {
-		return jdbcTemplate.query(SqlQueries.SQL_READ_ALL_CARTOES, cartaoMapper);
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO);
+		try {
+			List<Cartao> cartoes = jdbcTemplate.query(SqlQueries.SQL_READ_ALL_CARTOES, cartaoMapper);
+			log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO);
+			return cartoes;
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_BUSCA_CARTAO, e);
+			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO);
+		}
 	}
 	public Optional<Cartao> findCartaoById(Long id) {
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO);
 		try {
 			Cartao cartao = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CARTAO_BY_ID, cartaoMapper, id);
+			if (cartao == null) {
+				log.warn(ConstantUtils.ERRO_CARTAO_NULO);
+				return Optional.empty();
+			}
+			log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO);
 			return Optional.of(cartao);
 		} catch (EmptyResultDataAccessException e) {
+			log.warn("{} - {}", ConstantUtils.ERRO_BUSCA_CARTAO, ConstantUtils.RETORNO_VAZIO);
 			return Optional.empty();
 		}
 	}
 	public List<Cartao> findByContaId(Long contaId) {
-		return jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_CONTA, cartaoMapper, contaId);
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_CONTA, contaId);
+		try {
+			List<Cartao> cartoes = jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_CONTA, cartaoMapper, contaId);
+			log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO_POR_CONTA, contaId);
+			return cartoes;
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_BUSCA_CARTAO_POR_CONTA, contaId, e);
+			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO_POR_CONTA);
+		}
 	}
 	public boolean existsByContaId(Long contaId) {
-		Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CARTAO_CONTA, Integer.class, contaId);
-		return count != null && count > 0;
+		log.info(ConstantUtils.INICIO_VERIFICAR_CARTAO_POR_CONTA, contaId);
+		try {
+			Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CARTAO_CONTA, Integer.class, contaId);
+			boolean exists = count != null && count > 0;
+			log.info(ConstantUtils.SUCESSO_VERIFICAR_CARTAO_POR_CONTA, contaId, exists);
+			return exists;
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CONTA, contaId, e);
+			throw new SystemException(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CONTA);
+		}
 	}
 	public boolean existsByContaClienteId(Long clienteId) {
-		Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CARTAO_CLIENTE, Integer.class, clienteId);
-		return count != null && count > 0;
+		log.info(ConstantUtils.INICIO_VERIFICAR_CARTAO_POR_CLIENTE, clienteId);
+		try {
+			Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CARTAO_CLIENTE, Integer.class, clienteId);
+			boolean exists = count != null && count > 0;
+			log.info(ConstantUtils.SUCESSO_VERIFICAR_CARTAO_POR_CLIENTE, clienteId, exists);
+			return exists;
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CLIENTE, clienteId, e);
+			throw new SystemException(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CLIENTE);
+		}
 	}
 	public List<Cartao> findByContaClienteUsuario(Usuario usuario) {
-		return jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_CONTA_CLIENTE_USUARIO, cartaoMapper, usuario.getId());
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_USUARIO, usuario.getId());
+		try {
+			List<Cartao> cartoes = jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_CONTA_CLIENTE_USUARIO, cartaoMapper, usuario.getId());
+			log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO_POR_USUARIO, usuario.getId());
+			return cartoes;
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_BUSCA_CARTAO_POR_USUARIO, usuario.getId(), e);
+			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO_POR_USUARIO);
+		}
 	}
 	public List<Cartao> findByContaClienteId(Long clienteId) {
-		return jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_CONTA_CLIENTE_ID, cartaoMapper, clienteId);
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_CLIENTE, clienteId);
+		try {
+			List<Cartao> cartoes = jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_CONTA_CLIENTE_ID, cartaoMapper, clienteId);
+			log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO_POR_CLIENTE, clienteId);
+			return cartoes;
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_BUSCA_CARTAO_POR_CLIENTE, clienteId, e);
+			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO_POR_CLIENTE);
+		}
 	}
-	// Listar cartões por tipo para um cliente
 	public List<Cartao> buscarCartoesPorTipoECliente(Long clienteId, String tipoCartao) {
-		return jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_TIPO_CLIENTE, cartaoMapper, clienteId, tipoCartao);
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_TIPO, clienteId, tipoCartao);
+		try {
+			List<Cartao> cartoes = jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_TIPO_CLIENTE, cartaoMapper, clienteId, tipoCartao);
+			log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO_POR_TIPO, clienteId, tipoCartao);
+			return cartoes;
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_BUSCA_CARTAO_POR_TIPO, clienteId, tipoCartao, e);
+			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO_POR_TIPO);
+		}
 	}
 
 	// UPDATE
 	public Cartao atualizarCartao(Cartao cartao) {
-		int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_CARTAO,
-				cartao.getTipoCartao().name(),
-				cartao.getNumeroCartao(),
-				cartao.getConta().getId(),
-				cartao.getStatus().name(),
-				cartao.getSenha(),
-				cartao.getDataEmissao(),
-				cartao.getDataVencimento(),
-				cartao.getTaxaUtilizacao(),
-				cartao.getLimite(),
-				cartao.getLimiteAtual(),
-				cartao.getTotalFatura(),
-				cartao.getTotalFaturaPaga(),
-				cartao.getId()
-		);
-
-		if (linhasAfetadas == 0) {
-			throw new ResourceNotFoundException("Cartão não encontrado para atualização com ID: " + cartao.getId());
+		log.info(ConstantUtils.INICIO_UPDATE_CARTAO, cartao.getId());
+		try {
+			int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_CARTAO,
+					cartao.getTipoCartao().name(),
+					cartao.getNumeroCartao(),
+					cartao.getConta().getId(),
+					cartao.getStatus().name(),
+					cartao.getSenha(),
+					cartao.getDataEmissao(),
+					cartao.getDataVencimento(),
+					cartao.getTaxaUtilizacao(),
+					cartao.getLimite(),
+					cartao.getLimiteAtual(),
+					cartao.getTotalFatura(),
+					cartao.getTotalFaturaPaga(),
+					cartao.getId()
+			);
+			if (linhasAfetadas == 0) {
+				log.warn(ConstantUtils.ERRO_UPDATE);
+				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CARTAO + cartao.getId());
+			}
+			log.info(ConstantUtils.SUCESSO_UPDATE_CARTAO, cartao.getId());
+			return cartao;
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_INESPERADO_UPDATE_CARTAO, cartao.getId(),e);
+			throw new SystemException(ConstantUtils.ERRO_INESPERADO_UPDATE_CARTAO + cartao.getId());
 		}
-
-		return cartao;
 	}
 
 	// DELETE
 	public void deletarCartaoPorId(Long id) {
-		int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_DELETE_CARTAO, id);
-
-		if (linhasAfetadas == 0) {
-			throw new ResourceNotFoundException("Cartão com ID " + id + " não encontrado para exclusão.");
+		log.info(ConstantUtils.INICIO_DELETE_CARTAO, id);
+		try {
+			int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_DELETE_CARTAO, id);
+			if (linhasAfetadas == 0) {
+				log.warn(ConstantUtils.ERRO_DELETE);
+				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CARTAO + id);
+			}
+			log.info(ConstantUtils.SUCESSO_DELETE_CARTAO, id);
+		} catch (SystemException e) {
+			log.error(ConstantUtils.ERRO_INESPERADO_DELETE_CARTAO, id, e);
+			throw new SystemException(ConstantUtils.ERRO_INESPERADO_DELETE_CARTAO + id);
 		}
 	}
-	
 }

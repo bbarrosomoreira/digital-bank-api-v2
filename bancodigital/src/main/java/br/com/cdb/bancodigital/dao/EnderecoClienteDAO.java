@@ -109,14 +109,14 @@ public class EnderecoClienteDAO {
                     endereco.getId()
             );
             if (linhasAfetadas == 0) {
-                log.warn(ConstantUtils.ERRO_UPDATE_ENDERECO);
+                log.warn(ConstantUtils.ERRO_UPDATE);
                 throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_ENDERECO);
             }
             log.info(ConstantUtils.SUCESSO_UPDATE_ENDERECO);
             return endereco;
         } catch (SystemException e) {
             log.error(ConstantUtils.ERRO_INESPERADO_UPDATE_ENDERECO,endereco.getId(), e);
-            throw new SystemException(ConstantUtils.ERRO_CRIAR_ENDERECO + endereco.getId());
+            throw new SystemException(ConstantUtils.ERRO_INESPERADO_UPDATE_ENDERECO + endereco.getId());
         }
 
     }

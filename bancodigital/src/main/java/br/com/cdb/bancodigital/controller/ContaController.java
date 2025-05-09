@@ -149,10 +149,10 @@ public class ContaController {
 	public ResponseEntity<Void> deleteContasByCliente(
 			@PathVariable Long id_cliente) {
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_EXCLUSAO_CONTA, id_cliente);
+		log.info(ConstantUtils.INICIO_DELETE_CONTA, id_cliente);
 
 		contaService.deleteContasByCliente(id_cliente);
-		log.info(ConstantUtils.SUCESSO_EXCLUSAO_CONTA, id_cliente);
+		log.info(ConstantUtils.SUCESSO_DELETE_CONTA, id_cliente);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);

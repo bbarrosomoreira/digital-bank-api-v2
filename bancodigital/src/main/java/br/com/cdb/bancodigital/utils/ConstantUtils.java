@@ -91,8 +91,8 @@ public class ConstantUtils {
     public static final String FIM_TENTATIVA_CHAMADA = "Tentativa de chamada concluída em {} ms.";
     public static final String SUCESSO_BUSCA = "Informação(ões) encontrada(s) com sucesso";
     public static final String RETORNO_VAZIO = "Retornando Optional.empty()";
-    public static final String ERRO_UPDATE = "Atualização não concluída.";
-    public static final String ERRO_DELETE = "Exclusão não concluída.";
+    public static final String ERRO_UPDATE = "Atualização não concluída. Nenhuma linha foi afetada.";
+    public static final String ERRO_DELETE = "Exclusão não concluída. Nenhuma linha foi afetada.";
 
     // Usuário
     public static final String USUARIO_LOGADO = "Usuário logado: ID: {}";
@@ -123,9 +123,9 @@ public class ConstantUtils {
     public static final String SUCESSO_BUSCA_CLIENTE = "Informações de cliente(s) obtidas com sucesso";
     public static final String CLIENTE_ENCONTRADO = "Cliente encontrado com sucesso";
     public static final String ERRO_BUSCA_CLIENTE = "Cliente não encontrado.";
-    public static final String INICIO_EXCLUSAO_CLIENTE = "Iniciando exclusão de cliente ID: {}";
-    public static final String SUCESSO_EXCLUSAO_CLIENTE = "Cliente excluído com sucesso ID: {}";
-    public static final String ERRO_EXCLUSAO_CLIENTE = "Erro ao excluir cliente";
+    public static final String INICIO_DELETE_CLIENTE = "Iniciando exclusão de cliente ID: {}";
+    public static final String SUCESSO_DELETE_CLIENTE = "Cliente excluído com sucesso ID: {}";
+    public static final String ERRO_DELETE_CLIENTE = "Erro ao excluir cliente";
     public static final String INICIO_ATUALIZACAO_CLIENTE = "Iniciando atualização de cliente ID: {}";
     public static final String SUCESSO_ATUALIZACAO_CLIENTE = "Cliente atualizado com sucesso ID: {}";
     public static final String INICIO_ATUALIZACAO_CATEGORIA_CLIENTE = "Iniciando atualização de categoria do cliente ID: {}";
@@ -134,6 +134,14 @@ public class ConstantUtils {
     public static final String SUCESSO_CRIAR_CLIENTE_BANCO_DADOS = "Cliente criado no banco de dados com sucesso";
     public static final String ERRO_CRIAR_CLIENTE_BANCO_DADOS = "Erro ao criar cliente no banco de dados";
     public static final String ERRO_CLIENTE_NULO = "Cliente não pode ser nulo";
+    public static final String INICIO_VERIFICAR_CLIENTE_CPF = "Iniciando verificação se existe no banco de dados cliente com o CPF solicitado.";
+    public static final String SUCESSO_VERIFICAR_CLIENTE_CPF = "Verificação de cliente com CPF concluída com sucesso.";
+    public static final String ERRO_VERIFICAR_CLIENTE_CPF = "Erro ao verificar cliente com CPF.";
+    public static final String VAZIO_VERIFICAR_CLIENTE_CPF = "Nenhum cliente encontrado com o CPF solicitado.";
+    public static final String INICIO_UPDATE_CLIENTE = "Iniciando atualização de cliente ID: {}";
+    public static final String SUCESSO_UPDATE_CLIENTE = "Cliente atualizado com sucesso ID: {}";
+    public static final String ERRO_INESPERADO_UPDATE_CLIENTE = "Erro inesperado ao atualizar cliente com ID: {}";
+    public static final String ERRO_INESPERADO_DELETE_CLIENTE = "Erro inesperado ao deletar cliente com ID: {}";
 
     // EnderecoCliente
     public static final String INICIO_SALVAR_ENDERECO = "Iniciando operação de salvar endereço.";
@@ -147,12 +155,14 @@ public class ConstantUtils {
     public static final String ERRO_ENDERECO_NULO = "Endereço não pode ser nulo";
     public static final String INICIO_UPDATE_ENDERECO = "Iniciando atualização de endereço com ID: {}.";
     public static final String SUCESSO_UPDATE_ENDERECO = "Endereço atualizado com sucesso. ID: {}.";
-    public static final String ERRO_UPDATE_ENDERECO = "Erro ao atualizar endereço. Nenhuma linha foi afetada.";
     public static final String INICIO_BUSCA_ERRO_ENDERECO = "Buscando endereço ou lançando erro para cliente com ID: {}";
     public static final String ERRO_INESPERADO_UPDATE_ENDERECO = "Erro inesperado ao atualizar endereço com ID: {}";
 
     // Conta
     public static final String ID_CONTA = "ID da conta: {}";
+    public static final String ERRO_CONTA_NULA = "Conta não pode ser nula";
+    public static final String INICIO_SALVAR_CONTA = "Iniciando operação de salvar conta.";
+    public static final String ERRO_SALVAR_CONTA = "Erro ao salvar conta.";
     public static final String INICIO_ABERTURA_CONTA = "Iniciando abertura de conta para cliente ID: {}";
     public static final String SUCESSO_ABERTURA_CONTA = "Conta criada com sucesso para cliente ID: {}";
     public static final String ERRO_ABERTURA_CONTA = "Erro ao abrir conta";
@@ -161,8 +171,8 @@ public class ConstantUtils {
     public static final String SUCESSO_BUSCA_CONTA = "Informações de conta(s) obtidas com sucesso";
     public static final String CONTA_ENCONTRADA = "Conta encontrada com sucesso";
     public static final String ERRO_BUSCA_CONTA = "Conta ID %d não encontrada.";
-    public static final String INICIO_EXCLUSAO_CONTA = "Iniciando exclusão de conta para cliente ID: {}";
-    public static final String SUCESSO_EXCLUSAO_CONTA = "Conta excluída com sucesso para cliente ID: {}";
+    public static final String INICIO_DELETE_CONTA = "Iniciando exclusão de conta para cliente ID: {}";
+    public static final String SUCESSO_DELETE_CONTA = "Conta excluída com sucesso para cliente ID: {}";
     public static final String INICIO_TRANSACAO_CONTA = "Iniciando transação de {} na conta ID: {}";
     public static final String TRANSFERENCIA = "TRANSFERÊNCIA";
     public static final String DEPOSITO = "DEPÓSITO";
@@ -176,9 +186,29 @@ public class ConstantUtils {
     public static final String INICIO_CRIAR_CONTA_BANCO_DADOS = "Iniciando criação de conta no banco de dados";
     public static final String SUCESSO_CRIAR_CONTA_BANCO_DADOS = "Conta criada no banco de dados com sucesso";
     public static final String ERRO_CRIAR_CONTA_BANCO_DADOS = "Erro ao criar conta no banco de dados";
+    public static final String INICIO_VERIFICAR_CONTA_CLIENTE = "Iniciando verificação se existe no banco de dados conta vinculada ao cliente.";
+    public static final String SUCESSO_VERIFICAR_CONTA_CLIENTE = "Verificação de conta vinculada ao cliente concluída com sucesso.";
+    public static final String ERRO_VERIFICAR_CONTA_CLIENTE = "Erro ao verificar conta vinculada ao cliente.";
+    public static final String VAZIO_VERIFICAR_CONTA_CLIENTE = "Nenhuma conta encontrada vinculada ao cliente.";
+    public static final String INICIO_UPDATE_CONTA = "Iniciando atualização de conta ID: {}";
+    public static final String SUCESSO_UPDATE_CONTA = "Conta atualizada com sucesso ID: {}";
+    public static final String ERRO_INESPERADO_UPDATE_CONTA = "Erro inesperado ao atualizar conta com ID: {}";
+    public static final String ERRO_INESPERADO_DELETE_CONTA = "Erro inesperado ao deletar conta com ID: {}";
+    public static final String INICIO_BUSCA_CONTA_POR_CLIENTE = "Iniciando busca de contas para o cliente com ID: {}.";
+    public static final String SUCESSO_BUSCA_CONTA_POR_CLIENTE = "Busca de contas para o cliente com ID: {} concluída com sucesso.";
+    public static final String ERRO_BUSCA_CONTA_POR_CLIENTE = "Erro ao buscar contas para o cliente com ID: {}.";
+    public static final String INICIO_BUSCA_CONTA_POR_USUARIO = "Iniciando busca de contas para o usuário com ID: {}.";
+    public static final String SUCESSO_BUSCA_CONTA_POR_USUARIO = "Busca de contas para o usuário com ID: {} concluída com sucesso.";
+    public static final String ERRO_BUSCA_CONTA_POR_USUARIO = "Erro ao buscar contas para o usuário com ID: {}.";
+    public static final String INICIO_BUSCA_CONTA_POR_TIPO = "Iniciando busca de contas do tipo '{}' para o cliente com ID: {}.";
+    public static final String SUCESSO_BUSCA_CONTA_POR_TIPO = "Busca de contas do tipo '{}' para o cliente com ID: {} concluída com sucesso.";
+    public static final String ERRO_BUSCA_CONTA_POR_TIPO = "Erro ao buscar contas do tipo '{}' para o cliente com ID: {}.";
 
     // Cartão
     public static final String ID_CARTAO = "ID do cartão: {}";
+    public static final String ERRO_CARTAO_NULO = "Cartão não pode ser nulo";
+    public static final String INICIO_SALVAR_CARTAO = "Iniciando operação de salvar cartão.";
+    public static final String ERRO_SALVAR_CARTAO = "Erro ao salvar cartão.";
     public static final String INICIO_EMISSAO_CARTAO = "Iniciando emissão de cartão para cliente ID: {}";
     public static final String SUCESSO_EMISSAO_CARTAO = "Cartão emitido com sucesso para cliente ID: {}";
     public static final String ERRO_EMISSAO_CARTAO = "Erro ao emitir cartão";
@@ -206,19 +236,47 @@ public class ConstantUtils {
     public static final String INICIO_CRIAR_CARTAO_BANCO_DADOS = "Iniciando criação de cartao no banco de dados";
     public static final String SUCESSO_CRIAR_CARTAO_BANCO_DADOS = "Cartao criado no banco de dados com sucesso";
     public static final String ERRO_CRIAR_CARTAO_BANCO_DADOS = "Erro ao criar cartao no banco de dados";
+    public static final String INICIO_UPDATE_CARTAO = "Iniciando atualização de cartão ID: {}";
+    public static final String SUCESSO_UPDATE_CARTAO = "Cartão atualizado com sucesso ID: {}";
+    public static final String INICIO_DELETE_CARTAO = "Iniciando exclusão de cartão ID: {}";
+    public static final String SUCESSO_DELETE_CARTAO = "Cartão excluído com sucesso ID: {}";
+    public static final String ERRO_INESPERADO_UPDATE_CARTAO = "Erro inesperado ao atualizar cartão com ID: {}";
+    public static final String ERRO_INESPERADO_DELETE_CARTAO = "Erro inesperado ao deletar cartão com ID: {}";
+    public static final String INICIO_BUSCA_CARTAO_POR_CONTA = "Iniciando busca de cartões para a conta com ID: {}.";
+    public static final String SUCESSO_BUSCA_CARTAO_POR_CONTA = "Busca de cartões para a conta com ID: {} concluída com sucesso.";
+    public static final String ERRO_BUSCA_CARTAO_POR_CONTA = "Erro ao buscar cartões para a conta com ID: {}.";
+    public static final String INICIO_VERIFICAR_CARTAO_POR_CONTA = "Iniciando verificação de cartões para a conta com ID: {}.";
+    public static final String SUCESSO_VERIFICAR_CARTAO_POR_CONTA = "Verificação de cartões para a conta com ID: {} concluída. Existe: {}.";
+    public static final String ERRO_VERIFICAR_CARTAO_POR_CONTA = "Erro ao verificar cartões para a conta com ID: {}.";
+    public static final String INICIO_VERIFICAR_CARTAO_POR_CLIENTE = "Iniciando verificação de cartões para o cliente com ID: {}.";
+    public static final String SUCESSO_VERIFICAR_CARTAO_POR_CLIENTE = "Verificação de cartões para o cliente com ID: {} concluída. Existe: {}.";
+    public static final String ERRO_VERIFICAR_CARTAO_POR_CLIENTE = "Erro ao verificar cartões para o cliente com ID: {}.";
+    public static final String INICIO_BUSCA_CARTAO_POR_USUARIO = "Iniciando busca de cartões para o usuário com ID: {}.";
+    public static final String SUCESSO_BUSCA_CARTAO_POR_USUARIO = "Busca de cartões para o usuário com ID: {} concluída com sucesso.";
+    public static final String ERRO_BUSCA_CARTAO_POR_USUARIO = "Erro ao buscar cartões para o usuário com ID: {}.";
+    public static final String INICIO_BUSCA_CARTAO_POR_CLIENTE = "Iniciando busca de cartões para o cliente com ID: {}.";
+    public static final String SUCESSO_BUSCA_CARTAO_POR_CLIENTE = "Busca de cartões para o cliente com ID: {} concluída com sucesso.";
+    public static final String ERRO_BUSCA_CARTAO_POR_CLIENTE = "Erro ao buscar cartões para o cliente com ID: {}.";
+    public static final String INICIO_BUSCA_CARTAO_POR_TIPO = "Iniciando busca de cartões do tipo '{}' para o cliente com ID: {}.";
+    public static final String SUCESSO_BUSCA_CARTAO_POR_TIPO = "Busca de cartões do tipo '{}' para o cliente com ID: {} concluída com sucesso.";
+    public static final String ERRO_BUSCA_CARTAO_POR_TIPO = "Erro ao buscar cartões do tipo '{}' para o cliente com ID: {}.";
 
     // Seguro
     public static final String ID_SEGURO = "ID do seguro: {}";
+    public static final String ERRO_SEGURO_NULO = "Seguro não pode ser nulo";
+    public static final String INICIO_SALVAR_SEGURO = "Iniciando operação de salvar seguro.";
+    public static final String ERRO_SALVAR_SEGURO = "Erro ao salvar seguro.";
     public static final String INICIO_CONTRATACAO_SEGURO = "Iniciando contratação de seguro.";
     public static final String SUCESSO_CONTRATACAO_SEGURO = "Seguro contratado com sucesso.";
     public static final String ERRO_CONTRATACAO_SEGURO = "Erro ao contratar seguro";
     public static final String INICIO_BUSCA_SEGURO = "Iniciando busca de informação de seguro(s)";
     public static final String SUCESSO_BUSCA_SEGURO = "Informações de seguro(s) obtidas com sucesso";
+    public static final String ERRO_BUSCA_SEGURO = "Seguro ID %d não encontrado.";
     public static final String SEGURO_ENCONTRADO = "Seguro encontrado com sucesso";
     public static final String INICIO_LISTAGEM_TIPO_SEGURO = "Listando tipos de seguros disponíveis.";
     public static final String SUCESSO_LISTAGEM_TIPO_SEGURO = "Tipos de seguros listados com sucesso.";
-    public static final String INICIO_EXCLUSAO_SEGURO = "Iniciando exclusão de seguro para cliente ID: {}";
-    public static final String SUCESSO_EXCLUSAO_SEGURO = "Seguro excluído com sucesso para cliente ID: {}";
+    public static final String INICIO_DELETE_SEGURO = "Iniciando exclusão de seguro para cliente ID: {}";
+    public static final String SUCESSO_DELETE_SEGURO = "Seguro excluído com sucesso para cliente ID: {}";
     public static final String INICIO_ACIONAMENTO_SEGURO = "Iniciando acionamento de seguro tipo {}";
     public static final String SEGURO_FRAUDE = "FRAUDE";
     public static final String SEGURO_VIAGEM = "VIAGEM";
@@ -230,6 +288,26 @@ public class ConstantUtils {
     public static final String INICIO_CRIAR_SEGURO_BANCO_DADOS = "Iniciando criação de seguro no banco de dados";
     public static final String SUCESSO_CRIAR_SEGURO_BANCO_DADOS = "Seguro criado no banco de dados com sucesso";
     public static final String ERRO_CRIAR_SEGURO_BANCO_DADOS = "Erro ao criar seguro no banco de dados";
+    public static final String INICIO_UPDATE_SEGURO = "Iniciando atualização de seguro ID: {}";
+    public static final String SUCESSO_UPDATE_SEGURO = "Seguro atualizado com sucesso ID: {}";
+    public static final String ERRO_INESPERADO_UPDATE_SEGURO = "Erro inesperado ao atualizar seguro com ID: {}";
+    public static final String ERRO_INESPERADO_DELETE_SEGURO = "Erro inesperado ao deletar seguro com ID: {}";
+    public static final String INICIO_BUSCA_SEGURO_POR_TIPO = "Iniciando busca de seguros do tipo '{}' para o cliente com ID: {}.";
+    public static final String SUCESSO_BUSCA_SEGURO_POR_TIPO = "Busca de seguros do tipo '{}' para o cliente com ID: {} concluída com sucesso.";
+    public static final String ERRO_BUSCA_SEGURO_POR_TIPO = "Erro ao buscar seguros do tipo '{}' para o cliente com ID: {}.";
+    public static final String INICIO_VERIFICAR_SEGURO_POR_CARTAO = "Iniciando verificação de seguros para o cartão com ID: {}.";
+    public static final String SUCESSO_VERIFICAR_SEGURO_POR_CARTAO = "Verificação de seguros para o cartão com ID: {} concluída. Existe: {}.";
+    public static final String ERRO_VERIFICAR_SEGURO_POR_CARTAO = "Erro ao verificar seguros para o cartão com ID: {}.";
+    public static final String INICIO_VERIFICAR_SEGURO_POR_CLIENTE = "Iniciando verificação de seguros para o cliente com ID: {}.";
+    public static final String SUCESSO_VERIFICAR_SEGURO_POR_CLIENTE = "Verificação de seguros para o cliente com ID: {} concluída. Existe: {}.";
+    public static final String ERRO_VERIFICAR_SEGURO_POR_CLIENTE = "Erro ao verificar seguros para o cliente com ID: {}.";
+    public static final String INICIO_BUSCA_SEGURO_POR_CLIENTE = "Iniciando busca de seguros para o cliente com ID: {}.";
+    public static final String SUCESSO_BUSCA_SEGURO_POR_CLIENTE = "Busca de seguros para o cliente com ID: {} concluída com sucesso.";
+    public static final String ERRO_BUSCA_SEGURO_POR_CLIENTE = "Erro ao buscar seguros para o cliente com ID: {}.";
+    public static final String INICIO_BUSCA_SEGURO_POR_USUARIO = "Iniciando busca de seguros para o usuário com ID: {}.";
+    public static final String SUCESSO_BUSCA_SEGURO_POR_USUARIO = "Busca de seguros para o usuário com ID: {} concluída com sucesso.";
+    public static final String ERRO_BUSCA_SEGURO_POR_USUARIO = "Erro ao buscar seguros para o usuário com ID: {}.";
+
 
     // Cambio
     public static final String INICIO_CONVERSAO = "Iniciando conversão de moedas";

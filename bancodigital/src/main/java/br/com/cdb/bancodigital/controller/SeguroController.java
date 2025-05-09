@@ -188,10 +188,10 @@ public class SeguroController {
 	public ResponseEntity<Void> deleteSegurosByCliente(
 			@PathVariable Long id_cliente){
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_EXCLUSAO_SEGURO, id_cliente);
+		log.info(ConstantUtils.INICIO_DELETE_SEGURO, id_cliente);
 
 		seguroService.deleteSegurosByCliente(id_cliente);
-		log.info(ConstantUtils.SUCESSO_EXCLUSAO_SEGURO, id_cliente);
+		log.info(ConstantUtils.SUCESSO_DELETE_SEGURO, id_cliente);
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.noContent().build();
