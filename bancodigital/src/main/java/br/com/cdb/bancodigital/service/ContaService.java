@@ -283,7 +283,7 @@ public class ContaService {
 
     public Cliente verificarClienteExistente(Long id_cliente) {
         return clienteDAO.buscarClienteporId(id_cliente)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CLIENTE, id_cliente)));
+                .orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CLIENTE));
     }
 
     public void verificaSaldoSuficiente(BigDecimal valor, BigDecimal saldo) {
