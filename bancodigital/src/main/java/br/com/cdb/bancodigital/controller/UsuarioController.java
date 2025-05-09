@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.controller;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,20 +13,20 @@ import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.dto.response.UsuarioResponse;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping(ConstantUtils.USUARIO)
 @Slf4j
 public class UsuarioController {
 	
-	@GetMapping("/me")
+	@GetMapping(ConstantUtils.GET_USUARIO)
 	public ResponseEntity<UsuarioResponse> getUsuarioLogado(@AuthenticationPrincipal Usuario usuario) {
 		long startTime = System.currentTimeMillis();
-		log.info("Buscando informações do usuário logado.");
+		log.info(ConstantUtils.INICIO_BUSCA_USUARIO);
 
 		UsuarioResponse dto = new UsuarioResponse(usuario);
-		log.info("Informações do usuário logado obtidas com sucesso.");
+		log.info(ConstantUtils.SUCESSO_BUSCA_USUARIO);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de informações do usuário logado concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(dto);
 	}
 }

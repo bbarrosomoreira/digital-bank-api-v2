@@ -2,6 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.math.BigDecimal;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -16,18 +17,18 @@ import br.com.cdb.bancodigital.dto.response.ConversorMoedasResponse;
 import br.com.cdb.bancodigital.service.ConversorMoedasService;
 
 @RestController
-@RequestMapping("/cambio")
+@RequestMapping(ConstantUtils.CAMBIO)
 @AllArgsConstructor
 @Slf4j
 public class ConversorMoedasController {
 	
 	private final ConversorMoedasService conversorMoedasService;
 	
-	@GetMapping("/conversor-real")
+	@GetMapping(ConstantUtils.CONVERSOR_REAL)
 	public ResponseEntity<ConversorMoedasResponse> converterParaBrl (
 			@RequestBody ConversorMoedasDTO dto){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando conversão de valor para BRL. Moeda de destino: {}.", dto.getMoedaDestino());
+		log.info(ConstantUtils.INICIO_CONVERSAO);
 
 		BigDecimal valorConvertido = conversorMoedasService.converterDeBrl(dto.getMoedaDestino(), dto.getValor());
 		ConversorMoedasResponse response = new ConversorMoedasResponse();
@@ -35,30 +36,30 @@ public class ConversorMoedasController {
 		response.setValorOriginal(dto.getValor());
 		response.setValorConvertido(valorConvertido);
 
-		log.info("Conversão concluída com sucesso.");
+		log.info(ConstantUtils.SUCESSO_CONVERSAO);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Conversão para BRL concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
-	@GetMapping("/conversor-moedas")
+	@GetMapping(ConstantUtils.CONVERSOR_MOEDAS)
 	public ResponseEntity<ApiConversorMoedasResponse> fazerConversao (
 			@RequestBody ConversorMoedasDTO dto){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando conversão de moedas.");
+		log.info(ConstantUtils.INICIO_CONVERSAO);
 
 		return conversorMoedasService.fazerConversao(dto.getMoedaOrigem(), dto.getMoedaDestino(), dto.getValor())
 				.map(response -> {
-					log.info("Conversão realizada com sucesso.");
+					log.info(ConstantUtils.SUCESSO_CONVERSAO);
 					long endTime = System.currentTimeMillis();
-					log.info("Conversão de moedas concluída em {} ms.", endTime - startTime);
+					log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 					return ResponseEntity.ok(response);
 				})
 				.orElseGet(() -> {
-					log.warn("Conversão de moedas falhou. Verifique os parâmetros fornecidos.");
+					log.warn(ConstantUtils.ERRO_CONVERSAO);
 					long endTime = System.currentTimeMillis();
-					log.info("Tentativa de conversão de moedas concluída em {} ms.", endTime - startTime);
+					log.info(ConstantUtils.FIM_TENTATIVA_CHAMADA, endTime - startTime);
 					return ResponseEntity.badRequest().build();
 				});
 	}

@@ -13,7 +13,7 @@ import br.com.cdb.bancodigital.dto.response.CpfValidationResponse;
 import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
 
 @RestController
-@RequestMapping("/receita-federal")
+@RequestMapping(ConstantUtils.RECEITA_FEDERAL)
 @AllArgsConstructor
 @Slf4j
 public class ReceitaController {
@@ -21,16 +21,16 @@ public class ReceitaController {
 	private final ReceitaFederalRestTemplate receitaFederalRestTemplate;
 
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@GetMapping("/consultar-cpf/")
+	@GetMapping(ConstantUtils.GET_CPF)
 	public ResponseEntity<CpfValidationResponse> consultarCpf(@Valid @RequestBody ConsultaCpfDTO dto) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando consulta de CPF");
+		log.info(ConstantUtils.INICIO_CONSULTA_CPF);
 
 		CpfValidationResponse response = receitaFederalRestTemplate.consultarCpf(dto.getCpf());
-		log.info("Consulta de CPF concluída com sucesso.");
+		log.info(ConstantUtils.SUCESSO_CONSULTA_CPF);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Consulta de CPF concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 

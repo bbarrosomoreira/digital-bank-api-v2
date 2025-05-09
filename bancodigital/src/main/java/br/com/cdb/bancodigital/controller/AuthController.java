@@ -16,7 +16,7 @@ import br.com.cdb.bancodigital.service.AuthService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(ConstantUtils.AUTENTICACAO)
 @AllArgsConstructor
 @Slf4j
 public class AuthController {
@@ -24,7 +24,7 @@ public class AuthController {
 	private final AuthService authService;
 
 	// Endpoint para cadastro de usuário (retorna token JWT após registro)
-	@PostMapping("/signin")
+	@PostMapping(ConstantUtils.SIGNIN)
 	public ResponseEntity<LoginResponse> registrar(@Valid @RequestBody UsuarioDTO dto) {
 		long startTime = System.currentTimeMillis();
 		log.info(ConstantUtils.INICIO_REGISTRAR);
@@ -38,7 +38,7 @@ public class AuthController {
 	}
 	
 	// Endpoint para login de usuário (retorna token JWT)
-	@PostMapping("/login")
+	@PostMapping(ConstantUtils.LOGIN)
 	public ResponseEntity<LoginResponse> autenticar(@Valid @RequestBody LoginDTO dto) {
 		long startTime = System.currentTimeMillis();
 		log.info(ConstantUtils.INICIO_AUTENTICACAO);

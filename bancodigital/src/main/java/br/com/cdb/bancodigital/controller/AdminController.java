@@ -26,7 +26,7 @@ import br.com.cdb.bancodigital.service.AdminService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping(ConstantUtils.ADMIN)
 @AllArgsConstructor
 @Slf4j
 public class AdminController {
@@ -34,7 +34,7 @@ public class AdminController {
 	private final AdminService adminService;
 	
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PostMapping("/cliente")
+	@PostMapping(ConstantUtils.CLIENTE)
 	public ResponseEntity<ClienteResponse> cadastrarCliente(
 			@Valid @RequestBody ClienteUsuarioDTO dto) {
 		long startTime = System.currentTimeMillis();
@@ -49,7 +49,7 @@ public class AdminController {
 	}
 	
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PostMapping("/conta/{id_cliente}")
+	@PostMapping(ConstantUtils.CONTA + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<ContaResponse> abrirConta(
 			@PathVariable Long id_cliente,
 			@Valid @RequestBody AbrirContaDTO dto,
@@ -72,7 +72,7 @@ public class AdminController {
 	}
 	
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PostMapping("/cartao/{id_cliente}")
+	@PostMapping(ConstantUtils.CARTAO + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<CartaoResponse> emitirCartao(
 			@PathVariable Long id_cliente,
 			@Valid @RequestBody EmitirCartaoDTO dto,
@@ -95,13 +95,13 @@ public class AdminController {
 	}
 
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PostMapping("/seguro/{id_cliente}")
+	@PostMapping(ConstantUtils.SEGURO + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<SeguroResponse> contratarSeguro (
 			@PathVariable Long id_cliente,
 			@Valid @RequestBody ContratarSeguroDTO dto,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_CONTRATACAO_SEGURO, id_cliente);
+		log.info(ConstantUtils.INICIO_CONTRATACAO_SEGURO + ConstantUtils.ID_CLIENTE, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
@@ -110,7 +110,7 @@ public class AdminController {
 		log.info(ConstantUtils.CLIENTE_ENCONTRADO);
 
 		SeguroResponse response = adminService.contratarSeguro(dto.getId_cartao(), usuarioCliente, dto.getTipo());
-		log.info(ConstantUtils.SUCESSO_CONTRATACAO_SEGURO, id_cliente);
+		log.info(ConstantUtils.SUCESSO_CONTRATACAO_SEGURO + ConstantUtils.ID_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);

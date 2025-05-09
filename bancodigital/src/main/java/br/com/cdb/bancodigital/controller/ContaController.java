@@ -38,14 +38,13 @@ import br.com.cdb.bancodigital.service.ContaService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/contas")
+@RequestMapping(ConstantUtils.CONTA)
 @AllArgsConstructor
 @Slf4j
 public class ContaController {
 
 	private final ContaService contaService;
 	
-	//ambos podem criar conta
 	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login
 	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@PostMapping
@@ -53,13 +52,13 @@ public class ContaController {
 			@Valid @RequestBody AbrirContaDTO dto,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando abertura de conta.");
+		log.info(ConstantUtils.INICIO_ABERTURA_CONTA, dto.getId_cliente());
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ContaResponse response = contaService.abrirConta(dto.getId_cliente(), usuarioLogado, dto.getTipoConta(), dto.getMoeda(), dto.getValorDeposito());
-		log.info("Conta criada com sucesso.");
+		log.info(ConstantUtils.SUCESSO_ABERTURA_CONTA, response.getId());
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -67,9 +66,9 @@ public class ContaController {
 	}
 	
 	// cliente e admin
-	@GetMapping("/tipos")
+	@GetMapping(ConstantUtils.TIPOS)
 	public ResponseEntity<List<TipoConta>> listarTiposContas() {
-		log.info("Listando tipos de contas disponíveis.");
+		log.info(ConstantUtils.INICIO_LISTAGEM_TIPO_CONTA);
 		return ResponseEntity.ok(Arrays.asList(TipoConta.values()));
 	}
 	
@@ -77,10 +76,10 @@ public class ContaController {
 	@GetMapping
 	public ResponseEntity<List<ContaResponse>> getContas() {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando busca de todas as contas.");
+		log.info(ConstantUtils.INICIO_BUSCA_CONTA);
 
 		List<ContaResponse> contas = contaService.getContas();
-		log.info("Contas encontradas");
+		log.info(ConstantUtils.SUCESSO_BUSCA_CONTA);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -89,17 +88,17 @@ public class ContaController {
 	
 	// para usuário logado ver informações de suas contas (cliente)
 	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
-	@GetMapping("/minhas-contas")
+	@GetMapping(ConstantUtils.GET_USUARIO)
 	public ResponseEntity<List<ContaResponse>> buscarContasDoUsuario (
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Buscando contas do usuário logado.");
+		log.info(ConstantUtils.INICIO_BUSCA_CONTA);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<ContaResponse> contas = contaService.listarPorUsuario(usuarioLogado);
-		log.info("Contas encontradas");
+		log.info(ConstantUtils.SUCESSO_BUSCA_CONTA);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -107,18 +106,18 @@ public class ContaController {
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@GetMapping("/cliente/{id_cliente}")
+	@GetMapping(ConstantUtils.CLIENTE + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<List<ContaResponse>> listarPorCliente(
 			@PathVariable Long id_cliente,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Buscando contas para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_BUSCA_CONTA + ConstantUtils.ID_CLIENTE, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<ContaResponse> contas = contaService.listarPorCliente(id_cliente, usuarioLogado);
-		log.info("Contas encontradas");
+		log.info(ConstantUtils.SUCESSO_BUSCA_CONTA + ConstantUtils.ID_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -126,18 +125,18 @@ public class ContaController {
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@GetMapping("/{id_conta}")
+	@GetMapping(ConstantUtils.CONTA_ID)
 	public ResponseEntity<ContaResponse> getContaById(
 			@PathVariable Long id_conta,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Buscando informações da conta ID: {}.", id_conta);
+		log.info(ConstantUtils.INICIO_BUSCA_CONTA + ConstantUtils.ID_CONTA, id_conta);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ContaResponse conta = contaService.getContaById(id_conta, usuarioLogado);
-		log.info("Informações da conta obtidas com sucesso.");
+		log.info(ConstantUtils.SUCESSO_BUSCA_CONTA + ConstantUtils.ID_CONTA, id_conta);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -146,14 +145,14 @@ public class ContaController {
 	
 	// só o admin pode confirmar a exclusão de cadastro de contas
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@DeleteMapping("/cliente/{id_cliente}")
+	@DeleteMapping(ConstantUtils.CLIENTE + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<Void> deleteContasByCliente(
 			@PathVariable Long id_cliente) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando exclusão de contas para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_EXCLUSAO_CONTA, id_cliente);
 
 		contaService.deleteContasByCliente(id_cliente);
-		log.info("Contas excluídas com sucesso para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.SUCESSO_EXCLUSAO_CONTA, id_cliente);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -162,19 +161,19 @@ public class ContaController {
 	
 	// admin tem acesso ao id, cliente só pode se origem for dele
 	//realizar uma transf entre contas
-	@PostMapping("/{id_contaOrigem}/transferencia")
+	@PostMapping(ConstantUtils.CONTA_ORIGEM_ID + ConstantUtils.TRANSFERENCIA_ENDPOINT)
 	public ResponseEntity<TransferenciaResponse> transferir(
 			@PathVariable Long id_contaOrigem, 
 			@Valid @RequestBody TransferenciaDTO dto,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando transferência da conta ID: {}.", id_contaOrigem);
+		log.info(ConstantUtils.INICIO_TRANSACAO_CONTA, ConstantUtils.TRANSFERENCIA, id_contaOrigem);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		TransferenciaResponse response = contaService.transferir(id_contaOrigem, usuarioLogado, dto.getId_contaDestino(), dto.getValor());
-		log.info("Transferência realizada com sucesso.");
+		log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, ConstantUtils.TRANSFERENCIA);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -182,19 +181,19 @@ public class ContaController {
 	}
 	
 	// admin tem acesso ao id, cliente só pode se origem for dele
-	@PostMapping("/{id_contaOrigem}/pix")
+	@PostMapping(ConstantUtils.CONTA_ORIGEM_ID + ConstantUtils.PIX_ENDPOINT)
 	public ResponseEntity<PixResponse> pix(
 			@PathVariable Long id_contaOrigem, 
 			@Valid @RequestBody PixDTO dto,
 			Authentication authentication)	{
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando pagamento PIX da conta ID: {}.", id_contaOrigem);
+		log.info(ConstantUtils.INICIO_TRANSACAO_CONTA, ConstantUtils.PIX, id_contaOrigem);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		PixResponse response = contaService.pix(id_contaOrigem, usuarioLogado, dto.getId_contaDestino(), dto.getValor());
-		log.info("Pagamento PIX realizado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, ConstantUtils.PIX);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -202,34 +201,34 @@ public class ContaController {
 	}
 	
 	// admin tem acesso ao id, cliente só pode se origem for dele
-	@GetMapping("/{id_conta}/saldo")
+	@GetMapping(ConstantUtils.CONTA_ID + ConstantUtils.SALDO_ENDPOINT)
 	public ResponseEntity<SaldoResponse> getSaldo(
 			@PathVariable Long id_conta,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Consultando saldo da conta ID: {}.", id_conta);
+		log.info(ConstantUtils.INICIO_LEITURA_SALDO, id_conta);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		SaldoResponse response = contaService.getSaldo(id_conta, usuarioLogado);
-		log.info("Saldo consultado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_LEITURA_SALDO);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
-	@PostMapping("{id_conta}/deposito")
+	@PostMapping(ConstantUtils.CONTA_ID + ConstantUtils.DEPOSITO_ENDPOINT)
 	public ResponseEntity<DepositoResponse> depositar(
 			@PathVariable Long id_conta, 
 			@Valid @RequestBody DepositoDTO dto)
 	{
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando depósito na conta ID: {}.", id_conta);
+		log.info(ConstantUtils.INICIO_TRANSACAO_CONTA, ConstantUtils.DEPOSITO, id_conta);
 
 		DepositoResponse response = contaService.depositar(id_conta, dto.getValor());
-		log.info("Depósito realizado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, ConstantUtils.DEPOSITO);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -237,19 +236,19 @@ public class ContaController {
 	}
 	
 	// admin tem acesso ao id, cliente só pode se origem for dele
-	@PostMapping("/{id_conta}/saque")
+	@PostMapping(ConstantUtils.CONTA_ID + ConstantUtils.SAQUE_ENDPOINT)
 	public ResponseEntity<SaqueResponse> sacar(
 			@PathVariable Long id_conta, 
 			@Valid @RequestBody SaqueDTO dto,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando saque da conta ID: {}.", id_conta);
+		log.info(ConstantUtils.INICIO_TRANSACAO_CONTA, ConstantUtils.SAQUE, id_conta);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		SaqueResponse response = contaService.sacar(id_conta, usuarioLogado, dto.getValor());
-		log.info("Saque realizado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, ConstantUtils.SAQUE);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -258,14 +257,14 @@ public class ContaController {
 	
 	//debitar tarifa de manutenção MENSAL de Conta Corrente e Conta Internacional
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PutMapping("/{id_conta}/manutencao")
+	@PutMapping(ConstantUtils.CONTA_ID + ConstantUtils.MANUTENCAO_ENDPOINT)
 	public ResponseEntity<AplicarTxManutencaoResponse> aplicarTxManutencao(
 			@PathVariable Long id_conta){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando aplicação de taxa de manutenção para conta ID: {}.", id_conta);
+		log.info(ConstantUtils.INICIO_TRANSACAO_CONTA, ConstantUtils.APLICACAO_TARIFA_MANUTENCAO, id_conta);
 
 		AplicarTxManutencaoResponse response = contaService.debitarTarifaManutencao(id_conta);
-		log.info("Taxa de manutenção aplicada com sucesso para conta");
+		log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, ConstantUtils.APLICACAO_TARIFA_MANUTENCAO);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -275,14 +274,14 @@ public class ContaController {
 	
 	//creditar rendimento MENSAL de Conta Poupança
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PutMapping("/{id_conta}/rendimentos")
+	@PutMapping(ConstantUtils.CONTA_ID + ConstantUtils.RENDIMENTOS_ENDPOINT)
 	public ResponseEntity<AplicarTxRendimentoResponse> aplicarTxRendimento(
 			@PathVariable Long id_conta){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando aplicação de rendimentos para conta ID: {}.", id_conta);
+		log.info(ConstantUtils.INICIO_TRANSACAO_CONTA, ConstantUtils.APLICACAO_RENDIMENTO, id_conta);
 
 		AplicarTxRendimentoResponse response = contaService.creditarRendimento(id_conta);
-		log.info("Rendimentos aplicados com sucesso para conta.");
+		log.info(ConstantUtils.INICIO_TRANSACAO_CONTA, ConstantUtils.APLICACAO_RENDIMENTO);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);

@@ -34,7 +34,7 @@ import br.com.cdb.bancodigital.service.CartaoService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/cartoes")
+@RequestMapping(ConstantUtils.CARTAO)
 @AllArgsConstructor
 @Slf4j
 public class CartaoController {
@@ -63,18 +63,18 @@ public class CartaoController {
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
 	//get cartao
-	@GetMapping("/{id_cartao}")
+	@GetMapping(ConstantUtils.CARTAO_ID)
 	public ResponseEntity<CartaoResponse> getCartaoById(
 			@PathVariable Long id_cartao,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_BUSCA_CARTAO, id_cartao);
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO + ConstantUtils.ID_CARTAO, id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		CartaoResponse cartao = cartaoService.getCartaoById(id_cartao, usuarioLogado);
-		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO);
+		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO + ConstantUtils.ID_CARTAO, id_cartao);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -98,18 +98,18 @@ public class CartaoController {
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@GetMapping("/cliente/{id_cliente}")
+	@GetMapping(ConstantUtils.CLIENTE + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<List<CartaoResponse>> listarPorCliente(
 			@PathVariable Long id_cliente,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_BUSCA_CARTAO, id_cliente);
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO + ConstantUtils.ID_CLIENTE, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorCliente(id_cliente, usuarioLogado);
-		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO);
+		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO + ConstantUtils.ID_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -117,18 +117,18 @@ public class CartaoController {
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@GetMapping("/conta/{id_conta}")
+	@GetMapping(ConstantUtils.CONTA + ConstantUtils.CONTA_ID)
 	public ResponseEntity<List<CartaoResponse>> listarPorConta(
 			@PathVariable Long id_conta,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_BUSCA_CARTAO, id_conta);
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO + ConstantUtils.ID_CONTA, id_conta);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorConta(id_conta, usuarioLogado);
-		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO);
+		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO + ConstantUtils.ID_CONTA, id_conta);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -137,7 +137,7 @@ public class CartaoController {
 	
 	// para usuário logado ver informações de seus cartoes (cliente)
 	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
-	@GetMapping("/meus-cartoes")
+	@GetMapping(ConstantUtils.GET_USUARIO)
 	public ResponseEntity<List<CartaoResponse>> buscarCartoesDoUsuario (
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
@@ -157,7 +157,7 @@ public class CartaoController {
 	// deletar cartoes by cliente
 	// só o admin pode confirmar a exclusão de cadastro de cartões
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@DeleteMapping("/cliente/{id_cliente}")
+	@DeleteMapping(ConstantUtils.CLIENTE + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<Void> deleteCartoesByCliente (
 			@PathVariable Long id_cliente) {
 		long startTime = System.currentTimeMillis();
@@ -175,7 +175,7 @@ public class CartaoController {
 	//post pagamento
 	// só cliente pode fazer comprar com o cartão
 	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
-	@PostMapping("/{id_cartao}/pagamento")
+	@PostMapping(ConstantUtils.CARTAO_ID + ConstantUtils.PAGAMENTO_ENDPOINT)
 	public ResponseEntity<PagamentoResponse> pagar(
 			@PathVariable Long id_cartao, 
 			@Valid @RequestBody PagamentoDTO dto,
@@ -197,7 +197,7 @@ public class CartaoController {
 	//put alterar limite
 	// só o admin pode confirmar a alteração de limites
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PutMapping("/{id_cartao}/limite")
+	@PutMapping(ConstantUtils.CARTAO_ID + ConstantUtils.LIMITE_ENDPOINT)
 	public ResponseEntity<LimiteResponse> alterarLimite(@PathVariable Long id_cartao,@Valid @RequestBody AjustarLimiteDTO dto){
 		long startTime = System.currentTimeMillis();
 		log.info(ConstantUtils.INICIO_ALTERACAO_LIMITE, id_cartao);
@@ -212,7 +212,7 @@ public class CartaoController {
 
 	//put alterar status
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@PutMapping("/{id_cartao}/status")
+	@PutMapping(ConstantUtils.CARTAO_ID + ConstantUtils.STATUS_ENDPOINT)
 	public ResponseEntity<StatusCartaoResponse> alterarStatus(
 			@PathVariable Long id_cartao, 
 			@Valid @RequestBody AlterarStatusCartaoDTO dto,
@@ -234,7 +234,7 @@ public class CartaoController {
 	//put alterar senha
 	// só cliente pode alterar a senha do cartão
 	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
-	@PutMapping("/{id_cartao}/senha")
+	@PutMapping(ConstantUtils.CARTAO_ID + ConstantUtils.SENHA_ENDPOINT)
 	public ResponseEntity<String> alterarSenha(
 			@PathVariable Long id_cartao,
 			@Valid @RequestBody AlterarSenhaDTO dto,
@@ -255,7 +255,7 @@ public class CartaoController {
 
 	//get fatura
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@GetMapping("/{id_cartao}/fatura")
+	@GetMapping(ConstantUtils.CARTAO_ID + ConstantUtils.FATURA_ENDPOINT)
 	public ResponseEntity<FaturaResponse> getFatura(
 			@PathVariable Long id_cartao,
 			Authentication authentication){
@@ -276,18 +276,18 @@ public class CartaoController {
 	
 	//post pagamento fatura
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@PostMapping("/{id_cartao}/fatura/pagamento")
+	@PostMapping(ConstantUtils.CARTAO_ID + ConstantUtils.FATURA_ENDPOINT + ConstantUtils.PAGAMENTO_ENDPOINT)
 	public ResponseEntity<FaturaResponse> pagarFatura(
 			@PathVariable Long id_cartao,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando pagamento de fatura para cartão ID: {}.", id_cartao);
+		log.info(ConstantUtils.INICIO_PAGAMENTO_FATURA, id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		FaturaResponse response = cartaoService.pagarFatura(id_cartao, usuarioLogado);
-		log.info("Fatura paga com sucesso");
+		log.info(ConstantUtils.SUCESSO_PAGAMENTO_FATURA);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -297,7 +297,7 @@ public class CartaoController {
 	//put ressetar limite diario
 	// só o admin pode ressetar o limite
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PutMapping("/{id_cartao}/limite-diario")
+	@PutMapping(ConstantUtils.CARTAO_ID + ConstantUtils.LIMITE_DIARIO)
 	public ResponseEntity<RessetarLimiteDiarioResponse> ressetarDebito(@PathVariable Long id_cartao){
 		long startTime = System.currentTimeMillis();
 		log.info(ConstantUtils.INICIO_RESET_LIMITE, id_cartao);

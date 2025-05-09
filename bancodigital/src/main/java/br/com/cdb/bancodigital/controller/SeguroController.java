@@ -35,7 +35,7 @@ import br.com.cdb.bancodigital.service.SeguroService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/seguros")
+@RequestMapping(ConstantUtils.SEGURO)
 @AllArgsConstructor
 @Slf4j
 public class SeguroController {
@@ -49,32 +49,32 @@ public class SeguroController {
 			@Valid @RequestBody ContratarSeguroDTO dto,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando contratação de seguro.");
+		log.info(ConstantUtils.INICIO_CONTRATACAO_SEGURO);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		SeguroResponse response = seguroService.contratarSeguro(dto.getId_cartao(), usuarioLogado, dto.getTipo());
-		log.info("Seguro contratado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_CONTRATACAO_SEGURO);
 		long endTime = System.currentTimeMillis();
-		log.info("Contratação de seguro concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 		
 	}
 
 	// Listar tipos de Seguros Disponiveis (suas descricoes)
-	@GetMapping("/tipos")
+	@GetMapping(ConstantUtils.TIPOS)
 	public ResponseEntity<List<TipoSeguroResponse>> listarTiposSeguros(){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando busca de tipos de seguros.");
+		log.info(ConstantUtils.INICIO_LISTAGEM_TIPO_SEGURO);
 
 		List<TipoSeguroResponse> tipos = Arrays.stream(TipoSeguro.values())
 				.map(seguro -> new TipoSeguroResponse(seguro.getNome(), seguro.getDescricao(), seguro.getCondicoes()))
 				.toList();
-		log.info("Tipos de seguros encontrados");
+		log.info(ConstantUtils.SUCESSO_LISTAGEM_TIPO_SEGURO);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de tipos de seguros concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(tipos);
 	}
 	
@@ -83,169 +83,169 @@ public class SeguroController {
 	@GetMapping
 	public ResponseEntity<List<SeguroResponse>> getSeguros(){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando busca de todos os seguros.");
+		log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
 
 		List<SeguroResponse> seguros = seguroService.getSeguros();
-		log.info("Seguros encontrados");
+		log.info(ConstantUtils.SUCESSO_BUSCA_SEGURO);
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de seguros concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(seguros);
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@GetMapping("/cartao/{id_cartao}")
+	@GetMapping(ConstantUtils.CARTAO + ConstantUtils.CARTAO_ID)
 	public ResponseEntity<List<SeguroResponse>> listarPorCartao(
 			@PathVariable Long id_cartao,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando busca de seguros do cartão ID: {}.", id_cartao);
+		log.info(ConstantUtils.INICIO_BUSCA_SEGURO + ConstantUtils.ID_CARTAO, id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<SeguroResponse> seguros = seguroService.getSeguroByCartaoId(id_cartao, usuarioLogado);
-		log.info("Seguros encontrados");
+		log.info(ConstantUtils.SUCESSO_BUSCA_SEGURO + ConstantUtils.ID_CARTAO, id_cartao);
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de seguro concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(seguros);
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@GetMapping("/cliente/{id_cliente}")
+	@GetMapping(ConstantUtils.CLIENTE + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<List<SeguroResponse>> listarPorCliente(
 			@PathVariable Long id_cliente,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando busca de seguros do cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_BUSCA_SEGURO + ConstantUtils.ID_CLIENTE, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<SeguroResponse> seguros = seguroService.getSeguroByClienteId(id_cliente, usuarioLogado);
-		log.info("Seguros encontrados");
+		log.info(ConstantUtils.SUCESSO_BUSCA_SEGURO + ConstantUtils.ID_CLIENTE, id_cliente);
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de seguro concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(seguros);
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@GetMapping("/{id_seguro}")
+	@GetMapping(ConstantUtils.SEGURO_ID)
 	public ResponseEntity<SeguroResponse> getSeguroById(
 			@PathVariable Long id_seguro,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando busca de seguro ID: {}.", id_seguro);
+		log.info(ConstantUtils.INICIO_BUSCA_SEGURO + ConstantUtils.ID_SEGURO, id_seguro);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		SeguroResponse seguro = seguroService.getSeguroById(id_seguro, usuarioLogado);
-		log.info("Informações do seguro obtidas com sucesso.");
+		log.info(ConstantUtils.SUCESSO_BUSCA_SEGURO + ConstantUtils.ID_SEGURO, id_seguro);
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de seguro concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(seguro);	
 	}
 	
 	// para usuário logado ver informações de seus cartoes (cliente)
 	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
-	@GetMapping("/meus-seguros")
+	@GetMapping(ConstantUtils.GET_USUARIO)
 	public ResponseEntity<List<SeguroResponse>> buscarSegurosDoUsuario (
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando busca de seguros do usuário logado.");
+		log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<SeguroResponse> seguros = seguroService.listarPorUsuario(usuarioLogado);
-		log.info("Seguros encontrados");
+		log.info(ConstantUtils.SUCESSO_BUSCA_SEGURO);
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de seguros concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(seguros);
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@PutMapping("/{id_seguro}/cancelar")
+	@PutMapping(ConstantUtils.SEGURO_ID + ConstantUtils.CANCELAR_ENDPOINT)
 	public ResponseEntity<CancelarSeguroResponse> cancelarSeguro(
 			@PathVariable Long id_seguro,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando cancelamento de seguro ID: {}.", id_seguro);
+		log.info(ConstantUtils.INICIO_CANCELAMENTO_SEGURO, id_seguro);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		CancelarSeguroResponse response = seguroService.cancelarSeguro(id_seguro, usuarioLogado);
-		log.info("Seguro cancelado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_CANCELAMENTO_SEGURO);
 		long endTime = System.currentTimeMillis();
-		log.info("Cancelamento de seguro concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
 	// só o admin pode confirmar a exclusão de cadastro de seguros
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@DeleteMapping("/cliente/{id_cliente}")
+	@DeleteMapping(ConstantUtils.CLIENTE + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<Void> deleteSegurosByCliente(
 			@PathVariable Long id_cliente){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando exclusão de seguros do cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_EXCLUSAO_SEGURO, id_cliente);
 
 		seguroService.deleteSegurosByCliente(id_cliente);
-		log.info("Seguros do cliente ID: {} excluídos com sucesso.", id_cliente);
+		log.info(ConstantUtils.SUCESSO_EXCLUSAO_SEGURO, id_cliente);
 		long endTime = System.currentTimeMillis();
-		log.info("Exclusão de seguros concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.noContent().build();
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@PutMapping("/fraude/{id_seguro}/acionar")
+	@PutMapping(ConstantUtils.FRAUDE_ENDPOINT + ConstantUtils.SEGURO_ID + ConstantUtils.ACIONAR_ENDPOINT)
 	public ResponseEntity<AcionarSeguroFraudeResponse> acionarSeguroFraude(
 			@PathVariable Long id_seguro,
 			@Valid @RequestBody AcionarSeguroFraudeDTO dto,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando acionamento de seguro de fraude.");
+		log.info(ConstantUtils.INICIO_ACIONAMENTO_SEGURO, ConstantUtils.SEGURO_FRAUDE);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		Seguro seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, dto.getValorFraude());
-		log.info("Seguro de fraude acionado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_ACIONAMENTO_SEGURO, ConstantUtils.SEGURO_FRAUDE);
 		long endTime = System.currentTimeMillis();
-		log.info("Acionamento de seguro de fraude concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(AcionarSeguroFraudeResponse.toSeguroFraudeResponse(seguro));
 	}
 	
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@PutMapping("/viagem/{id_seguro}/acionar")
+	@PutMapping(ConstantUtils.VIAGEM_ENDPOINT + ConstantUtils.SEGURO_ID + ConstantUtils.ACIONAR_ENDPOINT)
 	public ResponseEntity<AcionarSeguroViagemResponse> acionarSeguroViagem(
 			@PathVariable Long id_seguro,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando acionamento de seguro de viagem.");
+		log.info(ConstantUtils.INICIO_ACIONAMENTO_SEGURO, ConstantUtils.SEGURO_VIAGEM);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		Seguro seguro = seguroService.acionarSeguro(id_seguro, usuarioLogado, BigDecimal.ZERO);
-		log.info("Seguro de viagem acionado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_ACIONAMENTO_SEGURO, ConstantUtils.SEGURO_VIAGEM);
 		long endTime = System.currentTimeMillis();
-		log.info("Acionamento de seguro de viagem concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(AcionarSeguroViagemResponse.toSeguroViagemResponse(seguro));
 	}
 	
 	// debitar premio seguro quando ativo
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PostMapping("/viagem/{id_seguro}/premio")
+	@PostMapping(ConstantUtils.SEGURO_ID + ConstantUtils.PREMIO_ENDPOINT)
 	public ResponseEntity<DebitarPremioSeguroResponse> debitarPremioSeguro(
 			@PathVariable Long id_seguro){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando débito de prêmio de seguro.");
+		log.info(ConstantUtils.INICIO_DEBITO_PREMIO_SEGURO, id_seguro);
 
 		DebitarPremioSeguroResponse response = seguroService.debitarPremioSeguro(id_seguro);
-		log.info("Prêmio de seguro debitado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_DEBITO_PREMIO_SEGURO);
 		long endTime = System.currentTimeMillis();
-		log.info("Débito de prêmio de seguro concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 		
 	}

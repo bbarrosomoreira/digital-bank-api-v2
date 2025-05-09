@@ -28,7 +28,7 @@ import br.com.cdb.bancodigital.service.ClienteService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping(ConstantUtils.CLIENTE)
 @AllArgsConstructor
 @Slf4j
 public class ClienteController {
@@ -57,7 +57,7 @@ public class ClienteController {
 	
 	// para usuário logado ver suas informações (cliente)
 	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
-	@GetMapping("/me")
+	@GetMapping(ConstantUtils.GET_USUARIO)
 	public ResponseEntity<ClienteResponse> buscarClienteDoUsuario(
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
@@ -89,18 +89,18 @@ public class ClienteController {
 	}
 
 	// admin tem acesso ao id, cliente só pode ver se for dele
-	@GetMapping("/{id_cliente}")
+	@GetMapping(ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<ClienteResponse> getClienteById(
 			@PathVariable Long id_cliente,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE, id_cliente);
+		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE + ConstantUtils.ID_CLIENTE, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse cliente = clienteService.toResponse(clienteService.getClienteById(id_cliente, usuarioLogado));
-		log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE);
+		log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE + ConstantUtils.ID_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
@@ -109,7 +109,7 @@ public class ClienteController {
 	
 	// só o admin pode confirmar a exclusão de cadastro de cliente
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@DeleteMapping("/{id_cliente}")
+	@DeleteMapping(ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<Void> deleteCliente(@PathVariable Long id_cliente){
 		long startTime = System.currentTimeMillis();
 		log.info(ConstantUtils.INICIO_EXCLUSAO_CLIENTE, id_cliente);
@@ -123,7 +123,7 @@ public class ClienteController {
 	}
 	
 	// admin podem atualizar dados cadastrais, cliente só se for dele
-	@PutMapping("/{id_cliente}")
+	@PutMapping(ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<ClienteResponse> updateCliente(
 			@PathVariable Long id_cliente, 
 			@Valid @RequestBody ClienteAtualizadoDTO clienteAtualizado,
@@ -143,7 +143,7 @@ public class ClienteController {
 	}
 	
 	// admin podem atualizar dados cadastrais, cliente só se for dele
-	@PatchMapping("/{id_cliente}")
+	@PatchMapping(ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<ClienteResponse> updateParcial(
 			@PathVariable Long id_cliente,
 			@Valid @RequestBody ClienteAtualizadoDTO clienteAtualizado,
@@ -163,7 +163,7 @@ public class ClienteController {
 	}
 	
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PatchMapping("/categoria/{id_cliente}")
+	@PatchMapping(ConstantUtils.CATEGORIA + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<ClienteResponse> updateCategoriaCliente(
 			@PathVariable Long id_cliente, 
 			@Valid @RequestBody AtualizarCategoriaClienteDTO dto) {

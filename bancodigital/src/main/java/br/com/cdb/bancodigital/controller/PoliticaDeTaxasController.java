@@ -17,25 +17,25 @@ import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.service.PoliticaDeTaxasService;
 
 @RestController
-@RequestMapping("/parametros")
+@RequestMapping(ConstantUtils.POLITICA_TAXAS)
 @AllArgsConstructor
 @Slf4j
 public class PoliticaDeTaxasController {
 	
 	private final PoliticaDeTaxasService parametrosService;
 	
-	@GetMapping("/{categoria}")
+	@GetMapping(ConstantUtils.GET_CATEGORIA)
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	public ResponseEntity<PoliticaDeTaxas> buscarPorCategoria(
 			@PathVariable CategoriaCliente categoria){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando busca de parâmetros para a categoria: {}.", categoria);
+		log.info(ConstantUtils.INICIO_BUSCA_POLITICA_TAXAS, categoria);
 
 		PoliticaDeTaxas parametros = parametrosService.buscarParametosPorCategoria(categoria);
-		log.info("Parâmetros encontrados para a categoria: {}.", categoria);
+		log.info(ConstantUtils.SUCESSO_BUSCA_POLITICA_TAXAS, categoria);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de parâmetros concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(parametros);
 	}
 	
@@ -43,13 +43,13 @@ public class PoliticaDeTaxasController {
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
     public ResponseEntity<List<PoliticaDeTaxas>> listarTodos() {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando listagem de todos os parâmetros de taxas.");
+		log.info(ConstantUtils.INICIO_LISTAGEM_POLITICA_TAXAS);
 
 		List<PoliticaDeTaxas> parametros = parametrosService.listarTodosParametros();
-		log.info("Parametros encontrados");
+		log.info(ConstantUtils.SUCESSO_LISTAGEM_POLITICA_TAXAS);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Listagem de parâmetros concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(parametros);
     }
 
