@@ -33,29 +33,29 @@ public class AdminController {
 	
 	private final AdminService adminService;
 	
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PostMapping("/cliente")
 	public ResponseEntity<ClienteResponse> cadastrarCliente(
 			@Valid @RequestBody ClienteUsuarioDTO dto) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando cadastro de cliente.");
+		log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
 		ClienteResponse response = adminService.cadastrarCliente(dto);
-		log.info("Cliente cadastrado com sucesso: ID: {}", response.getId());
+		log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, response.getId());
 
 		long endTime = System.currentTimeMillis();
-		log.info("Cadastro de cliente concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PostMapping("/conta/{id_cliente}")
 	public ResponseEntity<ContaResponse> abrirConta(
 			@PathVariable Long id_cliente,
 			@Valid @RequestBody AbrirContaDTO dto,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando abertura de conta para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_ABERTURA_CONTA, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
@@ -64,21 +64,21 @@ public class AdminController {
 		log.info(ConstantUtils.CLIENTE_ENCONTRADO);
 
 		ContaResponse response = adminService.abrirConta(dto.getId_cliente(), usuarioCliente, dto.getTipoConta(), dto.getMoeda(), dto.getValorDeposito());
-		log.info("Conta criada com sucesso para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.SUCESSO_ABERTURA_CONTA, id_cliente);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Abertura de conta concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PostMapping("/cartao/{id_cliente}")
 	public ResponseEntity<CartaoResponse> emitirCartao(
 			@PathVariable Long id_cliente,
 			@Valid @RequestBody EmitirCartaoDTO dto,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando emissão de cartão para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_EMISSAO_CARTAO, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
@@ -87,21 +87,21 @@ public class AdminController {
 		log.info(ConstantUtils.CLIENTE_ENCONTRADO);
 
 		CartaoResponse response = adminService.emitirCartao(dto.getId_conta(), usuarioCliente, dto.getTipoCartao(), dto.getSenha());
-		log.info("Cartão emitido com sucesso para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.SUCESSO_EMISSAO_CARTAO, id_cliente);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Emissão de cartão concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PostMapping("/seguro/{id_cliente}")
 	public ResponseEntity<SeguroResponse> contratarSeguro (
 			@PathVariable Long id_cliente,
 			@Valid @RequestBody ContratarSeguroDTO dto,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando contratação de seguro para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_CONTRATACAO_SEGURO, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
@@ -110,10 +110,10 @@ public class AdminController {
 		log.info(ConstantUtils.CLIENTE_ENCONTRADO);
 
 		SeguroResponse response = adminService.contratarSeguro(dto.getId_cartao(), usuarioCliente, dto.getTipo());
-		log.info("Seguro contratado com sucesso para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.SUCESSO_CONTRATACAO_SEGURO, id_cliente);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Contratação de seguro concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 		
 	}

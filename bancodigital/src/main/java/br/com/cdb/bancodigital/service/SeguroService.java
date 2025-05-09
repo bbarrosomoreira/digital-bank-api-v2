@@ -185,7 +185,7 @@ public class SeguroService {
 	}
 	public Cliente verificarClienteExistente(Long id_cliente) {
 		return clienteDAO.buscarClienteporId(id_cliente)
-				.orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_CLIENTE_NAO_ENCONTRADO, id_cliente)));
+				.orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CLIENTE, id_cliente)));
 	}
 	public Cartao verificarCartaoExistente(Long id_cartao) {
 		return cartaoDAO.findCartaoById(id_cartao)

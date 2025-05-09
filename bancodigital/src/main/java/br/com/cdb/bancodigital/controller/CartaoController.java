@@ -42,22 +42,22 @@ public class CartaoController {
 	private final CartaoService cartaoService;
 	
 	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login
-	@PreAuthorize("hasRole('CLIENTE')")
+	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@PostMapping
 	public ResponseEntity<CartaoResponse> emitirCartao(
 			@Valid @RequestBody EmitirCartaoDTO dto,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando emissão de cartão para conta ID: {}.", dto.getId_conta());
+		log.info(ConstantUtils.INICIO_EMISSAO_CARTAO, dto.getId_conta());
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		CartaoResponse response = cartaoService.emitirCartao(dto.getId_conta(), usuarioLogado, dto.getTipoCartao(), dto.getSenha());
-		log.info("Cartão emitido com sucesso.");
+		log.info(ConstantUtils.SUCESSO_EMISSAO_CARTAO, response.getId());
 
 		long endTime = System.currentTimeMillis();
-		log.info("Emissão de cartão concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
@@ -68,32 +68,32 @@ public class CartaoController {
 			@PathVariable Long id_cartao,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Buscando informações do cartão ID: {}.", id_cartao);
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO, id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		CartaoResponse cartao = cartaoService.getCartaoById(id_cartao, usuarioLogado);
-		log.info("Informações do cartão obtidas com sucesso.");
+		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de informações do cartão concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(cartao);
 	}
 
 	//outros gets
 	// só admin pode puxar uma lista de todos cartoes
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@GetMapping
 	public ResponseEntity<List<CartaoResponse>> getCartoes(){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando busca de todos os cartões.");
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO);
 
 		List<CartaoResponse> cartoes = cartaoService.getCartoes();
-		log.info(ConstantUtils.CARTAO_ENCONTRADO);
+		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de cartões concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(cartoes);
 	}
 	
@@ -103,16 +103,16 @@ public class CartaoController {
 			@PathVariable Long id_cliente,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Buscando cartões para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorCliente(id_cliente, usuarioLogado);
-		log.info(ConstantUtils.CARTAO_ENCONTRADO);
+		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de cartões por cliente concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(cartoes);
 	}
 	
@@ -122,91 +122,91 @@ public class CartaoController {
 			@PathVariable Long id_conta,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Buscando cartões para conta ID: {}.", id_conta);
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO, id_conta);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorConta(id_conta, usuarioLogado);
-		log.info(ConstantUtils.CARTAO_ENCONTRADO);
+		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de cartões por conta concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(cartoes);
 	}
 	
 	// para usuário logado ver informações de seus cartoes (cliente)
-	@PreAuthorize("hasRole('CLIENTE')")
+	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@GetMapping("/meus-cartoes")
 	public ResponseEntity<List<CartaoResponse>> buscarCartoesDoUsuario (
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Buscando cartões do usuário logado.");
+		log.info(ConstantUtils.INICIO_BUSCA_CARTAO);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		List<CartaoResponse> cartoes = cartaoService.listarPorUsuario(usuarioLogado);
-		log.info(ConstantUtils.CARTAO_ENCONTRADO);
+		log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de cartões do usuário logado concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(cartoes);
 	}
 	
 	// deletar cartoes by cliente
 	// só o admin pode confirmar a exclusão de cadastro de cartões
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@DeleteMapping("/cliente/{id_cliente}")
 	public ResponseEntity<Void> deleteCartoesByCliente (
 			@PathVariable Long id_cliente) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando exclusão de cartões para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_EXCLUSAO_CARTAO, id_cliente);
 
 		cartaoService.deleteCartoesByCliente(id_cliente);
-		log.info("Cartões excluídos com sucesso para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.SUCESSO_EXCLUSAO_CARTAO, id_cliente);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Exclusão de cartões concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.noContent().build();
 	}
 	
 	
 	//post pagamento
 	// só cliente pode fazer comprar com o cartão
-	@PreAuthorize("hasRole('CLIENTE')")
+	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@PostMapping("/{id_cartao}/pagamento")
 	public ResponseEntity<PagamentoResponse> pagar(
 			@PathVariable Long id_cartao, 
 			@Valid @RequestBody PagamentoDTO dto,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando pagamento com cartão ID: {}.", id_cartao);
+		log.info(ConstantUtils.INICIO_PAGAMENTO_CARTAO, id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		PagamentoResponse response = cartaoService.pagar(id_cartao, usuarioLogado, dto.getValor(), dto.getSenha(), dto.getDescricao());
-		log.info("Pagamento realizado com sucesso");
+		log.info(ConstantUtils.SUCESSO_PAGAMENTO_CARTAO);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Pagamento concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
 	//put alterar limite
 	// só o admin pode confirmar a alteração de limites
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PutMapping("/{id_cartao}/limite")
 	public ResponseEntity<LimiteResponse> alterarLimite(@PathVariable Long id_cartao,@Valid @RequestBody AjustarLimiteDTO dto){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando alteração de limite para cartão ID: {}.", id_cartao);
+		log.info(ConstantUtils.INICIO_ALTERACAO_LIMITE, id_cartao);
 
 		LimiteResponse response = cartaoService.alterarLimite(id_cartao, dto.getLimiteNovo());
-		log.info("Limite alterado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_ALTERACAO_LIMITE);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Alteração de limite concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 
@@ -218,39 +218,39 @@ public class CartaoController {
 			@Valid @RequestBody AlterarStatusCartaoDTO dto,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando alteração de status para cartão ID: {}.", id_cartao);
+		log.info(ConstantUtils.INICIO_ALTERACAO_STATUS, id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		StatusCartaoResponse response = cartaoService.alterarStatus(id_cartao, usuarioLogado, dto.getStatus());
-		log.info("Status alterado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_ALTERACAO_STATUS);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Alteração de status concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
 	//put alterar senha
 	// só cliente pode alterar a senha do cartão
-	@PreAuthorize("hasRole('CLIENTE')")
+	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@PutMapping("/{id_cartao}/senha")
 	public ResponseEntity<String> alterarSenha(
 			@PathVariable Long id_cartao,
 			@Valid @RequestBody AlterarSenhaDTO dto,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando alteração de senha para cartão ID: {}.", id_cartao);
+		log.info(ConstantUtils.INICIO_ALTERACAO_SENHA, id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		cartaoService.alterarSenha(id_cartao, usuarioLogado, dto.getSenhaAntiga(), dto.getSenhaNova());
-		log.info("Senha alterada com sucesso");
+		log.info(ConstantUtils.SUCESSO_ALTERACAO_SENHA);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Alteração de senha concluída em {} ms.", endTime - startTime);
-		return ResponseEntity.ok("Senha alterada com sucesso.");
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
+		return ResponseEntity.ok(ConstantUtils.SUCESSO_ALTERACAO_SENHA);
 	}
 
 	//get fatura
@@ -260,16 +260,16 @@ public class CartaoController {
 			@PathVariable Long id_cartao,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando leitura de fatura para cartão ID: {}.", id_cartao);
+		log.info(ConstantUtils.INICIO_LEITURA_FATURA, id_cartao);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		FaturaResponse response = cartaoService.getFatura(id_cartao, usuarioLogado);
-		log.info("Fatura obtida com sucesso");
+		log.info(ConstantUtils.SUCESSO_LEITURA_FATURA);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Leitura de fatura concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 		
 	}
@@ -290,23 +290,23 @@ public class CartaoController {
 		log.info("Fatura paga com sucesso");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Pagamento de fatura concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 
 	//put ressetar limite diario
 	// só o admin pode ressetar o limite
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PutMapping("/{id_cartao}/limite-diario")
 	public ResponseEntity<RessetarLimiteDiarioResponse> ressetarDebito(@PathVariable Long id_cartao){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando reset de limite diário para cartão ID: {}.", id_cartao);
+		log.info(ConstantUtils.INICIO_RESET_LIMITE, id_cartao);
 
 		RessetarLimiteDiarioResponse response = cartaoService.ressetarDebito(id_cartao);
-		log.info("Limite diário redefinido com sucesso");
+		log.info(ConstantUtils.SUCESSO_RESET_LIMITE);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Reset de limite diário concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 		
 	}

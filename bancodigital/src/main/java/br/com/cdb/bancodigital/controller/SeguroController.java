@@ -43,7 +43,7 @@ public class SeguroController {
 	private final SeguroService seguroService;
 	
 	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login
-	@PreAuthorize("hasRole('CLIENTE')")
+	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@PostMapping
 	public ResponseEntity<SeguroResponse> contratarSeguro (
 			@Valid @RequestBody ContratarSeguroDTO dto,
@@ -79,7 +79,7 @@ public class SeguroController {
 	}
 	
 	// só admin pode puxar uma lista de todos seguros
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@GetMapping
 	public ResponseEntity<List<SeguroResponse>> getSeguros(){
 		long startTime = System.currentTimeMillis();
@@ -147,7 +147,7 @@ public class SeguroController {
 	}
 	
 	// para usuário logado ver informações de seus cartoes (cliente)
-	@PreAuthorize("hasRole('CLIENTE')")
+	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@GetMapping("/meus-seguros")
 	public ResponseEntity<List<SeguroResponse>> buscarSegurosDoUsuario (
 			Authentication authentication) {
@@ -183,7 +183,7 @@ public class SeguroController {
 	}
 	
 	// só o admin pode confirmar a exclusão de cadastro de seguros
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@DeleteMapping("/cliente/{id_cliente}")
 	public ResponseEntity<Void> deleteSegurosByCliente(
 			@PathVariable Long id_cliente){
@@ -235,7 +235,7 @@ public class SeguroController {
 	}
 	
 	// debitar premio seguro quando ativo
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PostMapping("/viagem/{id_seguro}/premio")
 	public ResponseEntity<DebitarPremioSeguroResponse> debitarPremioSeguro(
 			@PathVariable Long id_seguro){

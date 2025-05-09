@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.controller;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,13 +27,13 @@ public class AuthController {
 	@PostMapping("/signin")
 	public ResponseEntity<LoginResponse> registrar(@Valid @RequestBody UsuarioDTO dto) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando registro de novo usuário.");
+		log.info(ConstantUtils.INICIO_REGISTRAR);
 
 		LoginResponse response = authService.registrar(dto);
-		log.info("Usuário registrado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_REGISTRAR);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Registro de usuário concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
@@ -40,13 +41,13 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> autenticar(@Valid @RequestBody LoginDTO dto) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando autenticação de usuário.");
+		log.info(ConstantUtils.INICIO_AUTENTICACAO);
 
 		LoginResponse response = authService.autenticar(dto);
-		log.info("Usuário autenticado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_AUTENTICACAO);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Autenticação concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	

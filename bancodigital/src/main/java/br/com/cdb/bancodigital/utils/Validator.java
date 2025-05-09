@@ -30,7 +30,7 @@ public class Validator {
     }
     public static Cliente verificarClienteExistente(ClienteDAO clienteDAO, Long id_cliente) {
         return clienteDAO.buscarClienteporId(id_cliente)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_CLIENTE_NAO_ENCONTRADO, id_cliente)));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CLIENTE, id_cliente)));
     }
     public static Conta verificarContaExistente(ContaDAO contaDAO, Long id_conta) {
         return contaDAO.buscarContaPorId(id_conta)

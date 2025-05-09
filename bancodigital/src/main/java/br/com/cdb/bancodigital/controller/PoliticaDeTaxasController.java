@@ -2,6 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class PoliticaDeTaxasController {
 	private final PoliticaDeTaxasService parametrosService;
 	
 	@GetMapping("/{categoria}")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	public ResponseEntity<PoliticaDeTaxas> buscarPorCategoria(
 			@PathVariable CategoriaCliente categoria){
 		long startTime = System.currentTimeMillis();
@@ -39,7 +40,7 @@ public class PoliticaDeTaxasController {
 	}
 	
     @GetMapping
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
     public ResponseEntity<List<PoliticaDeTaxas>> listarTodos() {
 		long startTime = System.currentTimeMillis();
 		log.info("Iniciando listagem de todos os parâmetros de taxas.");

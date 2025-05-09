@@ -47,7 +47,7 @@ public class ContaController {
 	
 	//ambos podem criar conta
 	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login
-	@PreAuthorize("hasRole('CLIENTE')")
+	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@PostMapping
 	public ResponseEntity<ContaResponse> abrirConta(
 			@Valid @RequestBody AbrirContaDTO dto,
@@ -62,7 +62,7 @@ public class ContaController {
 		log.info("Conta criada com sucesso.");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Abertura de conta concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);	
 	}
 	
@@ -73,7 +73,7 @@ public class ContaController {
 		return ResponseEntity.ok(Arrays.asList(TipoConta.values()));
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@GetMapping
 	public ResponseEntity<List<ContaResponse>> getContas() {
 		long startTime = System.currentTimeMillis();
@@ -83,12 +83,12 @@ public class ContaController {
 		log.info("Contas encontradas");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de contas concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(contas);
 	}
 	
 	// para usuário logado ver informações de suas contas (cliente)
-	@PreAuthorize("hasRole('CLIENTE')")
+	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@GetMapping("/minhas-contas")
 	public ResponseEntity<List<ContaResponse>> buscarContasDoUsuario (
 			Authentication authentication){
@@ -102,7 +102,7 @@ public class ContaController {
 		log.info("Contas encontradas");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de contas do usuário logado concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(contas);
 	}
 	
@@ -121,7 +121,7 @@ public class ContaController {
 		log.info("Contas encontradas");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de contas por cliente concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(contas);
 	}
 	
@@ -140,12 +140,12 @@ public class ContaController {
 		log.info("Informações da conta obtidas com sucesso.");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de informações da conta concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(conta);
 	}
 	
 	// só o admin pode confirmar a exclusão de cadastro de contas
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@DeleteMapping("/cliente/{id_cliente}")
 	public ResponseEntity<Void> deleteContasByCliente(
 			@PathVariable Long id_cliente) {
@@ -156,7 +156,7 @@ public class ContaController {
 		log.info("Contas excluídas com sucesso para cliente ID: {}.", id_cliente);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Exclusão de contas concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.noContent().build();
 	}
 	
@@ -177,7 +177,7 @@ public class ContaController {
 		log.info("Transferência realizada com sucesso.");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Transferência concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
@@ -197,7 +197,7 @@ public class ContaController {
 		log.info("Pagamento PIX realizado com sucesso.");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Pagamento PIX concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
@@ -216,7 +216,7 @@ public class ContaController {
 		log.info("Saldo consultado com sucesso.");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Consulta de saldo concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
@@ -232,7 +232,7 @@ public class ContaController {
 		log.info("Depósito realizado com sucesso.");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Depósito concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
@@ -252,12 +252,12 @@ public class ContaController {
 		log.info("Saque realizado com sucesso.");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Saque concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 	}
 	
 	//debitar tarifa de manutenção MENSAL de Conta Corrente e Conta Internacional
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PutMapping("/{id_conta}/manutencao")
 	public ResponseEntity<AplicarTxManutencaoResponse> aplicarTxManutencao(
 			@PathVariable Long id_conta){
@@ -268,13 +268,13 @@ public class ContaController {
 		log.info("Taxa de manutenção aplicada com sucesso para conta");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Aplicação de taxa de manutenção concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);
 		
 	}
 	
 	//creditar rendimento MENSAL de Conta Poupança
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PutMapping("/{id_conta}/rendimentos")
 	public ResponseEntity<AplicarTxRendimentoResponse> aplicarTxRendimento(
 			@PathVariable Long id_conta){
@@ -285,7 +285,7 @@ public class ContaController {
 		log.info("Rendimentos aplicados com sucesso para conta.");
 
 		long endTime = System.currentTimeMillis();
-		log.info("Aplicação de rendimentos concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(response);	
 	}
 	

@@ -7,8 +7,7 @@ import java.util.Objects;
 import br.com.cdb.bancodigital.model.*;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,9 +34,8 @@ import br.com.cdb.bancodigital.dto.response.TransferenciaResponse;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ContaService {
-
-    private static final Logger log = LoggerFactory.getLogger(ContaService.class);
 
     private final ContaDAO contaDAO;
     private final ClienteDAO clienteDAO;
@@ -285,7 +283,7 @@ public class ContaService {
 
     public Cliente verificarClienteExistente(Long id_cliente) {
         return clienteDAO.buscarClienteporId(id_cliente)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_CLIENTE_NAO_ENCONTRADO, id_cliente)));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CLIENTE, id_cliente)));
     }
 
     public void verificaSaldoSuficiente(BigDecimal valor, BigDecimal saldo) {

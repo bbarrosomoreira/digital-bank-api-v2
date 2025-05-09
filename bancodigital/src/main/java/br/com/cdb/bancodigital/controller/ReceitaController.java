@@ -1,6 +1,7 @@
 package br.com.cdb.bancodigital.controller;
 
 import br.com.cdb.bancodigital.dto.ConsultaCpfDTO;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ public class ReceitaController {
 	
 	private final ReceitaFederalRestTemplate receitaFederalRestTemplate;
 
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@GetMapping("/consultar-cpf/")
 	public ResponseEntity<CpfValidationResponse> consultarCpf(@Valid @RequestBody ConsultaCpfDTO dto) {
 		long startTime = System.currentTimeMillis();

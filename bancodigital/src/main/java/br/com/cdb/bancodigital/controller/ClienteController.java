@@ -36,55 +36,55 @@ public class ClienteController {
 	private final ClienteService clienteService;
 
 	// só cliente pode cadastrar por este endpoint, pois ele vincula o cadastro ao login
-	@PreAuthorize("hasRole('CLIENTE')")
+	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@PostMapping
 	public ResponseEntity<ClienteResponse> cadastrarCliente(
 			@Valid @RequestBody ClienteDTO dto,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando cadastro de cliente.");
+		log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse response = clienteService.cadastrarCliente(dto, usuarioLogado);
-		log.info("Cliente cadastrado com sucesso.");
+		log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, response.getId());
 
 		long endTime = System.currentTimeMillis();
-		log.info("Cadastro de cliente concluído em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 	
 	// para usuário logado ver suas informações (cliente)
-	@PreAuthorize("hasRole('CLIENTE')")
+	@PreAuthorize(ConstantUtils.ROLE_CLIENTE)
 	@GetMapping("/me")
 	public ResponseEntity<ClienteResponse> buscarClienteDoUsuario(
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Buscando informações do cliente logado.");
+		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse cliente = clienteService.buscarClienteDoUsuario(usuarioLogado);
-		log.info("Informações do cliente logado obtidas com sucesso.");
+		log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de informações do cliente logado concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 	    return ResponseEntity.ok(cliente);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@GetMapping
 	public ResponseEntity<List<ClienteResponse>> getClientes() {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando busca de todos os clientes.");
+		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
 
 		List<ClienteResponse> clientes = clienteService.getClientes();
-		log.info("Clientes encontrados");
+		log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de todos os clientes concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(clientes);
 	}
 
@@ -94,31 +94,31 @@ public class ClienteController {
 			@PathVariable Long id_cliente,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info("Buscando informações do cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse cliente = clienteService.toResponse(clienteService.getClienteById(id_cliente, usuarioLogado));
-		log.info("Informações do cliente obtidas com sucesso.");
+		log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Busca de informações do cliente concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(cliente);
 	}
 	
 	// só o admin pode confirmar a exclusão de cadastro de cliente
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@DeleteMapping("/{id_cliente}")
 	public ResponseEntity<Void> deleteCliente(@PathVariable Long id_cliente){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando exclusão do cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_EXCLUSAO_CLIENTE, id_cliente);
 
 		clienteService.deleteCliente(id_cliente);
-		log.info("Cliente ID: {} excluído com sucesso.", id_cliente);
+		log.info(ConstantUtils.SUCESSO_EXCLUSAO_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Exclusão de cliente concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.noContent().build();
 	}
 	
@@ -129,16 +129,16 @@ public class ClienteController {
 			@Valid @RequestBody ClienteAtualizadoDTO clienteAtualizado,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando atualização do cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_ATUALIZACAO_CLIENTE, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse atualizado = clienteService.atualizarCliente(id_cliente, clienteAtualizado, usuarioLogado);
-		log.info("Cliente ID: {} atualizado com sucesso.", id_cliente);
+		log.info(ConstantUtils.SUCESSO_ATUALIZACAO_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Atualização de cliente concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(atualizado);
 	}
 	
@@ -149,32 +149,32 @@ public class ClienteController {
 			@Valid @RequestBody ClienteAtualizadoDTO clienteAtualizado,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando atualização parcial do cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_ATUALIZACAO_CLIENTE, id_cliente);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
 		ClienteResponse atualizado = clienteService.atualizarCliente(id_cliente, clienteAtualizado, usuarioLogado);
-		log.info("Cliente ID: {} atualizado parcialmente com sucesso.", id_cliente);
+		log.info(ConstantUtils.SUCESSO_ATUALIZACAO_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Atualização parcial de cliente concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(atualizado);
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PatchMapping("/categoria/{id_cliente}")
 	public ResponseEntity<ClienteResponse> updateCategoriaCliente(
 			@PathVariable Long id_cliente, 
 			@Valid @RequestBody AtualizarCategoriaClienteDTO dto) {
 		long startTime = System.currentTimeMillis();
-		log.info("Iniciando atualização de categoria para cliente ID: {}.", id_cliente);
+		log.info(ConstantUtils.INICIO_ATUALIZACAO_CATEGORIA_CLIENTE, id_cliente);
 		
 		ClienteResponse atualizado = clienteService.updateCategoriaCliente(id_cliente, dto.getCategoriaCliente());
-		log.info("Categoria do cliente atualizada com sucesso.");
+		log.info(ConstantUtils.SUCESSO_ATUALIZACAO_CATEGORIA_CLIENTE);
 
 		long endTime = System.currentTimeMillis();
-		log.info("Atualização de categoria concluída em {} ms.", endTime - startTime);
+		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
 		return ResponseEntity.ok(atualizado);
 	}
 	
