@@ -9,6 +9,7 @@ import br.com.cdb.bancodigital.resttemplate.BrasilApiRestTemplate;
 import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +35,8 @@ import br.com.cdb.bancodigital.dto.response.ClienteResponse;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ClienteService {
-
-    private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
 
     private final ClienteDAO clienteDAO;
     private final EnderecoClienteDAO enderecoClienteDAO;

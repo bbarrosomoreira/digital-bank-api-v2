@@ -99,7 +99,7 @@ public class UsuarioDAO {
 	}
 
 	// DELETE | Excluir usuários
-	public void deletarUsuarioPorId(Long id) {
+	public void deletarUsuario(Long id) {
 		log.info(ConstantUtils.INICIO_DELETE_USUARIO, id);
 		try {
 			int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_DELETE_USUARIO, id);

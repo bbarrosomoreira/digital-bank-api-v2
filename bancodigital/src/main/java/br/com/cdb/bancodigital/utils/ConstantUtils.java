@@ -44,6 +44,7 @@ public class ConstantUtils {
 
     // Endpoints
     public static final String USUARIO = "/usuario";
+    public static final String DELETE_USUARIO = "/{id_usuario}";
     public static final String CLIENTE = "/cliente";
     public static final String CLIENTE_ID = "/{id_cliente}";
     public static final String CONTA = "/conta";
