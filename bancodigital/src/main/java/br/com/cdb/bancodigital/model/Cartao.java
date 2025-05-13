@@ -10,6 +10,7 @@ import br.com.cdb.bancodigital.model.enums.Status;
 import br.com.cdb.bancodigital.model.enums.TipoCartao;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @Setter
@@ -68,8 +69,19 @@ public class Cartao implements CartaoBase {
 	}
 	
 	@Override
-	public void alterarSenha(String senhaAntiga, String senhaNova) {
-		definirSenha(senhaNova);
+	public void alterarSenha(String senhaAntiga, String senhaNova, PasswordEncoder passwordEncoder) {
+		// Valida a senha antiga
+		if (!passwordEncoder.matches(senhaAntiga, this.senha)) {
+			throw new IllegalArgumentException("A senha antiga está incorreta.");
+		}
+
+		// Valida o formato da nova senha
+		if (senhaNova == null || !senhaNova.matches("\\d{4}")) {
+			throw new IllegalArgumentException("A nova senha deve ter exatamente 4 dígitos numéricos.");
+		}
+
+		// Criptografa e define a nova senha
+		this.senha = passwordEncoder.encode(senhaNova);
 	}
 	
 	@Override
@@ -77,11 +89,9 @@ public class Cartao implements CartaoBase {
 		this.setStatus(statusNovo);
 	}
 	
-	public void definirSenha(String senhaNova) {
-		if (senhaNova == null || !senhaNova.matches("\\d{4}")) {
-			throw new IllegalArgumentException("A senha deve ter exatamente 4 dígitos numéricos.");
-		}
-		this.senha = senhaNova;
+	public void definirSenha(String senhaCriptografada) {
+		// Define diretamente a senha já criptografada
+		this.senha = senhaCriptografada;
 	}
 
 	// CC
@@ -99,3 +109,4 @@ public class Cartao implements CartaoBase {
 	}
 
 }
+

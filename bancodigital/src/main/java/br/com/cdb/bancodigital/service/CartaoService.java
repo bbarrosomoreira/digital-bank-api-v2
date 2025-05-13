@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,7 @@ public class CartaoService {
     private final SeguroDAO seguroDAO;
     private final PoliticaDeTaxasDAO politicaDeTaxasDAO;
     private final SecurityService securityService;
+    private final PasswordEncoder passwordEncoder;
 
     // add cartao
     @Transactional
@@ -59,7 +61,8 @@ public class CartaoService {
         log.info("Acesso validado para usuário ID {}", usuarioLogado.getId());
 
         // Lógica de criação
-        Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
+        String senhaCriptografada = passwordEncoder.encode(senha);
+        Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senhaCriptografada);
         log.info("Cartão criado: ID {}", cartaoNovo.getId());
 
         try {
@@ -221,9 +224,8 @@ public class CartaoService {
         securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 
         Validator.verificarCartaoAtivo(cartao.getStatus());
-        Validator.verificarSenhaCorreta(senhaAntiga, cartao.getSenha());
 
-        cartao.alterarSenha(senhaAntiga, senhaNova);
+        cartao.alterarSenha(senhaAntiga, senhaNova, passwordEncoder);
         cartaoDAO.salvar(cartao);
     }
 
