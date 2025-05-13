@@ -38,7 +38,7 @@ public class ReceitaFederalRestTemplateImpl implements ReceitaFederalRestTemplat
     @Override
     public boolean isCpfInvalidoOuInativo(String cpf) {
         CpfValidationResponse response = consultarCpf(cpf);
-        return !response.isValid() || "INATIVO".equals(response.getStatus());
+        return !response.getValid() || "INATIVO".equals(response.getStatus());
     }
 
 }

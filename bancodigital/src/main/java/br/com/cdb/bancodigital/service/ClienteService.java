@@ -49,11 +49,16 @@ public class ClienteService {
     private final BrasilApiRestTemplate brasilApiRestTemplate;
 
     // Cadastrar cliente
+    @Transactional
     public ClienteResponse cadastrarCliente(ClienteDTO dto, Usuario usuario) {
         log.info("Iniciando cadastro de cliente");
 
         CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(dto.getCep());
         log.info("Dados do CEP encontrados com sucesso");
+        if (cepInfo == null) {
+            log.error("Erro ao buscar dados do CEP");
+            throw new SystemException("Erro ao buscar dados do CEP");
+        }
 
         Cliente cliente = criarCliente(dto, usuario);
         log.info("Cliente criado: ID {}", cliente.getId());
@@ -105,9 +110,9 @@ public class ClienteService {
             boolean temCartoes = cartaoDAO.existsByContaClienteId(id_cliente);
             boolean temSeguros = seguroDAO.existsByCartaoContaClienteId(id_cliente);
 
-            if (temContas || temCartoes || temSeguros) throw new ValidationException(
-                    "Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado."); {
-                        log.warn("Cliente ID {} possui vínculos com contas, cartões ou seguros", id_cliente);
+            if (temContas || temCartoes || temSeguros)  {
+                log.warn("Cliente ID {} possui vínculos com contas, cartões ou seguros", id_cliente);
+                throw new ValidationException("Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.");
             }
 
             log.info("Cliente sem vínculos e pronto para ser deletado.");

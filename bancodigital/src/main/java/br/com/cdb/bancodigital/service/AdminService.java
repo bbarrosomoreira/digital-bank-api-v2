@@ -11,6 +11,7 @@ import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,23 +40,29 @@ public class AdminService {
     private final SeguroDAO seguroDAO;
     private final PoliticaDeTaxasDAO politicaDeTaxasDAO;
     private final SecurityService securityService;
+    private final PasswordEncoder passwordEncoder;
     private final ReceitaFederalRestTemplate receitaFederalRestTemplate;
     private final BrasilApiRestTemplate brasilApiRestTemplate;
     private final ConversorMoedasService conversorMoedasService;
 
 
     // Cadastrar cliente
+    @Transactional
     public ClienteResponse cadastrarCliente(ClienteUsuarioDTO dto) {
         log.info("Iniciando cadastro de cliente");
 
         CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(dto.getCep());
-        log.info("Dados do CEP encontrados com sucesso");
+        if (cepInfo == null) {
+            log.error("Erro ao buscar dados do CEP");
+            throw new CommunicationException("Erro ao buscar dados do CEP");
+        }
+        log.info("Dados do CEP {} encontrados com sucesso", cepInfo);
 
         Usuario usuario = criarUsuario(dto);
         log.info("Usuário criado: ID {}", usuario.getId());
 
         Cliente cliente = criarCliente(dto, usuario);
-        log.info("Cliente criado: ID {}", cliente.getId());
+        log.info("Cliente criado");
 
         validarCliente(cliente);
         log.info("Validação do cliente concluída");
@@ -163,8 +170,8 @@ public class AdminService {
 
     private Usuario criarUsuario(ClienteUsuarioDTO dto) {
         log.info("Criando usuário");
-
-        return usuarioDAO.criarUsuario(dto.getEmail(), dto.getSenha(), dto.getRole());
+        String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
+        return usuarioDAO.criarUsuario(dto.getEmail(), senhaCriptografada, dto.getRole());
     }
 
     private Cliente criarCliente(ClienteUsuarioDTO dto, Usuario usuario) {
