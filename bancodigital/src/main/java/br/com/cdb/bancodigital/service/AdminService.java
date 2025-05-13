@@ -67,16 +67,11 @@ public class AdminService {
         validarCliente(cliente);
         log.info("Validação do cliente concluída");
 
-        try {
-            salvarCliente(cliente);
-            log.info("Cliente salvo no banco de dados: ID {}", cliente.getId());
+        salvarCliente(cliente);
+        salvarEndereco(dto, cliente, cepInfo);
+        log.info("Cliente salvo no banco de dados: ID {}", cliente.getId());
+        log.info("Endereço salvo no banco de dados para cliente ID {}", cliente.getId());
 
-            salvarEndereco(dto, cliente, cepInfo);
-            log.info("Endereço salvo no banco de dados para cliente ID {}", cliente.getId());
-        } catch (DataAccessException e) {
-            log.error("Erro ao salvar cliente no banco: {}", e.getMessage(), e);
-            throw new SystemException("Erro interno ao salvar o cliente. Tente novamente mais tarde.");
-        }
         log.info("Cadastro de cliente realizado com sucesso");
         return toClienteResponse(cliente);
     }
