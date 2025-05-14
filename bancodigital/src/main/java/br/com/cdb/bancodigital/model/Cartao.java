@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.NumberGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -25,11 +26,11 @@ public class Cartao implements CartaoBase {
 	private String numeroCartao;
 	private Conta conta;
 	private Status status;
-	@Size(min = 4, max = 4, message = "A senha deve ter exatamente 4 dígitos numéricos.")
+	@Size(min = 4, max = 4, message = ConstantUtils.SENHA_TAMANHO)
 	private String senha;
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = ConstantUtils.FORMATO_DATA_DD_MM_YYYY)
 	private LocalDate dataEmissao;
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = ConstantUtils.FORMATO_DATA_DD_MM_YYYY)
 	private LocalDate dataVencimento;
 	private BigDecimal taxaUtilizacao;
 	private BigDecimal limite;
@@ -72,12 +73,12 @@ public class Cartao implements CartaoBase {
 	public void alterarSenha(String senhaAntiga, String senhaNova, PasswordEncoder passwordEncoder) {
 		// Valida a senha antiga
 		if (!passwordEncoder.matches(senhaAntiga, this.senha)) {
-			throw new IllegalArgumentException("A senha antiga está incorreta.");
+			throw new IllegalArgumentException(ConstantUtils.SENHA_ANTIGA_INCORRETA);
 		}
 
 		// Valida o formato da nova senha
 		if (senhaNova == null || !senhaNova.matches("\\d{4}")) {
-			throw new IllegalArgumentException("A nova senha deve ter exatamente 4 dígitos numéricos.");
+			throw new IllegalArgumentException(ConstantUtils.SENHA_TAMANHO);
 		}
 
 		// Criptografa e define a nova senha

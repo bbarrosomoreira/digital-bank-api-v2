@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.model;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -17,30 +18,30 @@ public class EnderecoCliente {
 	private Long id;
 	private Cliente cliente;
 
-	@NotBlank(message = "CEP é obrigatório")
-	@Pattern(regexp = "\\d{8}", message = "CEP deve estar no formato XXXXXXXX")
+	@NotBlank(message = ConstantUtils.CEP_OBRIGATORIO)
+	@Pattern(regexp = "\\d{8}", message = ConstantUtils.CEP_FORMATO)
 	private String cep;
 
-	@NotBlank(message = "Rua é um campo obrigatório")
+	@NotBlank(message = ConstantUtils.RUA_OBRIGATORIA)
 	@Size(max = 100)
 	private String rua;
 
-	@NotNull(message = "Numero é um campo obrigatório - Se endereço não tiver número, digite 0")
+	@NotNull(message = ConstantUtils.NUMERO_OBRIGATORIO)
 	private int numero;
 
-	@Size(max = 100, message = "Complemento deve ter no máximo 100 caracteres")
+	@Size(max = 100, message = ConstantUtils.COMPLEMENTO_TAMANHO)
 	private String complemento;
 
-	@NotBlank(message = "Bairro é um campo obrigatório")
+	@NotBlank(message = ConstantUtils.BAIRRO_OBRIGATORIO)
 	@Size(max = 100)
 	private String bairro;
 
-	@NotBlank(message = "Cidade é obrigatória")
-    @Size(max = 50, message = "Cidade deve ter no máximo 50 caracteres")
+	@NotBlank(message = ConstantUtils.CIDADE_OBRIGATORIA)
+	@Size(max = 100, message = ConstantUtils.CIDADE_TAMANHO)
 	private String cidade;
 
-	@NotBlank(message = "Estado é obrigatório")
-    @Size(min = 2, max = 2, message = "Estado deve ter 2 caracteres (ex: SP)")
+	@NotBlank(message = ConstantUtils.ESTADO_OBRIGATORIO)
+	@Size(min = 2, max = 2, message = ConstantUtils.ESTADO_TAMANHO)
 	private String estado;
 
 }

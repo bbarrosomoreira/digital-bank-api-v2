@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.NumberGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -25,7 +26,7 @@ public class Conta implements ContaBase {
 	private BigDecimal saldo;
 	private Moeda moeda;
 	private Cliente cliente;
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = ConstantUtils.FORMATO_DATA_DD_MM_YYYY)
 	private LocalDate dataCriacao;
 	private BigDecimal tarifaManutencao;
 	private BigDecimal saldoEmReais;

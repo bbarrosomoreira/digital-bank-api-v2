@@ -215,7 +215,14 @@ public class ConstantUtils {
     public static final String NOME_TAMANHO = "Nome deve ter entre 2 e 100 caracteres";
     public static final String NOME_FORMATO = "Nome deve conter apenas letras e espaços";
     public static final String DATA_NASCIMENTO_PASSADO = "Data de nascimento deve ser no passado";
+    public static final String DATA_NASCIMENTO_NULA = "Data de nascimento não pode ser nula";
     public static final String CEP_OBRIGATORIO = "CEP é obrigatório";
+    public static final String RUA_OBRIGATORIA = "Rua é um campo obrigatório";
+    public static final String BAIRRO_OBRIGATORIO = "Bairro é um campo obrigatório";
+    public static final String CIDADE_OBRIGATORIA = "Cidade é um campo obrigatório";
+    public static final String CIDADE_TAMANHO = "Cidade deve ter no máximo 100 caracteres";
+    public static final String ESTADO_OBRIGATORIO = "Estado é um campo obrigatório";
+    public static final String ESTADO_TAMANHO = "Estado deve ter exatamente 2 caracteres (ex: SP)";
     public static final String CEP_FORMATO = "CEP deve estar no formato XXXXXXXX";
     public static final String NUMERO_OBRIGATORIO = "Número é um campo obrigatório - Se endereço não tiver número, digite 0";
     public static final String COMPLEMENTO_TAMANHO = "Complemento deve ter no máximo 100 caracteres";
@@ -229,6 +236,7 @@ public class ConstantUtils {
     public static final String MOEDA_OBRIGATORIA = "Moeda da conta é obrigatório";
     public static final String EMAIL_OBRIGATORIO = "O e-mail é obrigatório e deve ser válido";
     public static final String SENHA_OBRIGATORIA = "A senha é obrigatória e deve ter no mínimo 6 caracteres";
+    public static final String SENHA_ANTIGA_INCORRETA = "A senha antiga está incorreta";
     public static final String TIPO_CARTAO_OBRIGATORIO = "O tipo do cartão é obrigatório";
 
     // Mensagens de validação - Enums

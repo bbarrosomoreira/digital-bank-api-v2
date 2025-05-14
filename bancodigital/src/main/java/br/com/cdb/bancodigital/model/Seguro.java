@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.NumberGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -23,14 +24,14 @@ public class Seguro implements SeguroBase {
 	private TipoSeguro tipoSeguro;
 	private String numApolice;
 	private Cartao cartao;
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = ConstantUtils.FORMATO_DATA_DD_MM_YYYY)
 	private LocalDate dataContratacao;
 	private BigDecimal valorApolice;
-	@Size(max=300, message="A descrição deve ter no máximo 300 caracteres.")
+	@Size(max = 300, message = ConstantUtils.DESCRICAO_TAMANHO)
 	private String descricaoCondicoes;
 	private BigDecimal premioApolice;
 	private Status statusSeguro;
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = ConstantUtils.FORMATO_DATA_DD_MM_YYYY)
 	private LocalDate dataAcionamento;
 	private BigDecimal valorFraude;
 

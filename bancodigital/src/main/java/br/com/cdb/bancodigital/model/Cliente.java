@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.model;
 import java.time.LocalDate;
 
 import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.*;
 
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
@@ -24,8 +25,11 @@ public class Cliente {
 	private Usuario usuario;
 
 	public boolean isMenorDeIdade() {
-		if(this.dataNascimento == null) throw new InvalidInputParameterException("Data de Nascimento não pode ser nula");
+		if (this.dataNascimento == null) {
+			throw new InvalidInputParameterException(ConstantUtils.DATA_NASCIMENTO_NULA);
+		}
 		return this.dataNascimento.plusYears(18).isAfter(LocalDate.now());
 	}
 
 }
+
