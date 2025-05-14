@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.resttemplate;
 import br.com.cdb.bancodigital.dto.response.ApiConversorMoedasResponse;
 import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
 import br.com.cdb.bancodigital.model.enums.Moeda;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +44,11 @@ public class ConversorMoedasRestTemplate {
                     entity,
                     ApiConversorMoedasResponse.class
             );
-            log.info("Chamada à API bem-sucedida. Status: {}, URL: {}", response.getStatusCode(), url);
+            log.info(ConstantUtils.SUCESSO_CONVERSAO, response.getStatusCode(), url);
             return response.getBody();
         } catch (Exception e) {
-            log.error("Erro ao chamar a API de conversão de moedas. URL: {}, Erro: {}", url, e.getMessage());
-            throw new CommunicationException("Erro ao chamar a API de conversão de moedas");
+            log.error(ConstantUtils.ERRO_CONVERSAO, url, e.getMessage());
+            throw new CommunicationException(ConstantUtils.ERRO_CONVERSAO);
         }
     }
 

@@ -22,48 +22,48 @@ public class Validator {
 
     public static void validarCpfUnico(ClienteDAO clienteDAO, String cpf) {
         if (clienteDAO.existsByCpf(cpf))
-            throw new ResourceAlreadyExistsException("CPF já cadastrado no sistema.");
+            throw new ResourceAlreadyExistsException(ConstantUtils.CPF_JA_CADASTRADO);
     }
     public static void validarMaiorIdade(Cliente cliente) {
         if (cliente.isMenorDeIdade())
-            throw new ValidationException("Cliente deve ser maior de 18 anos para se cadastrar.");
+            throw new ValidationException(ConstantUtils.CLIENTE_MAIOR_18);
     }
     public static Cliente verificarClienteExistente(ClienteDAO clienteDAO, Long id_cliente) {
         return clienteDAO.buscarClienteporId(id_cliente)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CLIENTE, id_cliente)));
+                .orElseThrow(() -> new ResourceNotFoundException((ConstantUtils.ERRO_BUSCA_CLIENTE + id_cliente)));
     }
     public static Conta verificarContaExistente(ContaDAO contaDAO, Long id_conta) {
         return contaDAO.buscarContaPorId(id_conta)
-                .orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CONTA, id_conta)));
     }
     public static Cartao verificarCartaoExistente(CartaoDAO cartaoDAO, Long id_cartao) {
         return cartaoDAO.findCartaoById(id_cartao)
-                .orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CARTAO, id_cartao)));
     }
     public static PoliticaDeTaxas verificarPolitiaExitente(PoliticaDeTaxasDAO politicaDeTaxasDAO, CategoriaCliente categoria) {
         return politicaDeTaxasDAO.findByCategoria(categoria)
-                .orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
+                .orElseThrow(() -> new ResourceNotFoundException((ConstantUtils.ERRO_BUSCA_POLITICA_TAXAS + categoria)));
     }
     public static void verificarCartaoAtivo(Status status) {
         if (status.equals(Status.INATIVO))
-            throw new InvalidInputParameterException("Cartão desativado - operação bloqueada");
+            throw new InvalidInputParameterException(ConstantUtils.CARTAO_INATIVO_OPERACAO_BLOQUEADA);
     }
     public static void verificaSeTemFaturaAbertaDeCartaoCredito(Cartao cartao) {
         if (cartao.getTotalFatura().compareTo(BigDecimal.ZERO) > 0)
-            throw new InvalidInputParameterException("Cartão não pode ser desativado com fatura em aberto.");
+            throw new InvalidInputParameterException(ConstantUtils.CARTAO_FATURA_ABERTA);
     }
     public static void verificarSenhaCorreta(String senhaDigitada, String senhaCartao) {
-        if (!senhaDigitada.equals(senhaCartao)) throw new ValidationException("A senha informada está incorreta!");
+        if (!senhaDigitada.equals(senhaCartao)) throw new ValidationException(ConstantUtils.SENHA_INCORRETA);
     }
     public static void verificarLimiteSuficiente(BigDecimal valor, BigDecimal limiteAtual) {
         if (valor.compareTo(limiteAtual) > 0)
-            throw new InvalidInputParameterException("Limite insuficiente para esta transação. Limite atual: " + (limiteAtual));
+            throw new InvalidInputParameterException(String.format(ConstantUtils.LIMITE_INSUFICIENTE, limiteAtual));
     }
     public static void verificarSegurosVinculados(SeguroDAO seguroDAO, Cartao cartao) {
         Long id = cartao.getId();
         boolean existeSeguro = seguroDAO.existsByCartaoId(id);
         if (existeSeguro) {
-            throw new InvalidInputParameterException("Cartão não pode ser excluído com seguros vinculados.");
+            throw new InvalidInputParameterException(ConstantUtils.CARTAO_SEGUROS_VINCULADOS);
         }
     }
 }

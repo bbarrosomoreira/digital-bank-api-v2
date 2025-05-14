@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import br.com.cdb.bancodigital.dto.response.CpfValidationResponse;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Component
 @Slf4j
@@ -18,16 +19,17 @@ public class ReceitaFederalRestTemplateMock implements ReceitaFederalRestTemplat
 	
 	@Override
 	public CpfValidationResponse consultarCpf(String cpf) {
-		log.info("Simulando consulta de CPF na Receita Federal");
+		log.info(ConstantUtils.SIMULANDO_CONSULTA_CPF);
 
 		// Simulação de resposta da Receita Federal
 		CpfValidationResponse response = new CpfValidationResponse();
 		response.setSuccess(true);
 		response.setCpf(cpf);
 		response.setValid(true);
-		response.setStatus("ATIVO");
-		response.setMessage("CPF válido e ativo");
+		response.setStatus(ConstantUtils.STATUS_ATIVO);
+		response.setMessage(ConstantUtils.CPF_VALIDO_ATIVO);
 		return response; // Sempre retorna como válido e ativo 
 	}
 
 }
+

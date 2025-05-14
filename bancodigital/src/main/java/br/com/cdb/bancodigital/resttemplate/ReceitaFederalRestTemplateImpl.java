@@ -2,6 +2,7 @@ package br.com.cdb.bancodigital.resttemplate;
 
 import br.com.cdb.bancodigital.dto.response.CpfValidationResponse;
 import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,14 +25,14 @@ public class ReceitaFederalRestTemplateImpl implements ReceitaFederalRestTemplat
     @Override
     public CpfValidationResponse consultarCpf(String cpf) {
         String url = String.format("%s%s", apiUrl, cpf);
-        log.info("Consultando CPF na API que simula a da Receita Federal");
+        log.info(ConstantUtils.INICIO_CONSULTA_CPF);
         try {
             ResponseEntity<CpfValidationResponse> response = restTemplate.getForEntity(url, CpfValidationResponse.class);
 
             return response.getBody();
         } catch (Exception e) {
-            log.error("Erro ao consultar CPF na API que simula a da Receita Federal", e);
-            throw new CommunicationException("Erro ao consultar CPF");
+            log.error(ConstantUtils.ERRO_CONSULTA_CPF, e);
+            throw new CommunicationException(ConstantUtils.ERRO_CONSULTA_CPF);
         }
     }
 

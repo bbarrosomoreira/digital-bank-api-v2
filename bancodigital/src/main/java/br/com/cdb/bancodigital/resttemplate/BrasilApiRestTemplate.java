@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import br.com.brasilapi.BrasilAPI;
 import br.com.brasilapi.api.CEP2;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Component
 @Slf4j
@@ -14,22 +15,22 @@ public class BrasilApiRestTemplate {
 
 	public CEP2 buscarEnderecoPorCep(String cep) throws ValidationException {
         if (cep == null || cep.isBlank()) {
-            log.error("CEP inválido: valor nulo ou vazio.");
-            throw new ValidationException("CEP não pode ser nulo ou vazio.");
+            log.error(ConstantUtils.CEP_INVALIDO);
+            throw new ValidationException(ConstantUtils.CEP_OBRIGATORIO);
         }
 
 		try {
-            log.info("Buscando endereço");
+            log.info(ConstantUtils.INICIO_BUSCA_ENDERECO);
 			return BrasilAPI.cep2(cep);
 		} catch (Exception e) {
 			// Verifica se o erro veio da API
             if (isApiError(e)) {
-                log.warn("Erro ao comunicar com a BrasilAPI. Usando fallback. Erro: {}", e.getMessage());
+                log.warn(ConstantUtils.ERRO_COMUNICACAO_BRASIL_API, e.getMessage());
                 return fallbackCep(cep);
             }
 			
-			log.error("CEP inválido ou erro inesperado", e);
-			throw new CommunicationException("CEP inválido ou erro inesperado");
+			log.error(ConstantUtils.ERRO_CEP_INVALIDO, e);
+			throw new CommunicationException(ConstantUtils.ERRO_CEP_INVALIDO);
 		}
 	}
     private boolean isApiError(Exception e) {
@@ -38,13 +39,13 @@ public class BrasilApiRestTemplate {
 	
     // Fallback para quando a API não retorna o endereço
     private CEP2 fallbackCep(String cep) {
-        log.info("Usando fallback para o CEP");
+        log.info(ConstantUtils.INICIO_FALLBACK_CEP);
         CEP2 endereco = new CEP2();
         endereco.setCep(cep);
-        endereco.setStreet("Rua não disponível");
-        endereco.setNeighborhood("Bairro não disponível");
-        endereco.setCity("Cidade não disponível");
-        endereco.setState("Estado não disponível");
+        endereco.setStreet(ConstantUtils.FALLBACK_RUA);
+        endereco.setNeighborhood(ConstantUtils.FALLBACK_BAIRRO);
+        endereco.setCity(ConstantUtils.FALLBACK_CIDADE);
+        endereco.setState(ConstantUtils.FALLBACK_ESTADO);
         return endereco;
     }
 
