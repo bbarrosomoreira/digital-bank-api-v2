@@ -2,11 +2,13 @@ package br.com.cdb.bancodigital.exceptions.handler;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import br.com.cdb.bancodigital.exceptions.custom.ApiException;
 import br.com.cdb.bancodigital.dto.response.ErrorResponse;
 import br.com.cdb.bancodigital.dto.response.ValidationErrorResponse;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +34,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	// Trata exceções customizadas da hierarquia ApiException
 	@ExceptionHandler(ApiException.class)
 	public ResponseEntity<ErrorResponse> handleApiException(ApiException ex, WebRequest request) {
-		log.error("Erro tratado - Status: {}, Caminho: {}, Mensagem: {}",
+		log.error(ConstantUtils.ERRO_TRATADO,
 				ex.getStatus(), request.getDescription(false), ex.getMessage());
 
 		ErrorResponse response = new ErrorResponse(
@@ -63,7 +65,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		ValidationErrorResponse response = new ValidationErrorResponse(
 				LocalDateTime.now(),
 				HttpStatus.BAD_REQUEST.value(), 
-				"Erro de validação", 
+				ConstantUtils.ERRO_VALIDACAO, 
 				request.getDescription(false).replace("uri=", ""), 
 				fieldErrors);
 
@@ -75,8 +77,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		ErrorResponse response = new ErrorResponse(
 				LocalDateTime.now(), 
 				HttpStatus.FORBIDDEN.value(), 
-				"Acesso negado", 
-				"Você não tem permissão para acessar este recurso.",
+				ConstantUtils.ACESSO_NEGADO, 
+				ConstantUtils.MENSAGEM_ACESSO_NEGADO,
 				request.getDescription(false).replace("uri=", "")
 		);
 		
@@ -85,11 +87,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
-		String mensagem = String.format("O valor '%s' não é válido para o parâmetro '%s'.", ex.getValue(), ex.getName());
+		String mensagem = String.format(ConstantUtils.MENSAGEM_TIPO_ARGUMENTO, ex.getValue(), ex.getName());
 		ErrorResponse response = new ErrorResponse(
 				LocalDateTime.now(),
 				HttpStatus.BAD_REQUEST.value(),
-				"Erro de tipo de argumento",
+				ConstantUtils.ERRO_TIPO_ARGUMENTO,
 				mensagem,
 				request.getDescription(false).replace("uri=", "")
 		);
@@ -97,16 +99,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(TimeoutException.class)
+	public ResponseEntity<ErrorResponse> handleTimeoutException(TimeoutException ex, WebRequest request) {
+		log.error(ConstantUtils.ERRO_TIMEOUT, request.getDescription(false), ex.getMessage());
+
+		ErrorResponse response = new ErrorResponse(
+				LocalDateTime.now(),
+				HttpStatus.REQUEST_TIMEOUT.value(),
+				ConstantUtils.TIMEOUT,
+				ex.getMessage(),
+				request.getDescription(false).replace("uri=", "")
+		);
+
+		return new ResponseEntity<>(response, HttpStatus.REQUEST_TIMEOUT);
+	}
+
 	// Fallback genérico
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleUnhandledExceptions(Exception ex, WebRequest request) {
-		logger.error("Erro não tratado", ex);
+		logger.error(ConstantUtils.ERRO_INTERNO, ex);
 
 		ErrorResponse response = new ErrorResponse(
 				LocalDateTime.now(), 
 				HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				"Erro interno", 
-				"Ocorreu um erro inesperado. Tente novamente mais tarde.",
+				ConstantUtils.ERRO_INTERNO, 
+				ConstantUtils.MENSAGEM_ERRO_INTERNO,
 				request.getDescription(false).replace("uri=", ""));
 
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
