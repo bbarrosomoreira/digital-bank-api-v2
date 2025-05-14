@@ -427,5 +427,30 @@ public class ConstantUtils {
     public static final String NOME_SEGURO_VIAGEM = "Seguro de Viagem";
     public static final String NOME_SEGURO_FRAUDE = "Seguro de Fraude";
 
-}
+    // Receita Federal
+    public static final String SIMULANDO_CONSULTA_CPF = "Simulando consulta de CPF na Receita Federal";
+    public static final String STATUS_ATIVO = "ATIVO";
+    public static final String CPF_VALIDO_ATIVO = "CPF válido e ativo";
+    public static final String ERRO_CONSULTA_CPF = "Erro ao consultar CPF na API que simula a da Receita Federal";
 
+    // Validações
+    public static final String CPF_JA_CADASTRADO = "CPF já cadastrado no sistema.";
+    public static final String CLIENTE_MAIOR_18 = "Cliente deve ser maior de 18 anos para se cadastrar.";
+    public static final String CARTAO_INATIVO_OPERACAO_BLOQUEADA = "Cartão desativado - operação bloqueada";
+    public static final String CARTAO_FATURA_ABERTA = "Cartão não pode ser desativado com fatura em aberto.";
+    public static final String SENHA_INCORRETA = "A senha informada está incorreta!";
+    public static final String LIMITE_INSUFICIENTE = "Limite insuficiente para esta transação. Limite atual: %s";
+    public static final String CARTAO_SEGUROS_VINCULADOS = "Cartão não pode ser excluído com seguros vinculados.";
+
+    // CEP
+    public static final String CEP_INVALIDO = "CEP inválido: valor nulo ou vazio.";
+    public static final String ERRO_CEP_INVALIDO = "CEP inválido ou erro inesperado";
+    public static final String ERRO_COMUNICACAO_BRASIL_API = "Erro ao comunicar com a BrasilAPI. Usando fallback. Erro: {}";
+
+    // Fallback
+    public static final String INICIO_FALLBACK_CEP = "Usando fallback para o CEP.";
+    public static final String FALLBACK_RUA = "Rua não disponível";
+    public static final String FALLBACK_BAIRRO = "Bairro não disponível";
+    public static final String FALLBACK_CIDADE = "Cidade não disponível";
+    public static final String FALLBACK_ESTADO = "Estado não disponível";
+}
