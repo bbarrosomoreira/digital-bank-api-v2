@@ -5,6 +5,7 @@ import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.model.Cliente;
 import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,7 +31,7 @@ public class ClienteMapper implements RowMapper<Cliente> {
 
         Long usuarioId = rs.getLong("usuario_id");
         Usuario usuario = usuarioDAO.buscarUsuarioporId(usuarioId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+                        .orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO));
         cliente.setUsuario(usuario);
 
         return cliente;

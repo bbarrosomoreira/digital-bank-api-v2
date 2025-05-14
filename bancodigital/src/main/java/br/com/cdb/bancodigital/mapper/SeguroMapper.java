@@ -6,6 +6,7 @@ import br.com.cdb.bancodigital.model.Cartao;
 import br.com.cdb.bancodigital.model.Seguro;
 import br.com.cdb.bancodigital.model.enums.Status;
 import br.com.cdb.bancodigital.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
@@ -29,7 +30,7 @@ public class SeguroMapper implements RowMapper<Seguro> {
 
         Long cartaoId = rs.getLong("cartao_id");
         Cartao cartao = cartaoDAO.findCartaoById(cartaoId)
-                        .orElseThrow(()-> new ResourceNotFoundException("Cartão não encontrado"));
+                        .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CARTAO + cartaoId));
         seguro.setCartao(cartao);
 
         seguro.setDataContratacao(rs.getDate("data_contratacao").toLocalDate());

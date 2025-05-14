@@ -4,6 +4,7 @@ import br.com.cdb.bancodigital.dao.ClienteDAO;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.model.Cliente;
 import br.com.cdb.bancodigital.model.EnderecoCliente;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,7 +33,7 @@ public class EnderecoClienteMapper implements RowMapper<EnderecoCliente> {
 
         long clienteId = rs.getLong("cliente_id");
         Cliente cliente = clienteDAO.buscarClienteporId(clienteId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CLIENTE));
         enderecoCliente.setCliente(cliente);
 
         return enderecoCliente;

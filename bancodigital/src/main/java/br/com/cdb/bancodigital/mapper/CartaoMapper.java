@@ -6,6 +6,7 @@ import br.com.cdb.bancodigital.model.Cartao;
 import br.com.cdb.bancodigital.model.Conta;
 import br.com.cdb.bancodigital.model.enums.Status;
 import br.com.cdb.bancodigital.model.enums.TipoCartao;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
@@ -29,7 +30,7 @@ public class CartaoMapper implements RowMapper<Cartao> {
 
         Long contaId = rs.getLong("conta_id");
         Conta conta = contaDAO.buscarContaPorId(contaId)
-                        .orElseThrow(()-> new ResourceNotFoundException("Conta não encontrada"));
+                        .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CONTA + contaId));
         cartao.setConta(conta);
 
         cartao.setStatus(Status.fromString(rs.getString("status")));

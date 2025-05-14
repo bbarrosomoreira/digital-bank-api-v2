@@ -231,6 +231,22 @@ public class ConstantUtils {
     public static final String SENHA_OBRIGATORIA = "A senha é obrigatória e deve ter no mínimo 6 caracteres";
     public static final String TIPO_CARTAO_OBRIGATORIO = "O tipo do cartão é obrigatório";
 
+    // Mensagens de validação - Enums
+    public static final String TIPO_SEGURO_NULO = "Tipo de seguro não pode ser nulo.";
+    public static final String TIPO_SEGURO_INVALIDO = "Tipo de seguro inválido: %s. Valores permitidos: %s.";
+    public static final String TIPO_CONTA_NULO = "Tipo de conta não pode ser nulo.";
+    public static final String TIPO_CONTA_INVALIDO = "Tipo de conta inválido: %s. Valores permitidos: %s.";
+    public static final String TIPO_CARTAO_NULO = "Tipo de cartão não pode ser nulo.";
+    public static final String TIPO_CARTAO_INVALIDO = "Tipo de cartão inválido: %s. Valores permitidos: %s.";
+    public static final String STATUS_NULO = "Status não pode ser nulo.";
+    public static final String STATUS_INVALIDO = "Status inválido: %s. Valores permitidos: %s.";
+    public static final String ROLE_NULA = "Role não pode ser nula.";
+    public static final String ROLE_INVALIDA = "Valor de role inválido: %s. Valores permitidos: %s.";
+    public static final String MOEDA_NULA = "Moeda não pode ser nula.";
+    public static final String MOEDA_INVALIDA = "Moeda inválida: %s. Valores permitidos: %s.";
+    public static final String CATEGORIA_NULA = "Categoria não pode ser nula.";
+    public static final String CATEGORIA_INVALIDA = "Categoria inválida: %s. Valores permitidos: %s.";
+
     // Cartão
     public static final String ID_CARTAO = "ID do cartão: {}";
     public static final String ERRO_CARTAO_NULO = "Cartão não pode ser nulo";
@@ -374,5 +390,34 @@ public class ConstantUtils {
     public static final String TIMEOUT = "Timeout";
     public static final String ERRO_INTERNO = "Erro interno";
     public static final String MENSAGEM_ERRO_INTERNO = "Ocorreu um erro inesperado. Tente novamente mais tarde.";
+    
+    // Descrições e textos - Enums
+    public static final String DESCRICAO_SEGURO_VIAGEM = "Cobertura para despesas médicas no exterior, cancelamento de voos e extravio de bagagem, com um valor base de R$10.000,00.";
+    public static final String CONDICOES_SEGURO_VIAGEM = "Clientes Comum e Super: opcional por R$50,00 por mês. Clientes Premium: isento de tarifa.";
+    public static final String DESCRICAO_SEGURO_FRAUDE = "Cobertura automática para fraudes no cartão, com um valor base de R$5.000,00";
+    public static final String CONDICOES_SEGURO_FRAUDE = "Serviço gratuito para todas as categorias de clientes.";
+
+    public static final String DESCRICAO_CONTA_CORRENTE = "Conta Corrente";
+    public static final String DESCRICAO_CONTA_POUPANCA = "Conta Poupanca";
+    public static final String DESCRICAO_CONTA_INTERNACIONAL = "Conta Internacional";
+
+    public static final String DESCRICAO_CARTAO_CREDITO = "Cartão de Crédito";
+    public static final String DESCRICAO_CARTAO_DEBITO = "Cartão de Débito";
+
+    public static final String DESCRICAO_MOEDA_BRL = "Real Brasileiro";
+    public static final String SIMBOLO_MOEDA_BRL = "R$";
+    public static final String DESCRICAO_MOEDA_USD = "Dólar Americano";
+    public static final String SIMBOLO_MOEDA_USD = "US$";
+    public static final String DESCRICAO_MOEDA_EUR = "Euro";
+    public static final String SIMBOLO_MOEDA_EUR = "€";
+
+    public static final String DESCRICAO_CATEGORIA_COMUM = "Comum";
+    public static final String DESCRICAO_CATEGORIA_SUPER = "Super";
+    public static final String DESCRICAO_CATEGORIA_PREMIUM = "Premium";
+
+    // Nomes - TipoSeguro
+    public static final String NOME_SEGURO_VIAGEM = "Seguro de Viagem";
+    public static final String NOME_SEGURO_FRAUDE = "Seguro de Fraude";
 
 }
+

@@ -6,6 +6,7 @@ import br.com.cdb.bancodigital.model.Cliente;
 import br.com.cdb.bancodigital.model.Conta;
 import br.com.cdb.bancodigital.model.enums.Moeda;
 import br.com.cdb.bancodigital.model.enums.TipoConta;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,7 +31,7 @@ public class ContaMapper implements RowMapper<Conta> {
 
         Long clienteId = rs.getLong("cliente_id");
         Cliente cliente = clienteDAO.buscarClienteporId(clienteId)
-                        .orElseThrow(()-> new ResourceNotFoundException("Cliente não encontrado"));
+                        .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CLIENTE));
         conta.setCliente(cliente);
 
         conta.setDataCriacao(rs.getDate("data_criacao").toLocalDate());
