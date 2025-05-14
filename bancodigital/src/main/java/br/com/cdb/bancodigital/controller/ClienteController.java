@@ -163,7 +163,7 @@ public class ClienteController {
 	}
 	
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
-	@PatchMapping(ConstantUtils.CATEGORIA + ConstantUtils.CLIENTE_ID)
+	@PatchMapping(ConstantUtils.CATEGORIA_EP + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<ClienteResponse> updateCategoriaCliente(
 			@PathVariable Long id_cliente, 
 			@Valid @RequestBody AtualizarCategoriaClienteDTO dto) {
