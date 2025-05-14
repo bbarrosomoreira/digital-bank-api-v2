@@ -7,12 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static br.com.cdb.bancodigital.utils.ConstantUtils.*;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class AcionarSeguroFraudeDTO {
 	
-	@NotNull(message = "Valor da fraude é obrigatório")
+	@NotNull(message = VALOR_FRAUDE_OBRIGATORIO)
 	private BigDecimal valorFraude;
 	
 }
+

@@ -85,7 +85,7 @@ public class ConstantUtils {
     public static final String CONVERSOR_REAL = "/conversor-real";
     public static final String CONVERSOR_MOEDAS = "/conversor-moedas";
     public static final String GET_CATEGORIA = "/{categoria}";
-    public static final String CATEGORIA = "/categoria";
+    public static final String CATEGORIA_EP = "/categoria";
 
     // Gerais
     public static final String FIM_CHAMADA = "Chamada concluída em {} ms.";
@@ -115,6 +115,7 @@ public class ConstantUtils {
 
     // Cliente
     public static final String ID_CLIENTE = "ID do cliente: {}";
+    public static final String CATEGORIA = "categoria";
     public static final String INICIO_SALVAR_CLIENTE = "Iniciando operação de salvar cliente.";
     public static final String ERRO_SALVAR_CLIENTE = "Erro ao salvar cliente.";
     public static final String INICIO_CADASTRO_CLIENTE = "Iniciando cadastro de cliente";
@@ -204,6 +205,31 @@ public class ConstantUtils {
     public static final String INICIO_BUSCA_CONTA_POR_TIPO = "Iniciando busca de contas do tipo '{}' para o cliente com ID: {}.";
     public static final String SUCESSO_BUSCA_CONTA_POR_TIPO = "Busca de contas do tipo '{}' para o cliente com ID: {} concluída com sucesso.";
     public static final String ERRO_BUSCA_CONTA_POR_TIPO = "Erro ao buscar contas do tipo '{}' para o cliente com ID: {}.";
+
+    // Mensagens de validação - DTO
+    public static final String TIPO_CONTA_OBRIGATORIO = "Tipo de conta é obrigatório";
+    public static final String MOEDA_CONTA_OBRIGATORIO = "Moeda da conta é obrigatório";
+    public static final String CPF_OBRIGATORIO = "CPF é obrigatório";
+    public static final String CPF_INVALIDO = "CPF inválido";
+    public static final String NOME_OBRIGATORIO = "Nome é obrigatório";
+    public static final String NOME_TAMANHO = "Nome deve ter entre 2 e 100 caracteres";
+    public static final String NOME_FORMATO = "Nome deve conter apenas letras e espaços";
+    public static final String DATA_NASCIMENTO_PASSADO = "Data de nascimento deve ser no passado";
+    public static final String CEP_OBRIGATORIO = "CEP é obrigatório";
+    public static final String CEP_FORMATO = "CEP deve estar no formato XXXXXXXX";
+    public static final String NUMERO_OBRIGATORIO = "Número é um campo obrigatório - Se endereço não tiver número, digite 0";
+    public static final String COMPLEMENTO_TAMANHO = "Complemento deve ter no máximo 100 caracteres";
+    public static final String CATEGORIA_OBRIGATORIA = "Categoria é um campo obrigatório";
+    public static final String SENHA_TAMANHO = "A senha deve ter exatamente 4 dígitos numéricos";
+    public static final String VALOR_FRAUDE_OBRIGATORIO = "Valor da fraude é obrigatório";
+    public static final String ID_CONTA_DESTINO_OBRIGATORIO = "ID da conta de destino é obrigatório";
+    public static final String VALOR_POSITIVO = "O valor deve ser positivo";
+    public static final String VALOR_MINIMO = "O valor mínimo é R$1,00";
+    public static final String DESCRICAO_TAMANHO = "A descrição deve ter no máximo 100 caracteres.";
+    public static final String MOEDA_OBRIGATORIA = "Moeda da conta é obrigatório";
+    public static final String EMAIL_OBRIGATORIO = "O e-mail é obrigatório e deve ser válido";
+    public static final String SENHA_OBRIGATORIA = "A senha é obrigatória e deve ter no mínimo 6 caracteres";
+    public static final String TIPO_CARTAO_OBRIGATORIO = "O tipo do cartão é obrigatório";
 
     // Cartão
     public static final String ID_CARTAO = "ID do cartão: {}";
@@ -328,5 +354,25 @@ public class ConstantUtils {
     public static final String INICIO_CONSULTA_CPF = "Iniciando consulta de CPF";
     public static final String SUCESSO_CONSULTA_CPF = "Consulta de CPF concluída com sucesso.";
 
+    // Formatos de Data
+    public static final String FORMATO_DATA_DD_MM_YYYY = "dd-MM-yyyy";
+
+    // Valores mínimos
+    public static final String VALOR_MIN_SAQUE = "1.00";
+    public static final String VALOR_MIN_DEPOSITO = "1.00";
+    public static final String VALOR_MIN_TRANSFERENCIA = "1.00";
+    public static final String VALOR_MIN_PIX = "1.00";
+
+    // GlobalExceptionHandler
+    public static final String ERRO_TRATADO = "Erro tratado - Status: {}, Caminho: {}, Mensagem: {}";
+    public static final String ERRO_VALIDACAO = "Erro de validação";
+    public static final String ACESSO_NEGADO = "Acesso negado";
+    public static final String MENSAGEM_ACESSO_NEGADO = "Você não tem permissão para acessar este recurso.";
+    public static final String ERRO_TIPO_ARGUMENTO = "Erro de tipo de argumento";
+    public static final String MENSAGEM_TIPO_ARGUMENTO = "O valor '%s' não é válido para o parâmetro '%s'.";
+    public static final String ERRO_TIMEOUT = "Erro de timeout - Caminho: {}, Mensagem: {}";
+    public static final String TIMEOUT = "Timeout";
+    public static final String ERRO_INTERNO = "Erro interno";
+    public static final String MENSAGEM_ERRO_INTERNO = "Ocorreu um erro inesperado. Tente novamente mais tarde.";
 
 }

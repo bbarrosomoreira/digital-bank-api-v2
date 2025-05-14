@@ -8,12 +8,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static br.com.cdb.bancodigital.utils.ConstantUtils.*;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class SaqueDTO {
 	
-	@Positive(message = "O valor deve ser positivo")
-	@DecimalMin(value = "1.00", message = "O valor mínimo é R$1,00")
+	@Positive(message = VALOR_POSITIVO)
+	@DecimalMin(value = VALOR_MIN_SAQUE, message = VALOR_MINIMO)
 	private BigDecimal valor;
 }
+

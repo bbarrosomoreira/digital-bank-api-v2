@@ -9,19 +9,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static br.com.cdb.bancodigital.utils.ConstantUtils.*;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class PagamentoDTO {
 	
-	@Positive(message = "O valor deve ser positivo")
+	@Positive(message = VALOR_POSITIVO)
 	private BigDecimal valor;
 	
-	@Size(max=100, message="A descrição deve ter no máximo 100 caracteres.")
+	@Size(max = 100, message = DESCRICAO_TAMANHO)
 	private String descricao;
 	
 	@NotNull
-	@Size(min = 4, max = 4, message = "A senha deve ter exatamente 4 dígitos numéricos.")
+	@Size(min = 4, max = 4, message = SENHA_TAMANHO)
 	private String senha;
 	
 }
+

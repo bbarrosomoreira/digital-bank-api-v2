@@ -8,15 +8,16 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import static br.com.cdb.bancodigital.utils.ConstantUtils.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class ConversorMoedasDTO {
-	@NotNull(message = "Moeda da conta é obrigatório")
+	@NotNull(message = MOEDA_OBRIGATORIA)
 	private Moeda moedaOrigem;
 	
-	@NotNull(message = "Moeda da conta é obrigatório")
+	@NotNull(message = MOEDA_OBRIGATORIA)
 	private Moeda moedaDestino;
 	
 	@Digits(integer = 19, fraction = 2)

@@ -8,13 +8,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static br.com.cdb.bancodigital.utils.ConstantUtils.*;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class AtualizarCategoriaClienteDTO {
 
-	@JsonProperty("categoria")
-	@NotNull(message = "Categoria é um campo obrigatório")
+	@JsonProperty(CATEGORIA)
+	@NotNull(message = CATEGORIA_OBRIGATORIA)
 	private CategoriaCliente categoria;
 	
 	public CategoriaCliente getCategoriaCliente() {

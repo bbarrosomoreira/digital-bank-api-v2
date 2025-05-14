@@ -17,32 +17,34 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import static br.com.cdb.bancodigital.utils.ConstantUtils.*;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class ClienteDTO {
 	
-	@NotBlank(message = "Nome é obrigatótio")
-	@Size(min=2, max=100, message="Nome deve ter entre 2 e 100 caracteres")
-	@Pattern(regexp = "^[\\p{L} ]+$", message = "Nome deve conter apenas letras e espaços")
+	@NotBlank(message = NOME_OBRIGATORIO)
+	@Size(min = 2, max = 100, message = NOME_TAMANHO)
+	@Pattern(regexp = "^[\\p{L} ]+$", message = NOME_FORMATO)
 	private String nome;
 	
-	@NotBlank(message = "CPF é obrigatótio")
-	@CPF(message = "CPF inválido")
+	@NotBlank(message = CPF_OBRIGATORIO)
+	@CPF(message = CPF_INVALIDO)
 	private String cpf;
 	
-	@Past(message = "Data de nascimento dever ser no passado")
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@Past(message = DATA_NASCIMENTO_PASSADO)
+	@JsonFormat(pattern = FORMATO_DATA_DD_MM_YYYY)
 	private LocalDate dataNascimento;
 	
-	@NotBlank(message = "CEP é obrigatório")
-	@Pattern(regexp = "\\d{8}", message = "CEP deve estar no formato XXXXXXXX")
+	@NotBlank(message = CEP_OBRIGATORIO)
+	@Pattern(regexp = "\\d{8}", message = CEP_FORMATO)
 	private String cep;
 	
-	@NotNull(message = "Numero é um campo obrigatório - Se endereço não tiver número, digite 0")
+	@NotNull(message = NUMERO_OBRIGATORIO)
 	private int numero;
 	
-	@Size(max = 100, message = "Complemento deve ter no máximo 100 caracteres")
+	@Size(max = 100, message = COMPLEMENTO_TAMANHO)
 	private String complemento;
 	
 	public EnderecoCliente transformaEnderecoParaObjeto() {

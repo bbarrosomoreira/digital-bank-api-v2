@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import static br.com.cdb.bancodigital.utils.ConstantUtils.*;
 
 @Getter
 @Setter
@@ -17,12 +18,13 @@ public class AbrirContaDTO {
 	
 	private Long id_cliente;
 	
-	@NotNull(message = "Tipo de conta é obrigatório")
+	@NotNull(message = TIPO_CONTA_OBRIGATORIO)
 	private TipoConta tipoConta;
 	
-	@NotNull(message = "Moeda da conta é obrigatório")
+	@NotNull(message = MOEDA_CONTA_OBRIGATORIO)
 	private Moeda moeda;
 	
 	@Digits(integer = 19, fraction = 2)
 	private BigDecimal valorDeposito;
 }
+

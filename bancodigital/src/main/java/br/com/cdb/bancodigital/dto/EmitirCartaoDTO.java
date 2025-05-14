@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import static br.com.cdb.bancodigital.utils.ConstantUtils.*;
 
 @Getter
 @Setter
@@ -14,11 +15,11 @@ public class EmitirCartaoDTO {
 	
 	private Long id_conta;
 	
-	@NotNull
+	@NotNull(message = TIPO_CARTAO_OBRIGATORIO)
 	private TipoCartao tipoCartao;
 	
 	@NotNull
-	@Size(min = 4, max = 4, message = "A senha deve ter exatamente 4 dígitos numéricos.")
+	@Size(min = 4, max = 4, message = SENHA_TAMANHO)
 	private String senha;
 
 }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import static br.com.cdb.bancodigital.utils.ConstantUtils.*;
 
 @Getter
 @Setter
@@ -12,11 +13,11 @@ import lombok.Setter;
 public class AlterarSenhaDTO {
 	
 	@NotNull
-	@Size(min = 4, max = 4, message = "A senha deve ter exatamente 4 dígitos numéricos.")
+	@Size(min = 4, max = 4, message = SENHA_TAMANHO)
 	private String senhaAntiga;
 	
 	@NotNull
-	@Size(min = 4, max = 4, message = "A senha deve ter exatamente 4 dígitos numéricos.")
+	@Size(min = 4, max = 4, message = SENHA_TAMANHO)
 	private String senhaNova;
 
 }
