@@ -40,7 +40,7 @@ public class Validator {
         return cartaoDAO.findCartaoById(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CARTAO, id_cartao)));
     }
-    public static PoliticaDeTaxas verificarPolitiaExitente(PoliticaDeTaxasDAO politicaDeTaxasDAO, CategoriaCliente categoria) {
+    public static PoliticaDeTaxas verificarPoliticaExitente(PoliticaDeTaxasDAO politicaDeTaxasDAO, CategoriaCliente categoria) {
         return politicaDeTaxasDAO.findByCategoria(categoria)
                 .orElseThrow(() -> new ResourceNotFoundException((ConstantUtils.ERRO_BUSCA_POLITICA_TAXAS + categoria)));
     }

@@ -44,7 +44,7 @@ public class ClienteService {
     private final ContaDAO contaDAO;
     private final CartaoDAO cartaoDAO;
     private final SeguroDAO seguroDAO;
-    private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
+    private final PoliticaDeTaxasDAO politicaDeTaxasDAO;
     private final ReceitaFederalRestTemplate receitaService;
     private final SecurityService securityService;
     private final BrasilApiRestTemplate brasilApiRestTemplate;
@@ -194,7 +194,7 @@ public class ClienteService {
     @Transactional
     public void atualizarTaxasDoCliente(Long id_cliente, CategoriaCliente novaCategoria) {
         try {
-            PoliticaDeTaxas parametros = verificarPolitiaExitente(novaCategoria);
+            PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxasDAO, novaCategoria);
 
             atualizarTaxasDasContas(id_cliente, parametros);
             atualizarTaxasDosCartoes(id_cliente, parametros);
@@ -277,11 +277,6 @@ public class ClienteService {
                 seguroDAO.salvar(seguro);
             });
         }
-    }
-
-    public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
-        return politicaDeTaxaDAO.findByCategoria(categoria)
-                .orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_POLITICA_TAXAS.replace("%s", categoria.toString())));
     }
     private boolean possuiDadosDeEndereco(ClienteAtualizadoDTO dto) {
         return dto.getRua() != null || dto.getNumero() != null || dto.getComplemento() != null ||

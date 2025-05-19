@@ -220,7 +220,7 @@ public class AdminService {
     private Conta criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
         log.info(ConstantUtils.VERIFICANDO_POLITICA_TAXAS);
 
-        PoliticaDeTaxas parametros = Validator.verificarPolitiaExitente(politicaDeTaxasDAO, cliente.getCategoria());
+        PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxasDAO, cliente.getCategoria());
         log.info(ConstantUtils.POLITICA_TAXAS_ENCONTRADA);
 
         return switch (tipo) {
@@ -269,7 +269,7 @@ public class AdminService {
         log.info(ConstantUtils.VERIFICANDO_POLITICA_TAXAS);
 
         CategoriaCliente categoria = conta.getCliente().getCategoria();
-        PoliticaDeTaxas parametros = Validator.verificarPolitiaExitente(politicaDeTaxasDAO, categoria);
+        PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxasDAO, categoria);
         log.info(ConstantUtils.POLITICA_TAXAS_ENCONTRADA);
 
         return switch (tipo) {
@@ -294,7 +294,7 @@ public class AdminService {
         log.info(ConstantUtils.VERIFICANDO_POLITICA_TAXAS);
 
         CategoriaCliente categoria = ccr.getConta().getCliente().getCategoria();
-        PoliticaDeTaxas parametros = Validator.verificarPolitiaExitente(politicaDeTaxasDAO, categoria);
+        PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxasDAO, categoria);
         log.info(ConstantUtils.POLITICA_TAXAS_ENCONTRADA);
 
         return switch (tipo) {

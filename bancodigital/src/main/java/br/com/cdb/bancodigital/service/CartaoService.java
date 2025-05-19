@@ -81,7 +81,7 @@ public class CartaoService {
     public Cartao criarCartaoPorTipo(TipoCartao tipo, Conta conta, String senha) {
         log.info(ConstantUtils.VERIFICANDO_POLITICA_TAXAS);
         CategoriaCliente categoria = conta.getCliente().getCategoria();
-        PoliticaDeTaxas parametros = Validator.verificarPolitiaExitente(politicaDeTaxasDAO, categoria);
+        PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxasDAO, categoria);
         log.info(ConstantUtils.POLITICA_TAXAS_ENCONTRADA);
 
         return switch (tipo) {

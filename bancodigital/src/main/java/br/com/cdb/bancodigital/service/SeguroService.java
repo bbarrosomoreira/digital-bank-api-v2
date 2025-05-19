@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,10 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class SeguroService {
 	
-	private static final Logger log = LoggerFactory.getLogger(SeguroService.class);
-
 	private final SeguroDAO seguroDAO;
 	private final CartaoDAO cartaoDAO;
 	private final ClienteDAO clienteDAO;
