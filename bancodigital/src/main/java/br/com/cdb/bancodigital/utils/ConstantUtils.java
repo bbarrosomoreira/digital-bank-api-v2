@@ -158,9 +158,10 @@ public class ConstantUtils {
     public static final String SUCESSO_BUSCA_CLIENTE = "Informações de cliente(s) obtidas com sucesso";
     public static final String CLIENTE_ENCONTRADO = "Cliente encontrado com sucesso";
     public static final String ERRO_BUSCA_CLIENTE = "Cliente não encontrado.";
+    public static final String ERRO_CLIENTE_NAO_ENCONTRADO_USUARIO_LOGADO = "Cliente não encontrado para o usuário logado.";
     public static final String INICIO_DELETE_CLIENTE = "Iniciando exclusão de cliente ID: {}";
     public static final String SUCESSO_DELETE_CLIENTE = "Cliente excluído com sucesso ID: {}";
-    public static final String ERRO_DELETE_CLIENTE = "Erro ao excluir cliente";
+    public static final String ERRO_DELETE_CLIENTE = "Erro ao excluir cliente com ID: {}";
     public static final String INICIO_ATUALIZACAO_CLIENTE = "Iniciando atualização de cliente ID: {}";
     public static final String SUCESSO_ATUALIZACAO_CLIENTE = "Cliente atualizado com sucesso ID: {}";
     public static final String INICIO_ATUALIZACAO_CATEGORIA_CLIENTE = "Iniciando atualização de categoria do cliente ID: {}";
@@ -177,6 +178,17 @@ public class ConstantUtils {
     public static final String SUCESSO_UPDATE_CLIENTE = "Cliente atualizado com sucesso ID: {}";
     public static final String ERRO_INESPERADO_UPDATE_CLIENTE = "Erro inesperado ao atualizar cliente com ID: {}";
     public static final String ERRO_INESPERADO_DELETE_CLIENTE = "Erro inesperado ao deletar cliente com ID: {}";
+
+    // ClienteService
+    public static final String CLIENTE_POSSUI_VINCULOS = "Cliente ID {} possui vínculos com contas, cartões ou seguros";
+    public static final String ERRO_CLIENTE_POSSUI_VINCULOS = "Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.";
+    public static final String ERRO_UPDATE_CLIENTE = "Erro ao acessar o banco de dados ao atualizar cliente ID {}: ";
+    public static final String CLIENTE_SEM_CONTAS = "Cliente ID {} não possui contas.";
+    public static final String CLIENTE_SEM_SEGUROS = "Cliente Id {} não possui seguros.";
+    public static final String ERRO_CLIENTE_JA_NA_CATEGORIA = "Cliente com ID {} já está na categoria {}. Nenhuma atualização necessária.";
+    public static final String ERRO_VALIDACAO_ATUALIZACAO_CATEGORIA = "Erro de validação ao atualizar categoria do cliente com ID {}: ";
+    public static final String ERRO_BANCO_DADOS_ATUALIZACAO_CATEGORIA = "Erro ao acessar o banco de dados ao atualizar categoria do cliente com ID {}: ";
+    public static final String ERRO_INTERNO_ATUALIZACAO_CATEGORIA = "Erro ao atualizar Política de Taxas do cliente. Tente novamente mais tarde.";
 
     // EnderecoCliente
     public static final String INICIO_SALVAR_ENDERECO = "Iniciando operação de salvar endereço.";
@@ -345,7 +357,7 @@ public class ConstantUtils {
     public static final String SUCESSO_BUSCA_CARTAO_POR_TIPO = "Busca de cartões do tipo '{}' para o cliente com ID: {} concluída com sucesso.";
     public static final String ERRO_BUSCA_CARTAO_POR_TIPO = "Erro ao buscar cartões do tipo '{}' para o cliente com ID: {}.";
 
-    // CartaoService - logs e mensagens customizadas
+    // CartaoService
     public static final String BUSCANDO_CARTOES_VINCULADOS_CONTA = "Buscando cartões vinculados à conta ID: {}";
     public static final String BUSCANDO_CARTOES_VINCULADOS_CLIENTE = "Buscando cartões vinculados ao cliente ID: {}";
     public static final String CLIENTE_SEM_CARTOES = "Cliente Id {} não possui cartões.";
@@ -506,7 +518,7 @@ public class ConstantUtils {
     public static final String ACESSO_NEGADO_LOG = "Acesso negado para usuário ID: {} ao cliente ID: {}.";
     public static final String ACESSO_PERMITIDO_LOG = "Acesso permitido para usuário ID: {} ao cliente ID: {}.";
 
-    // AdminService - logs customizados
+    // AdminService
     public static final String USUARIO_CRIADO_SUCESSO = "Usuário criado: ID {}";
     public static final String CLIENTE_CRIADO = "Cliente criado";
     public static final String VALIDACAO_CLIENTE_CONCLUIDA = "Validação do cliente concluída";
