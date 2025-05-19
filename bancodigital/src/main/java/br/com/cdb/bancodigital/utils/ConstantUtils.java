@@ -326,7 +326,7 @@ public class ConstantUtils {
     public static final String SUCESSO_DELETE_CARTAO = "Cartão excluído com sucesso ID: {}";
     public static final String ERRO_INESPERADO_UPDATE_CARTAO = "Erro inesperado ao atualizar cartão com ID: {}";
     public static final String ERRO_INESPERADO_DELETE_CARTAO = "Erro inesperado ao deletar cartão com ID: {}";
-    public static final String INICIO_BUSCA_CARTAO_POR_CONTA = "Iniciando busca de cartões para a conta com ID: {}.";
+    public static final String INICIO_BUSCA_CARTAO_POR_CONTA = "Iniciando busca de cartões por conta ID: {}";
     public static final String SUCESSO_BUSCA_CARTAO_POR_CONTA = "Busca de cartões para a conta com ID: {} concluída com sucesso.";
     public static final String ERRO_BUSCA_CARTAO_POR_CONTA = "Erro ao buscar cartões para a conta com ID: {}.";
     public static final String INICIO_VERIFICAR_CARTAO_POR_CONTA = "Iniciando verificação de cartões para a conta com ID: {}.";
@@ -338,12 +338,22 @@ public class ConstantUtils {
     public static final String INICIO_BUSCA_CARTAO_POR_USUARIO = "Iniciando busca de cartões para o usuário com ID: {}.";
     public static final String SUCESSO_BUSCA_CARTAO_POR_USUARIO = "Busca de cartões para o usuário com ID: {} concluída com sucesso.";
     public static final String ERRO_BUSCA_CARTAO_POR_USUARIO = "Erro ao buscar cartões para o usuário com ID: {}.";
-    public static final String INICIO_BUSCA_CARTAO_POR_CLIENTE = "Iniciando busca de cartões para o cliente com ID: {}.";
+    public static final String INICIO_BUSCA_CARTAO_POR_CLIENTE = "Iniciando busca de cartões por cliente ID: {}";
     public static final String SUCESSO_BUSCA_CARTAO_POR_CLIENTE = "Busca de cartões para o cliente com ID: {} concluída com sucesso.";
     public static final String ERRO_BUSCA_CARTAO_POR_CLIENTE = "Erro ao buscar cartões para o cliente com ID: {}.";
     public static final String INICIO_BUSCA_CARTAO_POR_TIPO = "Iniciando busca de cartões do tipo '{}' para o cliente com ID: {}.";
     public static final String SUCESSO_BUSCA_CARTAO_POR_TIPO = "Busca de cartões do tipo '{}' para o cliente com ID: {} concluída com sucesso.";
     public static final String ERRO_BUSCA_CARTAO_POR_TIPO = "Erro ao buscar cartões do tipo '{}' para o cliente com ID: {}.";
+
+    // CartaoService - logs e mensagens customizadas
+    public static final String BUSCANDO_CARTOES_VINCULADOS_CONTA = "Buscando cartões vinculados à conta ID: {}";
+    public static final String BUSCANDO_CARTOES_VINCULADOS_CLIENTE = "Buscando cartões vinculados ao cliente ID: {}";
+    public static final String CLIENTE_SEM_CARTOES = "Cliente Id {} não possui cartões.";
+    public static final String CARTAO_DELETADO_SUCESSO = "Cartão ID {} deletado com sucesso";
+    public static final String ERRO_DELETAR_CARTAO = "Falha ao deletar cartão ID {}";
+    public static final String ERRO_DELETAR_CARTAO_MENSAGEM = "Erro ao deletar cartão: ";
+    public static final String ERRO_SALDO_INSUFICIENTE = "Saldo insuficiente para esta transação. Saldo atual: ";
+    public static final String ERRO_LIMITE_CONSUMIDO = "Limite não pode ser alterado, pois o limite consumido é maior do que o novo valor de limite.";
 
     // Seguro
     public static final String ID_SEGURO = "ID do seguro: {}";

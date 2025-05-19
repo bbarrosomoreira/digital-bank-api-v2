@@ -34,6 +34,7 @@ import br.com.cdb.bancodigital.dto.response.LimiteResponse;
 import br.com.cdb.bancodigital.dto.response.PagamentoResponse;
 import br.com.cdb.bancodigital.dto.response.RessetarLimiteDiarioResponse;
 import br.com.cdb.bancodigital.dto.response.StatusCartaoResponse;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Service
 @AllArgsConstructor
@@ -51,37 +52,37 @@ public class CartaoService {
     // add cartao
     @Transactional
     public CartaoResponse emitirCartao(Long id_conta, Usuario usuarioLogado, TipoCartao tipo, String senha) {
-        log.info("Iniciando emissão de cartão para conta ID {}", id_conta);
+        log.info(ConstantUtils.INICIO_EMISSAO_CARTAO, id_conta);
 
         // Busca e validações
         Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);
-        log.info("Conta encontrada: ID {}", conta.getId());
+        log.info(ConstantUtils.CONTA_ENCONTRADA, conta.getId());
 
         securityService.validateAccess(usuarioLogado, conta.getCliente());
-        log.info("Acesso validado para usuário ID {}", usuarioLogado.getId());
+        log.info(ConstantUtils.ACESSO_VALIDADO_USUARIO, usuarioLogado.getId());
 
         // Lógica de criação
         String senhaCriptografada = passwordEncoder.encode(senha);
         Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senhaCriptografada);
-        log.info("Cartão criado: ID {}", cartaoNovo.getId());
+        log.info(ConstantUtils.CARTAO_CRIADO, cartaoNovo.getId());
 
         try {
             cartaoDAO.salvar(cartaoNovo);
-            log.info("Cartão salvo no banco de dados: ID {}", cartaoNovo.getId());
+            log.info(ConstantUtils.CARTAO_SALVO_BANCO, cartaoNovo.getId());
         } catch (DataAccessException e) {
-            log.error("Erro ao salvar o cartão no banco de dados", e);
-            throw new SystemException("Erro interno ao salvar o cartão. Tente novamente mais tarde.");
+            log.error(ConstantUtils.ERRO_SALVAR_CARTAO_BANCO, e);
+            throw new SystemException(ConstantUtils.ERRO_SALVAR_CARTAO_BANCO_MENSAGEM_EXCEPTION);
         }
 
-        log.info("Emissão de cartão realizada com sucesso");
+        log.info(ConstantUtils.SUCESSO_EMISSAO_CARTAO);
         return toResponse(cartaoNovo);
     }
 
     public Cartao criarCartaoPorTipo(TipoCartao tipo, Conta conta, String senha) {
-        log.info("Verificando política de taxas");
+        log.info(ConstantUtils.VERIFICANDO_POLITICA_TAXAS);
         CategoriaCliente categoria = conta.getCliente().getCategoria();
         PoliticaDeTaxas parametros = Validator.verificarPolitiaExitente(politicaDeTaxasDAO, categoria);
-        log.info("Política de taxas encontrada");
+        log.info(ConstantUtils.POLITICA_TAXAS_ENCONTRADA);
 
         return switch (tipo) {
             case CREDITO -> {
@@ -103,31 +104,31 @@ public class CartaoService {
 
     // get cartoes
     public List<CartaoResponse> getCartoes() {
-        log.info("Buscando todos os cartões");
+        log.info(ConstantUtils.INICIO_BUSCA_CARTAO);
         List<Cartao> cartoes = cartaoDAO.buscarTodosCartoes();
         return cartoes.stream().map(this::toResponse).toList();
     }
 
     // get cartoes por conta
     public List<CartaoResponse> listarPorConta(Long id_conta, Usuario usuarioLogado) {
-        log.info("Buscando cartões por conta ID: {}", id_conta);
+        log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_CONTA, id_conta);
         Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);
-        log.info("Conta encontrada: ID {}", conta.getId());
+        log.info(ConstantUtils.CONTA_ENCONTRADA, conta.getId());
         securityService.validateAccess(usuarioLogado, conta.getCliente());
-        log.info("Acesso validado");
-        log.info("Buscando cartões vinculados à conta ID: {}", id_conta);
+        log.info(ConstantUtils.ACESSO_VALIDADO);
+        log.info(ConstantUtils.BUSCANDO_CARTOES_VINCULADOS_CONTA, id_conta);
         List<Cartao> cartoes = cartaoDAO.findByContaId(id_conta);
         return cartoes.stream().map(this::toResponse).toList();
     }
 
     // get cartao por cliente
     public List<CartaoResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
-        log.info("Buscando cartões por cliente ID: {}", id_cliente);
+        log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
-        log.info("Cliente encontrado: ID {}", cliente.getId());
+        log.info(ConstantUtils.CLIENTE_ENCONTRADO, cliente.getId());
         securityService.validateAccess(usuarioLogado, cliente);
-        log.info("Acesso validado");
-        log.info("Buscando cartões vinculados ao cliente ID: {}", id_cliente);
+        log.info(ConstantUtils.ACESSO_VALIDADO);
+        log.info(ConstantUtils.BUSCANDO_CARTOES_VINCULADOS_CLIENTE, id_cliente);
         List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
         return cartoes.stream().map(this::toResponse).toList();
     }
@@ -150,7 +151,7 @@ public class CartaoService {
     public void deleteCartoesByCliente(Long id_cliente) {
         List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
         if (cartoes.isEmpty()) {
-            log.info("Cliente Id {} não possui cartões.", id_cliente);
+            log.info(ConstantUtils.CLIENTE_SEM_CARTOES, id_cliente);
             return;
         }
         for (Cartao cartao : cartoes) {
@@ -159,11 +160,11 @@ public class CartaoService {
                 Validator.verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
                 Long id = cartao.getId();
                 cartaoDAO.deletarCartaoPorId(cartao.getId());
-                log.info("Cartão ID {} deletado com sucesso", id);
+                log.info(ConstantUtils.CARTAO_DELETADO_SUCESSO, id);
 
             } catch (DataIntegrityViolationException e) {
-                log.error("Falha ao deletar cartão ID {}", cartao.getId(), e);
-                throw new ValidationException("Erro ao deletar cartão: " + e.getMessage());
+                log.error(ConstantUtils.ERRO_DELETAR_CARTAO, cartao.getId(), e);
+                throw new ValidationException(ConstantUtils.ERRO_DELETAR_CARTAO_MENSAGEM + e.getMessage());
             }
         }
     }
@@ -178,7 +179,7 @@ public class CartaoService {
         Validator.verificarLimiteSuficiente(valor, cartao.getLimiteAtual());
 
         if (cartao.getTipoCartao().equals(TipoCartao.DEBITO) && cartao.getLimiteAtual().compareTo(valor) < 0) {
-            throw new InvalidInputParameterException("Saldo insuficiente para esta transação. Saldo atual: " + cartao.getConta().getSaldo());
+            throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_INSUFICIENTE + cartao.getConta().getSaldo());
         }
 
         cartao.realizarPagamento(valor);
@@ -195,7 +196,7 @@ public class CartaoService {
         BigDecimal limiteConsumido = cartao.getLimite().subtract(cartao.getLimiteAtual());
 
         if (valor.compareTo(limiteConsumido) < 0)
-            throw new InvalidInputParameterException("Limite não pode ser alterado, pois o limite consumido é maior do que o novo valor de limite.");
+            throw new InvalidInputParameterException(ConstantUtils.ERRO_LIMITE_CONSUMIDO);
 
         cartao.alterarLimite(valor);
         cartaoDAO.salvar(cartao);
@@ -246,7 +247,7 @@ public class CartaoService {
 
         Validator.verificarCartaoAtivo(ccr.getStatus());
         if (ccr.getTotalFatura().compareTo(ccr.getConta().getSaldo()) > 0)
-            throw new InvalidInputParameterException("Saldo insuficiente para esta transação. Saldo atual: " + (ccr.getConta().getSaldo()));
+            throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_INSUFICIENTE + (ccr.getConta().getSaldo()));
 
         ccr.pagarFatura();
         cartaoDAO.salvar(ccr);
