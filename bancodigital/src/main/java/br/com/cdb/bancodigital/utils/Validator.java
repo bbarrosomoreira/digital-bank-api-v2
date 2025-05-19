@@ -5,10 +5,7 @@ import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.model.Cartao;
-import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.Conta;
-import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.model.*;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.model.enums.Status;
 
@@ -39,6 +36,10 @@ public class Validator {
     public static Cartao verificarCartaoExistente(CartaoDAO cartaoDAO, Long id_cartao) {
         return cartaoDAO.findCartaoById(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CARTAO, id_cartao)));
+    }
+    public static Seguro verificarSeguroExistente(SeguroDAO seguroDAO, Long id_seguro) {
+        return seguroDAO.buscarSeguroPorId(id_seguro)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_SEGURO, id_seguro)));
     }
     public static PoliticaDeTaxas verificarPoliticaExitente(PoliticaDeTaxasDAO politicaDeTaxasDAO, CategoriaCliente categoria) {
         return politicaDeTaxasDAO.findByCategoria(categoria)

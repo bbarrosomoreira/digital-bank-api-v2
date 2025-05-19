@@ -2,13 +2,11 @@ package br.com.cdb.bancodigital.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
 import br.com.cdb.bancodigital.utils.ConstantUtils;
+import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -40,15 +38,13 @@ public class SeguroService {
 	private final SeguroDAO seguroDAO;
 	private final CartaoDAO cartaoDAO;
 	private final ClienteDAO clienteDAO;
-	private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
+	private final PoliticaDeTaxasDAO politicaDeTaxasDAO;
 	private final SecurityService securityService;
 
 	// contrataSeguro
 	@Transactional
 	public SeguroResponse contratarSeguro(Long id_cartao, Usuario usuarioLogado, TipoSeguro tipo) {
-		Objects.requireNonNull(tipo, "O tipo não pode ser nulo");
-		Cartao ccr = cartaoDAO.findCartaoById(id_cartao)
-				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
+		Cartao ccr = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
 		securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
 
 		Seguro seguroNovo = contratarSeguroPorTipo(tipo, ccr);
@@ -60,8 +56,7 @@ public class SeguroService {
 
 		CategoriaCliente categoria = ccr.getConta().getCliente().getCategoria();
 
-		PoliticaDeTaxas parametros = politicaDeTaxaDAO.findByCategoria(categoria)
-				.orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
+		PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxasDAO, categoria);
 
 		return switch (tipo) {
 			case FRAUDE -> {
@@ -85,8 +80,7 @@ public class SeguroService {
 
 	// obtemDetalhesApolice
 	public SeguroResponse getSeguroById(Long id_seguro, Usuario usuarioLogado) {
-		Seguro seguro = seguroDAO.buscarSeguroPorId(id_seguro)
-				.orElseThrow(() -> new ResourceNotFoundException("Seguro com ID " + id_seguro + " não encontrado."));
+		Seguro seguro = Validator.verificarSeguroExistente(seguroDAO, id_seguro);
 		securityService.validateAccess(usuarioLogado, seguro.getCartao().getConta().getCliente());
 		return SeguroResponse.toSeguroResponse(seguro);
 	}
@@ -111,7 +105,7 @@ public class SeguroService {
 	// deletar seguros de cliente
 	@Transactional
 	public void deleteSegurosByCliente(Long id_cliente) {
-		verificarClienteExistente(id_cliente);
+		Validator.verificarClienteExistente(clienteDAO, id_cliente);
 		List<Seguro> seguros = seguroDAO.findSegurosByClienteId(id_cliente);
 		if (seguros.isEmpty()) {
 			log.info("Cliente Id {} não possui seguros.", id_cliente);
@@ -138,7 +132,7 @@ public class SeguroService {
 
 	// get seguros by cartao
 	public List<SeguroResponse> getSeguroByCartaoId(Long id_cartao, Usuario usuarioLogado) {
-		Cartao cartao = verificarCartaoExistente(id_cartao);
+		Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
 		securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 		List<Seguro> seguros = seguroDAO.findByCartaoId(id_cartao);
 		return seguros.stream().map(this::toResponse).toList();
@@ -146,7 +140,7 @@ public class SeguroService {
 
 	// get seguros by cliente
 	public List<SeguroResponse> getSeguroByClienteId(Long id_cliente, Usuario usuarioLogado) {
-		Cliente cliente = verificarClienteExistente(id_cliente);
+		Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
 		securityService.validateAccess(usuarioLogado, cliente);
 		List<Seguro> seguros = seguroDAO.findSegurosByClienteId(id_cliente);
 		return seguros.stream().map(this::toResponse).toList();
@@ -182,14 +176,6 @@ public class SeguroService {
 
 	public SeguroResponse toResponse(Seguro seguro) {
 		return SeguroResponse.toSeguroResponse(seguro);
-	}
-	public Cliente verificarClienteExistente(Long id_cliente) {
-		return clienteDAO.buscarClienteporId(id_cliente)
-				.orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CLIENTE, id_cliente)));
-	}
-	public Cartao verificarCartaoExistente(Long id_cartao) {
-		return cartaoDAO.findCartaoById(id_cartao)
-				.orElseThrow(() -> new ResourceNotFoundException("Cartão com ID " + id_cartao + " não encontrado."));
 	}
 
 }
