@@ -485,5 +485,13 @@ public class ConstantUtils {
     public static final String FALLBACK_BAIRRO = "Bairro não disponível";
     public static final String FALLBACK_CIDADE = "Cidade não disponível";
     public static final String FALLBACK_ESTADO = "Estado não disponível";
-}
 
+    // SecurityService
+    public static final String INICIO_VERIFICACAO_ADMIN = "Verificando se usuário ID: {} é ADMIN.";
+    public static final String RESULTADO_VERIFICACAO_ADMIN = "Usuário ID: {} é ADMIN? {}";
+    public static final String INICIO_VERIFICACAO_OWNER = "Verificando se usuário ID: {} é proprietário do cliente ID: {}.";
+    public static final String RESULTADO_VERIFICACAO_OWNER = "Usuário ID: {} é proprietário do cliente ID: {}? {}";
+    public static final String INICIO_VALIDACAO_ACESSO = "Validando acesso do usuário ID: {} ao cliente ID: {}.";
+    public static final String ACESSO_NEGADO_LOG = "Acesso negado para usuário ID: {} ao cliente ID: {}.";
+    public static final String ACESSO_PERMITIDO_LOG = "Acesso permitido para usuário ID: {} ao cliente ID: {}.";
+}
