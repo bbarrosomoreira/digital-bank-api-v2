@@ -46,7 +46,7 @@ public class PoliticaDeTaxasDAO{
             log.info(ConstantUtils.SUCESSO_BUSCA_POLITICA_TAXAS, categoriaCliente);
             return Optional.of(politicaDeTaxas);
         } catch (EmptyResultDataAccessException e) {
-            log.warn("{} - {}", ConstantUtils.ERRO_BUSCA_POLITICA_TAXAS, ConstantUtils.RETORNO_VAZIO);
+            log.warn("{} - {}", ConstantUtils.ERRO_BUSCA_POLITICA_TAXAS + categoriaCliente, ConstantUtils.RETORNO_VAZIO);
             return Optional.empty();
         }
     }

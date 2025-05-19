@@ -91,6 +91,9 @@ public class ClienteDAO {
 		} catch (EmptyResultDataAccessException e) {
 			log.warn("{} - {}", ConstantUtils.ERRO_BUSCA_CLIENTE, ConstantUtils.RETORNO_VAZIO);
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			log.error(ConstantUtils.ERRO_BUSCA_CLIENTE, id, e);
+			throw new SystemException(ConstantUtils.ERRO_BUSCA_CLIENTE + id);
 		}
 	}
 	public Optional<Cliente> buscarClienteporUsuario(Usuario usuario) {
@@ -144,7 +147,7 @@ public class ClienteDAO {
 			}
 			log.info(ConstantUtils.SUCESSO_UPDATE_CLIENTE, cliente.getId());
 			return cliente;
-		} catch (SystemException e) {
+		} catch (DataAccessException e) {
 			log.error(ConstantUtils.ERRO_INESPERADO_UPDATE_CLIENTE, cliente.getId(), e);
 			throw new SystemException(ConstantUtils.ERRO_INESPERADO_UPDATE_CLIENTE + cliente.getId());
 		}
@@ -160,7 +163,7 @@ public class ClienteDAO {
 				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CLIENTE);
 			}
 			log.info(ConstantUtils.SUCESSO_DELETE_CLIENTE, id);
-		} catch (SystemException e) {
+		} catch (DataAccessException e) {
 			log.error(ConstantUtils.ERRO_INESPERADO_DELETE_CLIENTE, id, e);
 			throw new SystemException(ConstantUtils.ERRO_INESPERADO_UPDATE_CLIENTE + id);
 		}

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.cdb.bancodigital.model.enums.Moeda;
 import br.com.cdb.bancodigital.dto.response.ApiConversorMoedasResponse;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Service
 @Slf4j
@@ -21,7 +22,7 @@ public class ConversorMoedasService {
 
 	public Optional<ApiConversorMoedasResponse> fazerConversao(Moeda from, Moeda to, BigDecimal amount) {
 		if (from == null || to == null || amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-			log.warn("Parâmetros inválidos para conversão de moeda.");
+			log.warn(ConstantUtils.ERRO_CONVERSAO);
 			return Optional.empty();
 		}
 
@@ -29,14 +30,14 @@ public class ConversorMoedasService {
 			ApiConversorMoedasResponse resposta = conversorMoedasRestTemplate.chamarApiConversao(from, to, amount);
 			return Optional.ofNullable(resposta);
 		} catch (Exception e) {
-			log.error("Erro na conversão de moeda: {}", e.getMessage());
+			log.error(ConstantUtils.ERRO_CONVERSAO + " {}", e.getMessage());
 			return Optional.empty();
 		}
 	}
 
 	public BigDecimal converterDeBrl(Moeda to, BigDecimal amount) {
 		if (to == null || amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-			log.warn("Parâmetros inválidos para conversão de BRL.");
+			log.warn(ConstantUtils.ERRO_CONVERSAO);
 			return BigDecimal.ZERO;
 		}
 
@@ -50,7 +51,7 @@ public class ConversorMoedasService {
 				return resposta.getResult().setScale(2, RoundingMode.HALF_UP);
 			}
 		} catch (Exception e) {
-			log.error("Erro na conversão de BRL para {}: {}", to, e.getMessage());
+			log.error(ConstantUtils.ERRO_CONVERSAO + " {}", e.getMessage());
 		}
 
 		return BigDecimal.ZERO;

@@ -15,6 +15,7 @@ import br.com.cdb.bancodigital.dto.UsuarioDTO;
 import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.dto.response.LoginResponse;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 import java.util.Optional;
 
@@ -31,36 +32,36 @@ public class AuthService {
     public LoginResponse registrar(UsuarioDTO dto) {
 
         // verificar se email está em uso
-        log.info("Verificando se o e-mail já está cadastrado");
+        log.info(ConstantUtils.LOG_VERIFICANDO_EMAIL_CADASTRADO);
         Optional<Usuario> usuarioExistente = usuarioDAO.buscarUsuarioPorEmail(dto.getEmail());
         if (usuarioExistente.isPresent()) {
-            log.error("E-mail já cadastrado");
-            throw new ResourceAlreadyExistsException("E-mail já cadastrado");
+            log.error(ConstantUtils.LOG_EMAIL_JA_CADASTRADO);
+            throw new ResourceAlreadyExistsException(ConstantUtils.EXC_EMAIL_JA_CADASTRADO);
         }
-        log.info("E-mail disponível");
+        log.info(ConstantUtils.LOG_EMAIL_DISPONIVEL);
 
         // criar novo usuário e salvar no banco
-        log.info("Criando novo usuário");
+        log.info(ConstantUtils.LOG_CRIANDO_NOVO_USUARIO);
         String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
         Usuario novoUsuario = usuarioDAO.criarUsuario(dto.getEmail(), senhaCriptografada, dto.getRole());
-        log.info("Usuário criado com sucesso");
+        log.info(ConstantUtils.LOG_USUARIO_CRIADO_SUCESSO);
 
         try {
             // gerar token
-            log.info("Gerando token");
+            log.info(ConstantUtils.LOG_GERANDO_TOKEN);
             String token = jwtService.gerarToken(novoUsuario);
-            log.info("Token gerado com sucesso");
+            log.info(ConstantUtils.LOG_TOKEN_GERADO_SUCESSO);
 
             return new LoginResponse(token);
         } catch (IllegalArgumentException e) {
-            log.error("Erro ao gerar token: argumento inválido", e);
-            throw new ValidationException("Erro ao gerar token: argumento inválido.");
+            log.error(ConstantUtils.LOG_ERRO_GERAR_TOKEN_ARG, e);
+            throw new ValidationException(ConstantUtils.EXC_ERRO_GERAR_TOKEN_ARG);
         } catch (JwtException e) {
-            log.error("Erro ao gerar token JWT", e);
-            throw new ValidationException("Erro ao gerar token JWT.");
+            log.error(ConstantUtils.LOG_ERRO_GERAR_TOKEN_JWT, e);
+            throw new ValidationException(ConstantUtils.EXC_ERRO_GERAR_TOKEN_JWT);
         } catch (Exception e) {
-            log.error("Erro inesperado ao autenticar usuário", e);
-            throw new ValidationException("Erro inesperado ao autenticar usuário.");
+            log.error(ConstantUtils.LOG_ERRO_INESPERADO_AUTENTICAR, e);
+            throw new ValidationException(ConstantUtils.EXC_ERRO_INESPERADO_AUTENTICAR);
         }
 
     }
@@ -68,33 +69,33 @@ public class AuthService {
     public LoginResponse autenticar(LoginDTO dto) {
 
         // autenticar usuário
-        log.info("Autenticando usuário");
+        log.info(ConstantUtils.LOG_AUTENTICANDO_USUARIO);
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha()));
-        log.info("Usuário autenticado com sucesso");
+        log.info(ConstantUtils.LOG_USUARIO_AUTENTICADO_SUCESSO);
 
         // buscar usuário
-        log.info("Buscando usuário no banco de dados");
+        log.info(ConstantUtils.LOG_BUSCANDO_USUARIO_BANCO);
         Usuario usuario = usuarioDAO.buscarUsuarioPorEmailOuErro(dto.getEmail());
-        log.info("Usuário encontrado com sucesso");
+        log.info(ConstantUtils.LOG_USUARIO_ENCONTRADO_SUCESSO);
 
         try {
             // gerar token
-            log.info("Gerando token");
+            log.info(ConstantUtils.LOG_GERANDO_TOKEN);
             String token = jwtService.gerarToken(usuario);
-            log.info("Token gerado com sucesso");
+            log.info(ConstantUtils.LOG_TOKEN_GERADO_SUCESSO);
 
             return new LoginResponse(token);
 
         } catch (IllegalArgumentException e) {
-            log.error("Erro ao gerar token: argumento inválido", e);
-            throw new ValidationException("Erro ao gerar token: argumento inválido.");
+            log.error(ConstantUtils.LOG_ERRO_GERAR_TOKEN_ARG, e);
+            throw new ValidationException(ConstantUtils.EXC_ERRO_GERAR_TOKEN_ARG);
         } catch (JwtException e) {
-            log.error("Erro ao gerar token JWT", e);
-            throw new ValidationException("Erro ao gerar token JWT.");
+            log.error(ConstantUtils.LOG_ERRO_GERAR_TOKEN_JWT, e);
+            throw new ValidationException(ConstantUtils.EXC_ERRO_GERAR_TOKEN_JWT);
         } catch (Exception e) {
-            log.error("Erro inesperado ao autenticar usuário", e);
-            throw new ValidationException("Erro inesperado ao autenticar usuário.");
+            log.error(ConstantUtils.LOG_ERRO_INESPERADO_AUTENTICAR, e);
+            throw new ValidationException(ConstantUtils.EXC_ERRO_INESPERADO_AUTENTICAR);
         }
 
     }

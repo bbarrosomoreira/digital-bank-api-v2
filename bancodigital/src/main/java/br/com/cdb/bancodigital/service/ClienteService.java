@@ -32,6 +32,8 @@ import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigital.dto.response.ClienteResponse;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 @Service
 @AllArgsConstructor
@@ -53,31 +55,33 @@ public class ClienteService {
     public ClienteResponse cadastrarCliente(ClienteDTO dto, Usuario usuario) {
         log.info("Iniciando cadastro de cliente");
 
-        CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(dto.getCep());
-        log.info("Dados do CEP encontrados com sucesso");
-        if (cepInfo == null) {
-            log.error("Erro ao buscar dados do CEP");
-            throw new SystemException("Erro ao buscar dados do CEP");
-        }
-
+        CEP2 cepInfo = buscarEnderecoPorCep(dto.getCep());
         Cliente cliente = criarCliente(dto, usuario);
-        log.info("Cliente criado: ID {}", cliente.getId());
+        log.info("Cliente criado");
 
         validarCliente(cliente);
         log.info("Validação do cliente concluída");
 
         try {
             salvarCliente(cliente);
-            log.info("Cliente salvo no banco de dados: ID {}", cliente.getId());
-
             salvarEndereco(dto, cliente, cepInfo);
-            log.info("Endereço salvo no banco de dados para cliente ID {}", cliente.getId());
         } catch (DataAccessException e) {
-            log.error("Erro ao salvar cliente no banco: {}", e.getMessage(), e);
-            throw new SystemException("Erro interno ao salvar o cliente. Tente novamente mais tarde.");
+            log.error("Erro ao salvar cliente no banco: ID {}", cliente.getId(), e);
+            throw new SystemException("Erro interno ao salvar o cliente com ID " + cliente.getId());
         }
-        log.info("Cadastro de cliente realizado com sucesso");
+        log.info("Cadastro de cliente realizado com sucesso: ID {}", cliente.getId());
         return toResponse(cliente);
+    }
+
+    private CEP2 buscarEnderecoPorCep(String cep) {
+        try {
+            CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(cep);
+            log.info("Dados do CEP encontrados com sucesso");
+            return cepInfo;
+        } catch (HttpClientErrorException | ResourceAccessException e) {
+            log.error("Erro ao buscar CEP na BrasilAPI: {}", e.getMessage(), e);
+            throw new SystemException("Erro ao consultar CEP. Tente novamente mais tarde.");
+        }
     }
 
     // Ver cliente(s)
@@ -100,82 +104,78 @@ public class ClienteService {
 
     // deletar cadastro de cliente
     @Transactional
-    public void deleteCliente(Long id_cliente) throws AccessDeniedException {
+    public void deleteCliente(Long id_cliente) {
         log.info("Deletando cliente ID {}", id_cliente);
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
+
+        validarVinculosCliente(id_cliente);
+
         try {
-            Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
-            log.info("Cliente encontrado: ID {}", cliente.getId());
-
-            boolean temContas = contaDAO.existsByClienteId(id_cliente);
-            boolean temCartoes = cartaoDAO.existsByContaClienteId(id_cliente);
-            boolean temSeguros = seguroDAO.existsByCartaoContaClienteId(id_cliente);
-
-            if (temContas || temCartoes || temSeguros)  {
-                log.warn("Cliente ID {} possui vínculos com contas, cartões ou seguros", id_cliente);
-                throw new ValidationException("Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.");
-            }
-
-            log.info("Cliente sem vínculos e pronto para ser deletado.");
-
             clienteDAO.deletarClientePorId(cliente.getId());
             log.info("Cliente ID {} deletado com sucesso", id_cliente);
-        } catch (ValidationException e) {
-            log.warn("Erro de validação ao deletar cliente ID {}: {}", id_cliente, e.getMessage());
-            throw new ValidationException("Erro de validação ao deletar cliente");
         } catch (DataAccessException e) {
             log.error("Erro ao acessar o banco de dados ao deletar cliente ID {}: {}", id_cliente, e.getMessage(), e);
-            throw new SystemException("Erro interno ao deletar o cliente. Tente novamente mais tarde.");
-        } catch (Exception e) {
-            log.error("Erro inesperado ao deletar cliente ID {}: {}", id_cliente, e.getMessage(), e);
-            throw new SystemException("Erro inesperado ao deletar o cliente.");
+            throw new SystemException("Erro interno ao deletar o cliente com ID " + id_cliente);
+        }
+    }
+
+    private void validarVinculosCliente(Long id_cliente) {
+        boolean temContas = contaDAO.existsByClienteId(id_cliente);
+        boolean temCartoes = cartaoDAO.existsByContaClienteId(id_cliente);
+        boolean temSeguros = seguroDAO.existsByCartaoContaClienteId(id_cliente);
+
+        if (temContas || temCartoes || temSeguros) {
+            log.warn("Cliente ID {} possui vínculos com contas, cartões ou seguros", id_cliente);
+            throw new ValidationException("Cliente possui vínculos com contas, cartões ou seguros e não pode ser deletado.");
         }
     }
 
     // Atualizações de cliente
     @Transactional
     public ClienteResponse atualizarCliente(Long id_cliente, ClienteAtualizadoDTO dto, Usuario usuarioLogado) {
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
+        securityService.validateAccess(usuarioLogado, cliente);
+
+        atualizarDadosCliente(cliente, dto);
+
         try {
-            Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
-            securityService.validateAccess(usuarioLogado, cliente);
-
-            if (dto.getNome() != null) {
-                cliente.setNome(dto.getNome());
-            }
-            if (dto.getCpf() != null && !dto.getCpf().equals(cliente.getCpf())) {
-                if (receitaService.isCpfInvalidoOuInativo(dto.getCpf())) {
-                    throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
-                }
-                Validator.validarCpfUnico(clienteDAO, dto.getCpf());
-                cliente.setCpf(dto.getCpf());
-            }
-            if (dto.getDataNascimento() != null) {
-                cliente.setDataNascimento(dto.getDataNascimento());
-            }
-
-            Validator.validarMaiorIdade(cliente);
             clienteDAO.salvar(cliente);
-
-            if (possuiDadosDeEndereco(dto)) {
-                EnderecoCliente enderecoExistente = enderecoClienteDAO.buscarEnderecoporCliente(cliente).orElse(null);
-                if (enderecoExistente == null) {
-                    EnderecoCliente novoEndereco = construirEndereco(dto, cliente);
-                    enderecoClienteDAO.salvar(novoEndereco);
-                } else {
-                    atualizarEnderecoExistente(enderecoExistente, dto);
-                    enderecoClienteDAO.atualizarEndereco(enderecoExistente);
-                }
-            }
-
-            return toResponse(cliente);
-        } catch (InvalidInputParameterException e) {
-            log.warn("Erro de validação ao atualizar cliente ID {}: {}", id_cliente, e.getMessage());
-            throw e;
+            atualizarEnderecoSeNecessario(cliente, dto);
         } catch (DataAccessException e) {
             log.error("Erro ao acessar o banco de dados ao atualizar cliente ID {}: {}", id_cliente, e.getMessage(), e);
-            throw new SystemException("Erro interno ao atualizar o cliente. Tente novamente mais tarde.");
-        } catch (Exception e) {
-            log.error("Erro inesperado ao atualizar cliente ID {}: {}", id_cliente, e.getMessage(), e);
-            throw new SystemException("Erro inesperado ao atualizar o cliente.");
+            throw new SystemException("Erro interno ao atualizar o cliente com ID " + id_cliente);
+        }
+
+        return toResponse(cliente);
+    }
+
+    private void atualizarDadosCliente(Cliente cliente, ClienteAtualizadoDTO dto) {
+        if (dto.getNome() != null) {
+            cliente.setNome(dto.getNome());
+        }
+        if (dto.getCpf() != null && !dto.getCpf().equals(cliente.getCpf())) {
+            if (receitaService.isCpfInvalidoOuInativo(dto.getCpf())) {
+                throw new InvalidInputParameterException("CPF inválido ou inativo na Receita Federal");
+            }
+            Validator.validarCpfUnico(clienteDAO, dto.getCpf());
+            cliente.setCpf(dto.getCpf());
+        }
+        if (dto.getDataNascimento() != null) {
+            cliente.setDataNascimento(dto.getDataNascimento());
+        }
+        Validator.validarMaiorIdade(cliente);
+    }
+
+    private void atualizarEnderecoSeNecessario(Cliente cliente, ClienteAtualizadoDTO dto) {
+        if (possuiDadosDeEndereco(dto)) {
+            EnderecoCliente enderecoExistente = enderecoClienteDAO.buscarEnderecoporCliente(cliente).orElse(null);
+            if (enderecoExistente == null) {
+                EnderecoCliente novoEndereco = construirEndereco(dto, cliente);
+                enderecoClienteDAO.salvar(novoEndereco);
+            } else {
+                atualizarEnderecoExistente(enderecoExistente, dto);
+                enderecoClienteDAO.atualizarEndereco(enderecoExistente);
+            }
         }
     }
 
@@ -365,3 +365,4 @@ public class ClienteService {
 
 
 }
+

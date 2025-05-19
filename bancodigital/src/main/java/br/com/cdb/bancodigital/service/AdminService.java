@@ -26,6 +26,8 @@ import br.com.cdb.bancodigital.dto.response.CartaoResponse;
 import br.com.cdb.bancodigital.dto.response.ClienteResponse;
 import br.com.cdb.bancodigital.dto.response.ContaResponse;
 import br.com.cdb.bancodigital.dto.response.SeguroResponse;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 @Service
 @AllArgsConstructor
@@ -51,12 +53,7 @@ public class AdminService {
     public ClienteResponse cadastrarCliente(ClienteUsuarioDTO dto) {
         log.info("Iniciando cadastro de cliente");
 
-        CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(dto.getCep());
-        if (cepInfo == null) {
-            log.error("Erro ao buscar dados do CEP");
-            throw new CommunicationException("Erro ao buscar dados do CEP");
-        }
-        log.info("Dados do CEP {} encontrados com sucesso", cepInfo);
+        CEP2 cepInfo = buscarEnderecoPorCep(dto.getCep());
 
         Usuario usuario = criarUsuario(dto);
         log.info("Usuário criado: ID {}", usuario.getId());
@@ -67,13 +64,26 @@ public class AdminService {
         validarCliente(cliente);
         log.info("Validação do cliente concluída");
 
-        salvarCliente(cliente);
-        salvarEndereco(dto, cliente, cepInfo);
-        log.info("Cliente salvo no banco de dados: ID {}", cliente.getId());
-        log.info("Endereço salvo no banco de dados para cliente ID {}", cliente.getId());
-
-        log.info("Cadastro de cliente realizado com sucesso");
+        try {
+            salvarCliente(cliente);
+            salvarEndereco(dto, cliente, cepInfo);
+        } catch (DataAccessException e) {
+            log.error("Erro ao salvar cliente no banco: ID {}", cliente.getId(), e);
+            throw new SystemException("Erro interno ao salvar o cliente com ID " + cliente.getId());
+        }
+        log.info("Cadastro de cliente realizado com sucesso: ID {}", cliente.getId());
         return toClienteResponse(cliente);
+    }
+
+    private CEP2 buscarEnderecoPorCep(String cep) {
+        try {
+            CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(cep);
+            log.info("Dados do CEP encontrados com sucesso");
+            return cepInfo;
+        } catch (HttpClientErrorException | ResourceAccessException e) {
+            log.error("Erro ao buscar CEP na BrasilAPI: {}", e.getMessage(), e);
+            throw new SystemException("Erro ao consultar CEP. Tente novamente mais tarde.");
+        }
     }
 
     // Adicionar conta

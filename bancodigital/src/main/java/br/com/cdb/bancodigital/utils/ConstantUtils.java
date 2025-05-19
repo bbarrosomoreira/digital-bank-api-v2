@@ -38,6 +38,26 @@ public class ConstantUtils {
     public static final String INICIO_AUTENTICACAO = "Iniciando autenticação de usuário";
     public static final String SUCESSO_AUTENTICACAO = "Usuário autenticado com sucesso";
 
+    // AuthService
+    public static final String LOG_VERIFICANDO_EMAIL_CADASTRADO = "Verificando se o e-mail já está cadastrado";
+    public static final String LOG_EMAIL_JA_CADASTRADO = "E-mail já cadastrado";
+    public static final String EXC_EMAIL_JA_CADASTRADO = "E-mail já cadastrado";
+    public static final String LOG_EMAIL_DISPONIVEL = "E-mail disponível";
+    public static final String LOG_CRIANDO_NOVO_USUARIO = "Criando novo usuário";
+    public static final String LOG_USUARIO_CRIADO_SUCESSO = "Usuário criado com sucesso";
+    public static final String LOG_GERANDO_TOKEN = "Gerando token";
+    public static final String LOG_TOKEN_GERADO_SUCESSO = "Token gerado com sucesso";
+    public static final String LOG_ERRO_GERAR_TOKEN_ARG = "Erro ao gerar token: argumento inválido";
+    public static final String EXC_ERRO_GERAR_TOKEN_ARG = "Erro ao gerar token: argumento inválido.";
+    public static final String LOG_ERRO_GERAR_TOKEN_JWT = "Erro ao gerar token JWT";
+    public static final String EXC_ERRO_GERAR_TOKEN_JWT = "Erro ao gerar token JWT.";
+    public static final String LOG_ERRO_INESPERADO_AUTENTICAR = "Erro inesperado ao autenticar usuário";
+    public static final String EXC_ERRO_INESPERADO_AUTENTICAR = "Erro inesperado ao autenticar usuário.";
+    public static final String LOG_AUTENTICANDO_USUARIO = "Autenticando usuário";
+    public static final String LOG_USUARIO_AUTENTICADO_SUCESSO = "Usuário autenticado com sucesso";
+    public static final String LOG_BUSCANDO_USUARIO_BANCO = "Buscando usuário no banco de dados";
+    public static final String LOG_USUARIO_ENCONTRADO_SUCESSO = "Usuário encontrado com sucesso";
+
     // Roles
     public static final String ROLE_ADMIN = "hasRole('ADMIN')";
     public static final String ROLE_CLIENTE = "hasRole('CLIENTE')";
@@ -372,7 +392,7 @@ public class ConstantUtils {
     public static final String SUCESSO_LISTAGEM_POLITICA_TAXAS = "Políticas de taxas listadas com sucesso.";
     public static final String ERRO_LISTAGEM_POLITICA_TAXAS = "Erro ao listar políticas de taxas.";
     public static final String ERRO_POLITICA_TAXAS_NULA = "Política de taxas não pode ser nula";
-    public static final String ERRO_BUSCA_POLITICA_TAXAS = "Política de taxas não encontrada.";
+    public static final String ERRO_BUSCA_POLITICA_TAXAS = "Parâmetros não encontrados para a categoria: %s";
 
     // CPF
     public static final String INICIO_CONSULTA_CPF = "Iniciando consulta de CPF";
@@ -398,7 +418,7 @@ public class ConstantUtils {
     public static final String TIMEOUT = "Timeout";
     public static final String ERRO_INTERNO = "Erro interno";
     public static final String MENSAGEM_ERRO_INTERNO = "Ocorreu um erro inesperado. Tente novamente mais tarde.";
-    
+
     // Descrições e textos - Enums
     public static final String DESCRICAO_SEGURO_VIAGEM = "Cobertura para despesas médicas no exterior, cancelamento de voos e extravio de bagagem, com um valor base de R$10.000,00.";
     public static final String CONDICOES_SEGURO_VIAGEM = "Clientes Comum e Super: opcional por R$50,00 por mês. Clientes Premium: isento de tarifa.";
@@ -454,3 +474,4 @@ public class ConstantUtils {
     public static final String FALLBACK_CIDADE = "Cidade não disponível";
     public static final String FALLBACK_ESTADO = "Estado não disponível";
 }
+
