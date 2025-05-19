@@ -126,6 +126,7 @@ public class ConstantUtils {
     public static final String RETORNO_VAZIO = "Retornando Optional.empty()";
     public static final String ERRO_UPDATE = "Atualização não concluída. Nenhuma linha foi afetada.";
     public static final String ERRO_DELETE = "Exclusão não concluída. Nenhuma linha foi afetada.";
+    public static final String VALOR_INESPERADO = "Valor inesperado: {}";
 
     // Usuário
     public static final String USUARIO_LOGADO = "Usuário logado: ID: {}";
@@ -184,7 +185,7 @@ public class ConstantUtils {
     public static final String SUCESSO_CRIAR_ENDERECO = "Endereço criado com sucesso. ID: {}.";
     public static final String ERRO_CRIAR_ENDERECO = "Erro ao criar endereço.";
     public static final String INICIO_BUSCA_ENDERECO = "Iniciando busca de endereço para cliente com ID: {}";
-    public static final String ENDERECO_ENCONTRADO = "Endereço encontrado.";
+    public static final String ENDERECO_ENCONTRADO = "Endereço encontrado: ID {}";
     public static final String ERRO_BUSCA_ENDERECO = "Endereço não encontrado.";
     public static final String ERRO_ENDERECO_NULO = "Endereço não pode ser nulo";
     public static final String INICIO_UPDATE_ENDERECO = "Iniciando atualização de endereço com ID: {}.";
@@ -198,7 +199,7 @@ public class ConstantUtils {
     public static final String INICIO_SALVAR_CONTA = "Iniciando operação de salvar conta.";
     public static final String ERRO_SALVAR_CONTA = "Erro ao salvar conta.";
     public static final String INICIO_ABERTURA_CONTA = "Iniciando abertura de conta para cliente ID: {}";
-    public static final String SUCESSO_ABERTURA_CONTA = "Conta criada com sucesso para cliente ID: {}";
+    public static final String SUCESSO_ABERTURA_CONTA = "Abertura de conta realizada com sucesso para cliente ID: {}";
     public static final String ERRO_ABERTURA_CONTA = "Erro ao abrir conta";
     public static final String INICIO_LISTAGEM_TIPO_CONTA = "Listando tipos de contas disponíveis.";
     public static final String INICIO_BUSCA_CONTA = "Iniciando busca de conta(s)";
@@ -293,7 +294,7 @@ public class ConstantUtils {
     public static final String INICIO_SALVAR_CARTAO = "Iniciando operação de salvar cartão.";
     public static final String ERRO_SALVAR_CARTAO = "Erro ao salvar cartão.";
     public static final String INICIO_EMISSAO_CARTAO = "Iniciando emissão de cartão para cliente ID: {}";
-    public static final String SUCESSO_EMISSAO_CARTAO = "Cartão emitido com sucesso para cliente ID: {}";
+    public static final String SUCESSO_EMISSAO_CARTAO = "Emissão de cartão realizada com sucesso para cliente ID: {}";
     public static final String ERRO_EMISSAO_CARTAO = "Erro ao emitir cartão";
     public static final String INICIO_BUSCA_CARTAO = "Iniciando busca de informação de cartão(ões)";
     public static final String SUCESSO_BUSCA_CARTAO = "Informações de cartão(ões) obtidas com sucesso";
@@ -350,7 +351,7 @@ public class ConstantUtils {
     public static final String INICIO_SALVAR_SEGURO = "Iniciando operação de salvar seguro.";
     public static final String ERRO_SALVAR_SEGURO = "Erro ao salvar seguro.";
     public static final String INICIO_CONTRATACAO_SEGURO = "Iniciando contratação de seguro.";
-    public static final String SUCESSO_CONTRATACAO_SEGURO = "Seguro contratado com sucesso.";
+    public static final String SUCESSO_CONTRATACAO_SEGURO = "Contratação de seguro realizada com sucesso.";
     public static final String ERRO_CONTRATACAO_SEGURO = "Erro ao contratar seguro";
     public static final String INICIO_BUSCA_SEGURO = "Iniciando busca de informação de seguro(s)";
     public static final String SUCESSO_BUSCA_SEGURO = "Informações de seguro(s) obtidas com sucesso";
@@ -494,4 +495,37 @@ public class ConstantUtils {
     public static final String INICIO_VALIDACAO_ACESSO = "Validando acesso do usuário ID: {} ao cliente ID: {}.";
     public static final String ACESSO_NEGADO_LOG = "Acesso negado para usuário ID: {} ao cliente ID: {}.";
     public static final String ACESSO_PERMITIDO_LOG = "Acesso permitido para usuário ID: {} ao cliente ID: {}.";
+
+    // AdminService - logs customizados
+    public static final String USUARIO_CRIADO_SUCESSO = "Usuário criado: ID {}";
+    public static final String CLIENTE_CRIADO = "Cliente criado";
+    public static final String VALIDACAO_CLIENTE_CONCLUIDA = "Validação do cliente concluída";
+    public static final String ERRO_SALVAR_CLIENTE_BANCO = "Erro ao salvar cliente no banco: ID {}";
+    public static final String DADOS_CEP_SUCESSO = "Dados do CEP encontrados com sucesso";
+    public static final String ERRO_BUSCAR_CEP_BRASILAPI = "Erro ao buscar CEP na BrasilAPI: {}";
+    public static final String ERRO_BUSCAR_CEP_MENSAGEM_EXCEPTION = "Erro ao consultar CEP. Tente novamente mais tarde.";
+    public static final String ACESSO_VALIDADO = "Acesso validado";
+    public static final String ACESSO_VALIDADO_USUARIO = "Acesso validado para usuário ID {}";
+    public static final String CONTA_CRIADA = "Conta criada: ID {}";
+    public static final String CONTA_SALVA_BANCO = "Conta salva no banco de dados: ID {}";
+    public static final String ERRO_ABRIR_CONTA = "Erro ao abrir conta: {}";
+    public static final String ERRO_ABRIR_CONTA_MENSAGEM_EXCEPTION = "Erro ao abrir conta. Tente novamente mais tarde.";
+    public static final String CARTAO_CRIADO = "Cartão criado: ID {}";
+    public static final String CARTAO_SALVO_BANCO = "Cartão salvo no banco de dados: ID {}";
+    public static final String ERRO_SALVAR_CARTAO_BANCO = "Erro ao salvar o cartão no banco de dados";
+    public static final String ERRO_SALVAR_CARTAO_BANCO_MENSAGEM_EXCEPTION = "Erro ao salvar cartão. Tente novamente mais tarde.";
+    public static final String SEGURO_CRIADO = "Seguro criado: ID {}";
+    public static final String SEGURO_SALVO_BANCO = "Seguro salvo no banco de dados: ID {}";
+    public static final String ERRO_CONTRATAR_SEGURO = "Erro ao contratar seguro: {}";
+    public static final String ERRO_CONTRATAR_SEGURO_MENSAGEM_EXCEPTION = "Erro ao contratar seguro. Tente novamente mais tarde.";
+    public static final String BUSCANDO_CLIENTE_ID = "Buscando cliente por ID: {}";
+    public static final String CRIANDO_USUARIO = "Criando usuário";
+    public static final String CRIANDO_CLIENTE = "Criando cliente";
+    public static final String SALVANDO_CLIENTE_BANCO = "Salvando cliente no banco de dados";
+    public static final String SALVANDO_ENDERECO_CLIENTE = "Salvando endereço para o cliente";
+    public static final String CPF_INVALIDO_RECEITA_FEDERAL = "CPF inválido ou inativo na Receita Federal";
+    public static final String CPF_VALIDO_UNICO = "Cpf válido e único";
+    public static final String CLIENTE_MAIOR_IDADE = "Cliente maior de idade";
+    public static final String VERIFICANDO_POLITICA_TAXAS = "Verificando política de taxas";
+    public static final String POLITICA_TAXAS_ENCONTRADA = "Política de taxas encontrada";
 }

@@ -78,7 +78,7 @@ public class EnderecoClienteDAO {
                 log.warn(ConstantUtils.ERRO_ENDERECO_NULO);
                 return Optional.empty();
             }
-            log.info(ConstantUtils.ENDERECO_ENCONTRADO);
+            log.info(ConstantUtils.ENDERECO_ENCONTRADO, endereco.getId());
             return Optional.of(endereco);
         } catch (EmptyResultDataAccessException e) {
             log.warn("{} - {}", ConstantUtils.ERRO_BUSCA_ENDERECO, ConstantUtils.RETORNO_VAZIO);
