@@ -66,4 +66,16 @@ public class Validator {
             throw new InvalidInputParameterException(ConstantUtils.CARTAO_SEGUROS_VINCULADOS);
         }
     }
+    public static void verificarSaldoSuficiente(BigDecimal valor, BigDecimal saldo) {
+        if (valor.compareTo(saldo) > 0)
+            throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
+    }
+    public static void verificarCartoesVinculados(CartaoDAO cartaoDAO, Conta conta) {
+        if (cartaoDAO.existsByContaId(conta.getId()))
+            throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
+    }
+    public static void verificarSaldoRemanescente(Conta conta) {
+        if (conta.getSaldo() != null && conta.getSaldo().compareTo(BigDecimal.ZERO) > 0)
+            throw new InvalidInputParameterException("Não é possivel excluir uma conta com saldo remanescente.");
+    }
 }

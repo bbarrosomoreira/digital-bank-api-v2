@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import br.com.cdb.bancodigital.model.*;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
+import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -13,11 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.cdb.bancodigital.model.Conta;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.model.enums.Moeda;
 import br.com.cdb.bancodigital.model.enums.TipoConta;
-import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigital.dao.CartaoDAO;
 import br.com.cdb.bancodigital.dao.ClienteDAO;
@@ -49,7 +47,7 @@ public class ContaService {
     public ContaResponse abrirConta(Long id_cliente, Usuario usuarioLogado, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito) {
         Objects.requireNonNull(tipo, "Tipo de conta não pode ser nulo");
 
-        Cliente cliente = verificarClienteExistente(id_cliente);
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
         securityService.validateAccess(usuarioLogado, cliente);
         Conta contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
         contaDAO.salvar(contaNova);
@@ -58,7 +56,7 @@ public class ContaService {
     }
 
     private Conta criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
-        PoliticaDeTaxas parametros = verificarPolitiaExitente(cliente.getCategoria());
+        PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxaDAO, cliente.getCategoria());
 
         return switch (tipo) {
             case CORRENTE -> {
@@ -113,7 +111,7 @@ public class ContaService {
 
     // get conta por cliente
     public List<ContaResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
-        Cliente cliente = verificarClienteExistente(id_cliente);
+        Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
         securityService.validateAccess(usuarioLogado, cliente);
         List<Conta> contas = contaDAO.buscarContaPorClienteId(id_cliente);
         return contas.stream().map(this::toResponse).toList();
@@ -121,7 +119,7 @@ public class ContaService {
 
     // get uma conta
     public ContaResponse getContaById(Long id_conta, Usuario usuarioLogado) {
-        Conta conta = verificarContaExitente(id_conta);
+        Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);
         Cliente cliente = conta.getCliente();
         securityService.validateAccess(usuarioLogado, cliente);
         return toResponse(conta);
@@ -137,8 +135,8 @@ public class ContaService {
         }
         for (Conta conta : contas) {
             try {
-                verificarCartoesVinculados(conta);
-                verificaSaldoRemanescente(conta);
+                Validator.verificarCartoesVinculados(cartaoDAO, conta);
+                Validator.verificarSaldoRemanescente(conta);
                 Long id = conta.getId();
                 contaDAO.deletarContaPorId(conta.getId());
                 log.info("Conta ID {} deletado com sucesso", id);
@@ -153,11 +151,11 @@ public class ContaService {
     // transferencia
     @Transactional
     public TransferenciaResponse transferir(Long id_contaOrigem, Usuario usuarioLogado, Long id_contaDestino, BigDecimal valor) {
-        Conta origem = verificarContaExitente(id_contaOrigem);
-        Conta destino = verificarContaExitente(id_contaDestino);
+        Conta origem = Validator.verificarContaExistente(contaDAO, id_contaOrigem);
+        Conta destino = Validator.verificarContaExistente(contaDAO, id_contaDestino);
         Cliente cliente = origem.getCliente();
         securityService.validateAccess(usuarioLogado, cliente);
-        verificaSaldoSuficiente(valor, origem.getSaldo());
+        Validator.verificarSaldoSuficiente(valor, origem.getSaldo());
         origem.transferir(destino, valor);
         contaDAO.salvar(origem);
         contaDAO.salvar(destino);
@@ -169,11 +167,11 @@ public class ContaService {
     // pix
     @Transactional
     public PixResponse pix(Long id_contaOrigem, Usuario usuarioLogado, Long id_contaDestino, BigDecimal valor) {
-        Conta origem = verificarContaExitente(id_contaOrigem);
-        Conta destino = verificarContaExitente(id_contaDestino);
+        Conta origem = Validator.verificarContaExistente(contaDAO, id_contaOrigem);
+        Conta destino = Validator.verificarContaExistente(contaDAO, id_contaDestino);
         Cliente cliente = origem.getCliente();
         securityService.validateAccess(usuarioLogado, cliente);
-        verificaSaldoSuficiente(valor, origem.getSaldo());
+        Validator.verificarSaldoSuficiente(valor, origem.getSaldo());
         origem.pix(destino, valor);
         contaDAO.salvar(origem);
         contaDAO.salvar(destino);
@@ -184,7 +182,7 @@ public class ContaService {
 
     // get saldo
     public SaldoResponse getSaldo(Long id_conta, Usuario usuarioLogado) {
-        Conta conta = verificarContaExitente(id_conta);
+        Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);
         Cliente cliente = conta.getCliente();
         securityService.validateAccess(usuarioLogado, cliente);
         return SaldoResponse.toSaldoResponse(conta);
@@ -193,7 +191,7 @@ public class ContaService {
     // deposito
     @Transactional
     public DepositoResponse depositar(Long id_conta, BigDecimal valor) {
-        Conta conta = verificarContaExitente(id_conta);
+        Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);
         conta.depositar(valor);
         contaDAO.salvar(conta);
         return DepositoResponse.toDepositoResponse(conta.getNumeroConta(), valor, conta.getSaldo());
@@ -205,10 +203,10 @@ public class ContaService {
     // saque
     @Transactional
     public SaqueResponse sacar(Long id_conta, Usuario usuarioLogado, BigDecimal valor) {
-        Conta conta = verificarContaExitente(id_conta);
+        Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);
         Cliente cliente = conta.getCliente();
         securityService.validateAccess(usuarioLogado, cliente);
-        verificaSaldoSuficiente(valor, conta.getSaldo());
+        Validator.verificarSaldoSuficiente(valor, conta.getSaldo());
         conta.sacar(valor);
         contaDAO.salvar(conta);
         return SaqueResponse.toSaqueResponse(conta.getNumeroConta(), valor, conta.getSaldo());
@@ -219,10 +217,8 @@ public class ContaService {
     // txmanutencao
     @Transactional
     public AplicarTxManutencaoResponse debitarTarifaManutencao(Long id_conta) {
-        Conta cc = contaDAO.buscarContaPorId(id_conta)
-                .orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
-
-        verificaSaldoSuficiente(cc.getTarifaManutencao(), cc.getSaldo());
+        Conta cc = Validator.verificarContaExistente(contaDAO, id_conta);
+        Validator.verificarSaldoSuficiente(cc.getTarifaManutencao(), cc.getSaldo());
         cc.aplicarTarifaManutencao();
         contaDAO.salvar(cc);
         return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), cc.getTarifaManutencao(), cc.getSaldo());
@@ -231,9 +227,7 @@ public class ContaService {
     // rendimento
     @Transactional
     public AplicarTxRendimentoResponse creditarRendimento(Long id_conta) {
-        Conta cp = contaDAO.buscarContaPorId(id_conta)
-                .orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
-
+        Conta cp = Validator.verificarContaExistente(contaDAO, id_conta);
         cp.aplicarRendimento();
         contaDAO.salvar(cp);
         return AplicarTxRendimentoResponse.toAplicarTxRendimentoResponse(cp.getNumeroConta(), cp.getTaxaRendimento(), cp.getSaldo());
@@ -259,36 +253,6 @@ public class ContaService {
             response.setSaldoEmReais(conta.getSaldoEmReais());
         }
         return response;
-    }
-
-    public void verificaSaldoRemanescente(Conta conta) {
-        if (conta.getSaldo() != null && conta.getSaldo().compareTo(BigDecimal.ZERO) > 0)
-            throw new InvalidInputParameterException("Não é possivel excluir uma conta com saldo remanescente.");
-    }
-
-    public void verificarCartoesVinculados(Conta conta) {
-        if (cartaoDAO.existsByContaId(conta.getId()))
-            throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
-    }
-
-    public Conta verificarContaExitente(Long id_conta) {
-        return contaDAO.buscarContaPorId(id_conta)
-                .orElseThrow(() -> new ResourceNotFoundException("Conta com ID " + id_conta + " não encontrada."));
-    }
-
-    public PoliticaDeTaxas verificarPolitiaExitente(CategoriaCliente categoria) {
-        return politicaDeTaxaDAO.findByCategoria(categoria)
-                .orElseThrow(() -> new ResourceNotFoundException("Parâmetros não encontrados para a categoria: " + categoria));
-    }
-
-    public Cliente verificarClienteExistente(Long id_cliente) {
-        return clienteDAO.buscarClienteporId(id_cliente)
-                .orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CLIENTE));
-    }
-
-    public void verificaSaldoSuficiente(BigDecimal valor, BigDecimal saldo) {
-        if (valor.compareTo(saldo) > 0)
-            throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
     }
 
 }
