@@ -58,6 +58,18 @@ public class ConstantUtils {
     public static final String LOG_BUSCANDO_USUARIO_BANCO = "Buscando usuário no banco de dados";
     public static final String LOG_USUARIO_ENCONTRADO_SUCESSO = "Usuário encontrado com sucesso";
 
+    // JwtService
+    public static final String JWT_GERANDO_TOKEN = "Iniciando geração de token para o usuário.";
+    public static final String JWT_TOKEN_GERADO_SUCESSO = "Token gerado com sucesso.";
+    public static final String JWT_EXTRAINDO_USERNAME = "Extraindo username do token.";
+    public static final String JWT_EXTRAINDO_CLAIM = "Extraindo claim do token.";
+    public static final String JWT_EXTRAINDO_TODOS_CLAIMS = "Extraindo todos os claims do token.";
+    public static final String JWT_VALIDANDO_TOKEN = "Validando token para o usuário.";
+    public static final String JWT_TOKEN_VALIDO = "Token válido.";
+    public static final String JWT_TOKEN_INVALIDO = "Token inválido.";
+    public static final String JWT_TOKEN_EXPIRADO = "Token expirado.";
+    public static final String JWT_EXTRAINDO_EXPIRACAO = "Extraindo data de expiração do token.";
+
     // Roles
     public static final String ROLE_ADMIN = "hasRole('ADMIN')";
     public static final String ROLE_CLIENTE = "hasRole('CLIENTE')";

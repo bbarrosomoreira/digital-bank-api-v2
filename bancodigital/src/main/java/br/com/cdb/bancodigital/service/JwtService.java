@@ -26,14 +26,14 @@ public class JwtService {
 	}
 	
 	public String gerarToken(UserDetails usuario) {
-		log.info(ConstantUtils.JWT_GERANDO_TOKEN, usuario.getUsername());
+		log.info(ConstantUtils.JWT_GERANDO_TOKEN);
 		String token = Jwts.builder()
 				.setSubject(usuario.getUsername())
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2)) // expira em 2h
 				.signWith(getChaveAssinatura(), SignatureAlgorithm.HS256)
 				.compact();
-		log.info(ConstantUtils.JWT_TOKEN_GERADO_SUCESSO, usuario.getUsername());
+		log.info(ConstantUtils.JWT_TOKEN_GERADO_SUCESSO);
 		return token;
 	}
 	
@@ -56,13 +56,13 @@ public class JwtService {
 				.getBody();
 	}
 	public boolean tokenValido(String token, UserDetails userDetails) {
-		log.info(ConstantUtils.JWT_VALIDANDO_TOKEN, userDetails.getUsername());
+		log.info(ConstantUtils.JWT_VALIDANDO_TOKEN);
 		final String username = extrairUsername(token);
 		boolean valido = (username != null && username.equals(userDetails.getUsername()) && !tokenExpirado(token));
 		if (valido) {
-			log.info(ConstantUtils.JWT_TOKEN_VALIDO, userDetails.getUsername());
+			log.info(ConstantUtils.JWT_TOKEN_VALIDO);
 		} else {
-			log.warn(ConstantUtils.JWT_TOKEN_INVALIDO, userDetails.getUsername());
+			log.warn(ConstantUtils.JWT_TOKEN_INVALIDO);
 		}
 		return valido;
 	}
