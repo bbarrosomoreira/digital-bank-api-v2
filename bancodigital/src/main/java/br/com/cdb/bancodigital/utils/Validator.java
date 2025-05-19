@@ -68,7 +68,7 @@ public class Validator {
     }
     public static void verificarSaldoSuficiente(BigDecimal valor, BigDecimal saldo) {
         if (valor.compareTo(saldo) > 0)
-            throw new InvalidInputParameterException("Saldo insuficiente para esta transação.");
+            throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_INSUFICIENTE);
     }
     public static void verificarCartoesVinculados(CartaoDAO cartaoDAO, Conta conta) {
         if (cartaoDAO.existsByContaId(conta.getId()))

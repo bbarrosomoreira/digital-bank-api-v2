@@ -228,8 +228,10 @@ public class ConstantUtils {
     public static final String APLICACAO_TARIFA_MANUTENCAO = "APLICAÇÃO TARIFA MANUTENÇÃO";
     public static final String APLICACAO_RENDIMENTO = "APLICAÇÃO RENDIMENTO";
     public static final String SUCESSO_TRANSACAO_CONTA = "Transação {} realizada com sucesso";
+    public static final String ERRO_TRANSACAO_CONTA = "Erro ao realizar transação na conta ID: {}";
     public static final String INICIO_LEITURA_SALDO = "Iniciando consulta de saldo da conta ID: {}";
     public static final String SUCESSO_LEITURA_SALDO = "Saldo consultado com sucesso";
+    public static final String SALDO_SUFICIENTE = "Saldo suficiente para a transação";
     public static final String INICIO_CRIAR_CONTA_BANCO_DADOS = "Iniciando criação de conta no banco de dados";
     public static final String SUCESSO_CRIAR_CONTA_BANCO_DADOS = "Conta criada no banco de dados com sucesso";
     public static final String ERRO_CRIAR_CONTA_BANCO_DADOS = "Erro ao criar conta no banco de dados";
@@ -364,7 +366,7 @@ public class ConstantUtils {
     public static final String CARTAO_DELETADO_SUCESSO = "Cartão ID {} deletado com sucesso";
     public static final String ERRO_DELETAR_CARTAO = "Falha ao deletar cartão ID {}";
     public static final String ERRO_DELETAR_CARTAO_MENSAGEM = "Erro ao deletar cartão: ";
-    public static final String ERRO_SALDO_INSUFICIENTE = "Saldo insuficiente para esta transação. Saldo atual: ";
+    public static final String ERRO_SALDO_INSUFICIENTE = "Saldo insuficiente para esta transação.";
     public static final String ERRO_LIMITE_CONSUMIDO = "Limite não pode ser alterado, pois o limite consumido é maior do que o novo valor de limite.";
 
     // Seguro

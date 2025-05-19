@@ -149,6 +149,7 @@ public class CartaoService {
     // deletar cartoes de cliente
     @Transactional
     public void deleteCartoesByCliente(Long id_cliente) {
+        log.info(ConstantUtils.INICIO_DELETE_CARTAO, id_cliente);
         List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
         if (cartoes.isEmpty()) {
             log.info(ConstantUtils.CLIENTE_SEM_CARTOES, id_cliente);
@@ -179,7 +180,7 @@ public class CartaoService {
         Validator.verificarLimiteSuficiente(valor, cartao.getLimiteAtual());
 
         if (cartao.getTipoCartao().equals(TipoCartao.DEBITO) && cartao.getLimiteAtual().compareTo(valor) < 0) {
-            throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_INSUFICIENTE + cartao.getConta().getSaldo());
+            throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_INSUFICIENTE);
         }
 
         cartao.realizarPagamento(valor);
@@ -247,7 +248,7 @@ public class CartaoService {
 
         Validator.verificarCartaoAtivo(ccr.getStatus());
         if (ccr.getTotalFatura().compareTo(ccr.getConta().getSaldo()) > 0)
-            throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_INSUFICIENTE + (ccr.getConta().getSaldo()));
+            throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_INSUFICIENTE);
 
         ccr.pagarFatura();
         cartaoDAO.salvar(ccr);
