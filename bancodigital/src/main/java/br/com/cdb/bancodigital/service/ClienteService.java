@@ -85,17 +85,22 @@ public class ClienteService {
 
     // Ver cliente(s)
     public List<ClienteResponse> getClientes() throws AccessDeniedException { //só admin
+        log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
         List<Cliente> clientes = clienteDAO.buscarTodosClientes();
         return clientes.stream().map(this::toResponse).toList();
     }
 
     public Cliente getClienteById(Long id_cliente, Usuario usuarioLogado) {
+        log.info(ConstantUtils.INICIO_BUSCA_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
+        log.info(ConstantUtils.CLIENTE_ENCONTRADO, cliente.getId());
         securityService.validateAccess(usuarioLogado, cliente);
+        log.info(ConstantUtils.ACESSO_VALIDADO);
         return cliente;
     }
 
     public ClienteResponse buscarClienteDoUsuario(Usuario usuario) {
+        log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
         Cliente cliente = clienteDAO.buscarClienteporUsuario(usuario)
                 .orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_CLIENTE_NAO_ENCONTRADO_USUARIO_LOGADO));
         return toResponse(cliente);

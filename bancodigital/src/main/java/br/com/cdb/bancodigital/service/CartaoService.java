@@ -135,13 +135,17 @@ public class CartaoService {
 
     // get um cartao
     public CartaoResponse getCartaoById(Long id_cartao, Usuario usuarioLogado) {
+        log.info(ConstantUtils.INICIO_BUSCA_CARTAO, id_cartao);
         Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
+        log.info(ConstantUtils.CARTAO_ENCONTRADO, cartao.getId());
         securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
+        log.info(ConstantUtils.ACESSO_VALIDADO);
         return toResponse(cartao);
     }
 
     // get cartão por usuário
     public List<CartaoResponse> listarPorUsuario(Usuario usuario) {
+        log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_USUARIO, usuario.getId());
         List<Cartao> cartoes = cartaoDAO.findByContaClienteUsuario(usuario);
         return cartoes.stream().map(this::toResponse).toList();
     }

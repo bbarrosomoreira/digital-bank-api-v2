@@ -313,6 +313,7 @@ public class ConstantUtils {
     public static final String INICIO_BUSCA_CARTAO = "Iniciando busca de informação de cartão(ões)";
     public static final String SUCESSO_BUSCA_CARTAO = "Informações de cartão(ões) obtidas com sucesso";
     public static final String CARTAO_ENCONTRADO = "Cartão encontrado com sucesso";
+    public static final String CARTAO_ATIVO = "Cartão ativo";
     public static final String ERRO_BUSCA_CARTAO = "Cartão ID %d não encontrado.";
     public static final String INICIO_EXCLUSAO_CARTAO = "Iniciando exclusão de cartão para cliente ID: {}";
     public static final String SUCESSO_EXCLUSAO_CARTAO = "Cartão excluído com sucesso para cliente ID: {}";
@@ -385,14 +386,18 @@ public class ConstantUtils {
     public static final String SUCESSO_LISTAGEM_TIPO_SEGURO = "Tipos de seguros listados com sucesso.";
     public static final String INICIO_DELETE_SEGURO = "Iniciando exclusão de seguro para cliente ID: {}";
     public static final String SUCESSO_DELETE_SEGURO = "Seguro excluído com sucesso para cliente ID: {}";
-    public static final String INICIO_ACIONAMENTO_SEGURO = "Iniciando acionamento de seguro tipo {}";
+    public static final String INICIO_ACIONAMENTO_SEGURO = "Iniciando acionamento de seguro.";
     public static final String SEGURO_FRAUDE = "FRAUDE";
     public static final String SEGURO_VIAGEM = "VIAGEM";
     public static final String SUCESSO_ACIONAMENTO_SEGURO = "Acionamento de seguro {} realizado com sucesso";
+    public static final String ERRO_ACIONAMENTO_SEGURO = "Erro ao acionar seguro";
+    public static final String ERRO_SEGURO_DESATIVADO = "Seguro desativado - operação bloqueada";
     public static final String INICIO_DEBITO_PREMIO_SEGURO = "Iniciando débito de prêmio de seguro ID: {}";
     public static final String SUCESSO_DEBITO_PREMIO_SEGURO = "Débito de prêmio de seguro realizado com sucesso";
+    public static final String ERRO_DEBITO_PREMIO_SEGURO = "Erro ao debitar prêmio de seguro";
     public static final String INICIO_CANCELAMENTO_SEGURO = "Iniciando cancelamento de seguro ID: {}";
     public static final String SUCESSO_CANCELAMENTO_SEGURO = "Cancelamento de seguro realizado com sucesso";
+    public static final String ERRO_CANCELAMENTO_SEGURO = "Erro ao cancelar seguro";
     public static final String INICIO_CRIAR_SEGURO_BANCO_DADOS = "Iniciando criação de seguro no banco de dados";
     public static final String SUCESSO_CRIAR_SEGURO_BANCO_DADOS = "Seguro criado no banco de dados com sucesso";
     public static final String ERRO_CRIAR_SEGURO_BANCO_DADOS = "Erro ao criar seguro no banco de dados";
