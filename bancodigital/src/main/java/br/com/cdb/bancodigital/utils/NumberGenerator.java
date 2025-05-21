@@ -13,39 +13,39 @@ public class NumberGenerator {
         throw new IllegalStateException("Utility class");
     }
 
+    private static final Set<String> numerosContaGerados = new HashSet<>();
+    private static final Set<String> numerosCartaoGerados = new HashSet<>();
+    private static final Set<String> numerosApoliceGerados = new HashSet<>();
+
     public static String gerarNumeroConta(TipoConta tipoConta) {
         SecureRandom secureRandom = new SecureRandom();
-        return switch (tipoConta) {
-            case CORRENTE -> {
-                yield "CC-" + (1000 + secureRandom.nextInt(9000));
-            }
-            case POUPANCA -> {
-                yield "CP-" + (5000 + secureRandom.nextInt(9000));
-            }
-            case INTERNACIONAL -> {
-                yield "CI-" + (10000 + secureRandom.nextInt(9000));
-            }
-        };
+        String numeroConta;
+        do {
+            numeroConta = switch (tipoConta) {
+                case CORRENTE -> "CC-" + (1000 + secureRandom.nextInt(9000));
+                case POUPANCA -> "CP-" + (5000 + secureRandom.nextInt(9000));
+                case INTERNACIONAL -> "CI-" + (10000 + secureRandom.nextInt(9000));
+            };
+        } while (!numerosContaGerados.add(numeroConta)); // Gera até encontrar um número único
+        return numeroConta;
     }
 
     public static String gerarNumeroCartao() {
         SecureRandom secureRandom = new SecureRandom();
-        StringBuilder numeroCartao = new StringBuilder();
-
-        // Define o primeiro dígito (Visa = 4, Mastercard = 5)
-        int primeiroDigito = secureRandom.nextBoolean() ? 4 : 5;
-        numeroCartao.append(primeiroDigito);
-
-        // Gera os outros 15 dígitos
-        for (int i = 1; i < 16; i++) {
-            numeroCartao.append(secureRandom.nextInt(10)); // Números de 0 a 9
-        }
-
-        // Aplica a formatação para "XXXX XXXX XXXX XXXX"
-        return numeroCartao.toString().replaceAll("(.{4})", "$1 ").trim();
+        String numeroCartaoFormatado;
+        String numeroCartao;
+        do {
+            StringBuilder sb = new StringBuilder();
+            int primeiroDigito = secureRandom.nextBoolean() ? 4 : 5;
+            sb.append(primeiroDigito);
+            for (int i = 1; i < 16; i++) {
+                sb.append(secureRandom.nextInt(10));
+            }
+            numeroCartao = sb.toString();
+            numeroCartaoFormatado = numeroCartao.replaceAll("(.{4})", "$1 ").trim();
+        } while (!numerosCartaoGerados.add(numeroCartao)); // Gera até encontrar um número único
+        return numeroCartaoFormatado;
     }
-
-    private static final Set<String> numerosApoliceGerados = new HashSet<>();
 
     public static String gerarNumeroApolice() {
         String numeroApolice;
@@ -53,6 +53,5 @@ public class NumberGenerator {
             numeroApolice = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         } while (!numerosApoliceGerados.add(numeroApolice)); // Gera até encontrar um número único
         return numeroApolice;
-
     }
 }
