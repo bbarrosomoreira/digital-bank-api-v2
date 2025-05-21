@@ -98,7 +98,10 @@ public class EnderecoClienteDAO {
     public EnderecoCliente atualizarEndereco(EnderecoCliente endereco) {
         log.info(ConstantUtils.INICIO_UPDATE_ENDERECO);
         try {
-            int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_ENDERECO_CLIENTE,
+            Integer linhasAfetadas = jdbcTemplate.queryForObject(
+                    SqlQueries.SQL_UPDATE_ENDERECO_CLIENTE,
+                    Integer.class,
+                    endereco.getId(),
                     endereco.getCep(),
                     endereco.getRua(),
                     endereco.getNumero(),
@@ -106,9 +109,9 @@ public class EnderecoClienteDAO {
                     endereco.getBairro(),
                     endereco.getCidade(),
                     endereco.getEstado(),
-                    endereco.getId()
+                    endereco.getCliente().getId()
             );
-            if (linhasAfetadas == 0) {
+            if (linhasAfetadas == null || linhasAfetadas == 0) {
                 log.warn(ConstantUtils.ERRO_UPDATE);
                 throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_ENDERECO);
             }
