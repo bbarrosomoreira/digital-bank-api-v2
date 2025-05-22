@@ -1,0 +1,15 @@
+CREATE OR REPLACE FUNCTION public_lst_all_seg_v1()
+
+RETURNS SETOF seguro
+
+LANGUAGE 'plpgsql'
+
+AS $BODY$
+
+BEGIN
+		RETURN QUERY
+
+		SELECT * FROM seguro;
+
+END;
+$BODY$

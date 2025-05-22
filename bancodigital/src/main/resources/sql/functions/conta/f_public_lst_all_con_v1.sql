@@ -1,0 +1,15 @@
+CREATE OR REPLACE FUNCTION public_lst_all_con_v1()
+
+RETURNS SETOF conta
+
+LANGUAGE 'plpgsql'
+
+AS $BODY$
+
+BEGIN
+		RETURN QUERY
+
+		SELECT * FROM conta;
+
+END;
+$BODY$
