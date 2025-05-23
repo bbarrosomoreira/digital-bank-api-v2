@@ -105,24 +105,12 @@ public class SeguroDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_SEGURO);
 		}
 	}
-	public List<Seguro> buscarSegurosPorTipoECliente(Long clienteId, String tipoSeguro) {
-		log.info(ConstantUtils.INICIO_BUSCA_SEGURO_POR_TIPO, clienteId, tipoSeguro);
-		try {
-			List<Seguro> seguros = jdbcTemplate.query(SqlQueries.SQL_READ_SEGURO_BY_TIPO_CLIENTE, seguroMapper, clienteId, tipoSeguro);
-			log.info(ConstantUtils.SUCESSO_BUSCA_SEGURO_POR_TIPO, clienteId, tipoSeguro);
-			return seguros;
-		} catch (SystemException e) {
-			log.error(ConstantUtils.ERRO_BUSCA_SEGURO_POR_TIPO, clienteId, tipoSeguro, e);
-			throw new SystemException(ConstantUtils.ERRO_BUSCA_SEGURO_POR_TIPO);
-		}
-	}
 	public boolean existsByCartaoId(Long cartaoId) {
 		log.info(ConstantUtils.INICIO_VERIFICAR_SEGURO_POR_CARTAO, cartaoId);
 		try {
-			Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_SEGURO_CARTAO, Integer.class, cartaoId);
-			boolean exists = count != null && count > 0;
+			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_SEGURO_CARTAO, Boolean.class, cartaoId);
 			log.info(ConstantUtils.SUCESSO_VERIFICAR_SEGURO_POR_CARTAO, cartaoId, exists);
-			return exists;
+			return Boolean.TRUE.equals(exists);
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_VERIFICAR_SEGURO_POR_CARTAO, cartaoId, e);
 			throw new SystemException(ConstantUtils.ERRO_VERIFICAR_SEGURO_POR_CARTAO);
@@ -131,10 +119,9 @@ public class SeguroDAO {
 	public boolean existsByCartaoContaClienteId(Long clienteId) {
 		log.info(ConstantUtils.INICIO_VERIFICAR_SEGURO_POR_CLIENTE, clienteId);
 		try {
-			Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_SEGURO_CLIENTE, Integer.class, clienteId);
-			boolean exists = count != null && count > 0;
+			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_SEGURO_CLIENTE, Boolean.class, clienteId);
 			log.info(ConstantUtils.SUCESSO_VERIFICAR_SEGURO_POR_CLIENTE, clienteId, exists);
-			return exists;
+			return Boolean.TRUE.equals(exists);
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_VERIFICAR_SEGURO_POR_CLIENTE, clienteId, e);
 			throw new SystemException(ConstantUtils.ERRO_VERIFICAR_SEGURO_POR_CLIENTE);

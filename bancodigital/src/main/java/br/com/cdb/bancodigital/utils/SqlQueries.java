@@ -52,15 +52,17 @@ public class SqlQueries {
     // SeguroDAO
     public static final String SQL_CREATE_SEGURO = "SELECT * FROM public_contratar_seguro_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     public static final String SQL_READ_ALL_SEGUROS = "SELECT * FROM public_lst_all_seg_v1()";
-    public static final String SQL_READ_SEGURO_BY_ID = "SELECT * FROM seguro WHERE id = ?";
+    public static final String SQL_READ_SEGURO_BY_ID = "SELECT * FROM public_lst_seg_id_v1(?)";
+
     public static final String SQL_READ_SEGURO_BY_CARTAO = "SELECT * FROM seguro WHERE cartao_id = ?";
     public static final String SQL_READ_SEGURO_BY_CARTAO_CLIENTE_ID = "SELECT s.* FROM seguro s JOIN cartao c ON s.cartao_id = c.id JOIN conta ct ON c.conta_id = ct.id WHERE ct.cliente_id = ?";
-    public static final String SQL_READ_SEGURO_BY_TIPO_CLIENTE = "SELECT s.* FROM seguro s JOIN cartao c ON s.cartao_id = c.id JOIN conta ct ON c.conta_id = ct.id WHERE ct.cliente_id = ? AND s.tipo_seguro = ?";
-    public static final String SQL_COUNT_SEGURO_CARTAO = "SELECT COUNT(*) FROM seguro WHERE cartao_id = ?";
-    public static final String SQL_COUNT_SEGURO_CLIENTE = "SELECT COUNT(*) FROM seguro s JOIN cartao c ON s.cartao_id = c.id JOIN conta ct ON c.conta_id = ct.id WHERE ct.cliente_id = ?";
     public static final String SQL_READ_SEGURO_BY_CARTAO_CLIENTE_USUARIO = "SELECT s.* FROM seguro s JOIN cartao c ON s.cartao_id = c.id JOIN conta ct ON c.conta_id = ct.id JOIN cliente cl ON ct.cliente_id = cl.id WHERE cl.usuario_id = ?";
-    public static final String SQL_UPDATE_SEGURO = "UPDATE seguro SET tipo_seguro = ?, num_apolice = ?, cartao_id = ?, data_contratacao = ?, valor_apolice = ?, descricao_condicoes = ?, premio_apolice = ?, status_seguro = ?, data_acionamento = ?, valor_fraude = ? WHERE id = ?";
-    public static final String SQL_DELETE_SEGURO = "DELETE FROM seguro WHERE id = ?";
+
+    public static final String SQL_EXIST_SEGURO_CARTAO = "SELECT COUNT(*) FROM seguro WHERE cartao_id = ?";
+    public static final String SQL_EXIST_SEGURO_CLIENTE = "SELECT COUNT(*) FROM seguro s JOIN cartao c ON s.cartao_id = c.id JOIN conta ct ON c.conta_id = ct.id WHERE ct.cliente_id = ?";
+
+    public static final String SQL_UPDATE_SEGURO = "SELECT public_upd_seg_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public static final String SQL_DELETE_SEGURO = "SELECT public_dlt_seg_v1(?)";
 
     // PoliticaDeTaxasDAO
     public static final String SQL_READ_ALL_POLITICA_DE_TAXAS = "SELECT * FROM public_listar_politica_de_taxas_v1()";
