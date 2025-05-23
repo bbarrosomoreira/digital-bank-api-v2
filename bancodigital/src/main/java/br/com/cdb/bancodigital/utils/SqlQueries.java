@@ -16,11 +16,11 @@ public class SqlQueries {
     // ClienteDAO
     public static final String SQL_CREATE_CLIENTE = "SELECT * FROM public_cadastrar_cliente_v1(?, ?, ?, ?, ?)";
     public static final String SQL_READ_ALL_CLIENTES = "SELECT * FROM public_lst_all_cli_v1()";
-    public static final String SQL_READ_CLIENTE_BY_ID = "SELECT * FROM cliente WHERE id = ?";
-    public static final String SQL_READ_CLIENTE_BY_USUARIO = "SELECT * FROM cliente WHERE usuario_id = ?";
+    public static final String SQL_READ_CLIENTE_BY_ID = "SELECT * FROM public_lst_cli_id_v1(?)";
+    public static final String SQL_READ_CLIENTE_BY_USUARIO = "SELECT * FROM public_lst_cli_usu_id_v1(?)";
     public static final String SQL_COUNT_CLIENTE = "SELECT COUNT(*) FROM cliente WHERE cpf = ?";
-    public static final String SQL_UPDATE_CLIENTE = "UPDATE cliente SET nome = ?, cpf = ?, categoria = ?, data_nascimento = ? WHERE id = ?";
-    public static final String SQL_DELETE_CLIENTE = "DELETE FROM cliente WHERE id = ?";
+    public static final String SQL_UPDATE_CLIENTE = "SELECT public_upd_cli_v1(?, ?, ?, ?, ?, ?)";
+    public static final String SQL_DELETE_CLIENTE = "SELECT public_dlt_cli_v1(?)";
 
     // EnderecoClienteDAO
     public static final String SQL_CREATE_ENDERECO_CLIENTE = "SELECT * FROM public_cadastrar_endereco_cliente_v1(?, ?, ?, ?, ?, ?, ?, ?)";

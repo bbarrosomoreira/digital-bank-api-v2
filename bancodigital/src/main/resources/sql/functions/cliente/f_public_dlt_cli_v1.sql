@@ -1,0 +1,17 @@
+CREATE OR REPLACE FUNCTION public_dlt_cli_v1(
+	p_id BIGINT
+)
+RETURNS INT
+
+LANGUAGE 'plpgsql'
+
+AS $BODY$
+
+BEGIN
+		DELETE FROM cliente
+		WHERE id = p_id;
+
+		RETURN FOUND::INT;
+
+END;
+$BODY$

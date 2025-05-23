@@ -116,8 +116,7 @@ public class ClienteDAO {
 		log.info(ConstantUtils.INICIO_VERIFICAR_CLIENTE_CPF);
 		// O resultado será o número de registros encontrados (1 ou mais)
 		try {
-			Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CLIENTE, Integer.class, cpf);
-			boolean exists = count != null && count > 0;
+			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CLIENTE, Boolean.class, cpf);
 			log.info(ConstantUtils.SUCESSO_VERIFICAR_CLIENTE_CPF);
 			return exists;
 		} catch (EmptyResultDataAccessException e) {
