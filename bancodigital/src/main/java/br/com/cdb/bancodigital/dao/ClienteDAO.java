@@ -118,10 +118,7 @@ public class ClienteDAO {
 		try {
 			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CLIENTE, Boolean.class, cpf);
 			log.info(ConstantUtils.SUCESSO_VERIFICAR_CLIENTE_CPF);
-			return exists;
-		} catch (EmptyResultDataAccessException e) {
-			log.warn(ConstantUtils.VAZIO_VERIFICAR_CLIENTE_CPF);
-			return false;  // Retorna false se não houver registros
+			return Boolean.TRUE.equals(exists);
 		} catch (DataAccessException e) {
 			log.error(ConstantUtils.ERRO_VERIFICAR_CLIENTE_CPF, e);
 			throw new CommunicationException(ConstantUtils.ERRO_VERIFICAR_CLIENTE_CPF + e.getMessage());

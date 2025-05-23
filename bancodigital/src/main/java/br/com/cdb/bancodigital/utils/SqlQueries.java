@@ -18,7 +18,7 @@ public class SqlQueries {
     public static final String SQL_READ_ALL_CLIENTES = "SELECT * FROM public_lst_all_cli_v1()";
     public static final String SQL_READ_CLIENTE_BY_ID = "SELECT * FROM public_lst_cli_id_v1(?)";
     public static final String SQL_READ_CLIENTE_BY_USUARIO = "SELECT * FROM public_lst_cli_usu_id_v1(?)";
-    public static final String SQL_COUNT_CLIENTE = "SELECT COUNT(*) FROM cliente WHERE cpf = ?";
+    public static final String SQL_COUNT_CLIENTE = "SELECT public_ext_cli_cpf_v1(?)";
     public static final String SQL_UPDATE_CLIENTE = "SELECT public_upd_cli_v1(?, ?, ?, ?, ?, ?)";
     public static final String SQL_DELETE_CLIENTE = "SELECT public_dlt_cli_v1(?)";
 
