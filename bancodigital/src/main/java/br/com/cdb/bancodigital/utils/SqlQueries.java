@@ -18,7 +18,7 @@ public class SqlQueries {
     public static final String SQL_READ_ALL_CLIENTES = "SELECT * FROM public_lst_all_cli_v1()";
     public static final String SQL_READ_CLIENTE_BY_ID = "SELECT * FROM public_lst_cli_id_v1(?)";
     public static final String SQL_READ_CLIENTE_BY_USUARIO = "SELECT * FROM public_lst_cli_usu_id_v1(?)";
-    public static final String SQL_COUNT_CLIENTE = "SELECT public_ext_cli_cpf_v1(?)";
+    public static final String SQL_EXIST_CLIENTE = "SELECT public_ext_cli_cpf_v1(?)";
     public static final String SQL_UPDATE_CLIENTE = "SELECT public_upd_cli_v1(?, ?, ?, ?, ?, ?)";
     public static final String SQL_DELETE_CLIENTE = "SELECT public_dlt_cli_v1(?)";
 
@@ -30,26 +30,24 @@ public class SqlQueries {
     // ContaDAO
     public static final String SQL_CREATE_CONTA = "SELECT * FROM public_abrir_conta_v1(?, ?, ?, ?, ?, ?, ?, ?, ?)";
     public static final String SQL_READ_ALL_CONTAS = "SELECT * FROM public_lst_all_con_v1()";
-    public static final String SQL_READ_CONTA_BY_ID = "SELECT * FROM conta WHERE id = ?";
-    public static final String SQL_COUNT_CONTA = "SELECT COUNT(*) FROM conta WHERE cliente_id = ?";
-    public static final String SQL_READ_CONTA_BY_CLIENTE = "SELECT * FROM conta WHERE cliente_id = ?";
-    public static final String SQL_READ_CONTA_BY_CLIENTE_USUARIO = "SELECT c.* FROM conta c JOIN cliente cl ON c.cliente_id = cl.id WHERE cl.usuario_id = ?";
-    public static final String SQL_READ_CONTA_BY_TIPO_CLIENTE = "SELECT * FROM conta WHERE cliente_id = ? AND tipo_conta = ?";
-    public static final String SQL_UPDATE_CONTA = "UPDATE conta SET numero_conta = ?, saldo = ?, moeda = ?, cliente_id = ?, data_criacao = ?, tipo_conta = ?, tarifa_manutencao = ?, taxa_rendimento = ?, saldo_em_reais = ? WHERE id = ?";
-    public static final String SQL_DELETE_CONTA = "DELETE FROM conta WHERE id = ?";
+    public static final String SQL_READ_CONTA_BY_ID = "SELECT * FROM public_lst_con_id_v1(?)";
+    public static final String SQL_READ_CONTA_BY_CLIENTE = "SELECT * FROM public_lst_con_cli_id_v1(?)";
+    public static final String SQL_READ_CONTA_BY_CLIENTE_USUARIO = "SELECT * FROM public_lst_con_usu_id_v1(?)";
+    public static final String SQL_EXIST_CONTA = "SELECT public_ext_con_cli_id_v1(?)";
+    public static final String SQL_UPDATE_CONTA = "SELECT public_upd_con_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public static final String SQL_DELETE_CONTA = "SELECT public_dlt_con_v1(?)";
 
     // CartaoDAO
     public static final String SQL_CREATE_CARTAO = "SELECT * FROM public_emitir_cartao_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     public static final String SQL_READ_ALL_CARTOES = "SELECT * FROM public_lst_all_crt_v1()";
-    public static final String SQL_READ_CARTAO_BY_ID = "SELECT * FROM cartao WHERE id = ?";
-    public static final String SQL_READ_CARTAO_BY_CONTA = "SELECT * FROM cartao WHERE conta_id = ?";
-    public static final String SQL_COUNT_CARTAO_CONTA = "SELECT COUNT(*) FROM cartao WHERE conta_id = ?";
-    public static final String SQL_COUNT_CARTAO_CLIENTE = "SELECT COUNT(*) FROM cartao cartao JOIN conta conta ON cartao.conta_id = conta.id WHERE conta.cliente_id = ?";
-    public static final String SQL_READ_CARTAO_BY_CONTA_CLIENTE_USUARIO = "SELECT c.* FROM cartao c JOIN conta conta ON c.conta_id = conta.id JOIN cliente cliente ON conta.cliente_id = cliente.id WHERE cliente.usuario_id = ?";
-    public static final String SQL_READ_CARTAO_BY_CONTA_CLIENTE_ID = "SELECT c.* FROM cartao c JOIN conta conta ON c.conta_id = conta.id WHERE conta.cliente_id = ?";
-    public static final String SQL_READ_CARTAO_BY_TIPO_CLIENTE = "SELECT c.* FROM cartao c JOIN conta conta ON c.conta_id = conta.id WHERE conta.cliente_id = ? AND c.tipo_cartao = ?";
-    public static final String SQL_UPDATE_CARTAO = "UPDATE cartao SET tipo_cartao = ?, numero_cartao = ?, conta_id = ?, status = ?, senha = ?, data_emissao = ?, data_vencimento = ?, taxa_utilizacao = ?, limite = ?, limite_atual = ?, total_fatura = ?, total_fatura_paga = ? WHERE id = ?";
-    public static final String SQL_DELETE_CARTAO = "DELETE FROM cartao WHERE id = ?";
+    public static final String SQL_READ_CARTAO_BY_ID = "SELECT * FROM public_lst_crt_id_v1(?)";
+    public static final String SQL_READ_CARTAO_BY_CONTA = "SELECT * FROM public_lst_crt_con_id_v1(?)";
+    public static final String SQL_READ_CARTAO_BY_CONTA_CLIENTE_ID = "SELECT * FROM public_lst_crt_cli_id_v1(?)";
+    public static final String SQL_READ_CARTAO_BY_CONTA_CLIENTE_USUARIO = "SELECT * FROM public_lst_crt_usu_id_v1(?)";
+    public static final String SQL_EXIST_CARTAO_CONTA = "SELECT public_ext_crt_con_id_v1(?)";
+    public static final String SQL_EXIST_CARTAO_CLIENTE = "SELECT public_ext_crt_cli_id_v1(?)";
+    public static final String SQL_UPDATE_CARTAO = "SELECT public_upd_crt_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public static final String SQL_DELETE_CARTAO = "SELECT public_dlt_crt_v1(?)";
 
     // SeguroDAO
     public static final String SQL_CREATE_SEGURO = "SELECT * FROM public_contratar_seguro_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
