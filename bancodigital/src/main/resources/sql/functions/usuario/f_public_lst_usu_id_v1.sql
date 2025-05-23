@@ -14,7 +14,7 @@ DECLARE
 BEGIN
 		SELECT * INTO v_usuario_encontrado
 		FROM usuario
-		WHERE usuario_id = p_usuario_id;
+		WHERE id = p_usuario_id;
 
 		RETURN v_usuario_encontrado;
 

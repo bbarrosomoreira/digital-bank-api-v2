@@ -12,7 +12,7 @@ BEGIN
 		RETURN QUERY
 		SELECT *
 		FROM seguro
-		WHERE seguro_id = p_seguro_id;
+		WHERE id = p_seguro_id;
 
 END;
 $BODY$

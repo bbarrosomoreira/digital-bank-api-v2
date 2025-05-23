@@ -12,7 +12,7 @@ BEGIN
 		RETURN QUERY
 		SELECT *
 		FROM cartao
-		WHERE cartao_id = p_cartao_id;
+		WHERE id = p_cartao_id;
 
 END;
 $BODY$

@@ -14,7 +14,7 @@ DECLARE
 BEGIN
 		SELECT * INTO v_conta_encontrado
 		FROM conta
-		WHERE conta_id = p_conta_id;
+		WHERE id = p_conta_id;
 
 		RETURN v_conta_encontrado;
 
