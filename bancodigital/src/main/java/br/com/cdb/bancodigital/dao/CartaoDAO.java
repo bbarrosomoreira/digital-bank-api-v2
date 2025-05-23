@@ -109,10 +109,9 @@ public class CartaoDAO {
 	public boolean existsByContaId(Long contaId) {
 		log.info(ConstantUtils.INICIO_VERIFICAR_CARTAO_POR_CONTA, contaId);
 		try {
-			Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CARTAO_CONTA, Integer.class, contaId);
-			boolean exists = count != null && count > 0;
+			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_CARTAO_CONTA, Boolean.class, contaId);
 			log.info(ConstantUtils.SUCESSO_VERIFICAR_CARTAO_POR_CONTA, contaId, exists);
-			return exists;
+			return Boolean.TRUE.equals(exists);
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CONTA, contaId, e);
 			throw new SystemException(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CONTA);
@@ -121,10 +120,9 @@ public class CartaoDAO {
 	public boolean existsByContaClienteId(Long clienteId) {
 		log.info(ConstantUtils.INICIO_VERIFICAR_CARTAO_POR_CLIENTE, clienteId);
 		try {
-			Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CARTAO_CLIENTE, Integer.class, clienteId);
-			boolean exists = count != null && count > 0;
+			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_CARTAO_CLIENTE, Boolean.class, clienteId);
 			log.info(ConstantUtils.SUCESSO_VERIFICAR_CARTAO_POR_CLIENTE, clienteId, exists);
-			return exists;
+			return Boolean.TRUE.equals(exists);
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CLIENTE, clienteId, e);
 			throw new SystemException(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CLIENTE);
@@ -150,17 +148,6 @@ public class CartaoDAO {
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_BUSCA_CARTAO_POR_CLIENTE, clienteId, e);
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO_POR_CLIENTE);
-		}
-	}
-	public List<Cartao> buscarCartoesPorTipoECliente(Long clienteId, String tipoCartao) {
-		log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_TIPO, clienteId, tipoCartao);
-		try {
-			List<Cartao> cartoes = jdbcTemplate.query(SqlQueries.SQL_READ_CARTAO_BY_TIPO_CLIENTE, cartaoMapper, clienteId, tipoCartao);
-			log.info(ConstantUtils.SUCESSO_BUSCA_CARTAO_POR_TIPO, clienteId, tipoCartao);
-			return cartoes;
-		} catch (SystemException e) {
-			log.error(ConstantUtils.ERRO_BUSCA_CARTAO_POR_TIPO, clienteId, tipoCartao, e);
-			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO_POR_TIPO);
 		}
 	}
 

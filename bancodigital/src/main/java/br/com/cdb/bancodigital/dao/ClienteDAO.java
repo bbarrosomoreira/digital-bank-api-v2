@@ -114,9 +114,8 @@ public class ClienteDAO {
 	// Verificar se existe cliente com o CPF
 	public boolean existsByCpf(String cpf) {
 		log.info(ConstantUtils.INICIO_VERIFICAR_CLIENTE_CPF);
-		// O resultado será o número de registros encontrados (1 ou mais)
 		try {
-			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CLIENTE, Boolean.class, cpf);
+			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_CLIENTE, Boolean.class, cpf);
 			log.info(ConstantUtils.SUCESSO_VERIFICAR_CLIENTE_CPF);
 			return Boolean.TRUE.equals(exists);
 		} catch (DataAccessException e) {

@@ -12,7 +12,6 @@ import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -99,13 +98,9 @@ public class ContaDAO {
 	public boolean existsByClienteId(Long clienteId) {
 		log.info(ConstantUtils.INICIO_VERIFICAR_CONTA_CLIENTE);
 		try {
-			Integer count = jdbcTemplate.queryForObject(SqlQueries.SQL_COUNT_CONTA, Integer.class, clienteId);
-			boolean exists = count != null && count > 0;
+			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_CONTA, Boolean.class, clienteId);
 			log.info(ConstantUtils.SUCESSO_VERIFICAR_CONTA_CLIENTE);
-			return exists;
-		} catch (EmptyResultDataAccessException e) {
-			log.warn(ConstantUtils.VAZIO_VERIFICAR_CONTA_CLIENTE);
-			return false;  // Retorna false se não houver registros
+			return Boolean.TRUE.equals(exists);
 		} catch (CommunicationException e) {
 			log.error(ConstantUtils.ERRO_VERIFICAR_CONTA_CLIENTE, e);
 			throw new CommunicationException(ConstantUtils.ERRO_VERIFICAR_CONTA_CLIENTE + e.getMessage());
@@ -131,17 +126,6 @@ public class ContaDAO {
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_BUSCA_CONTA_POR_USUARIO, usuario.getId(), e);
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CONTA_POR_USUARIO);
-		}
-	}
-	public List<Conta> buscarContasPorTipoPorCliente(Long clienteId, String tipoConta) {
-		log.info(ConstantUtils.INICIO_BUSCA_CONTA_POR_TIPO, clienteId, tipoConta);
-		try {
-			List<Conta> contas = jdbcTemplate.query(SqlQueries.SQL_READ_CONTA_BY_TIPO_CLIENTE, contaMapper, clienteId, tipoConta);
-			log.info(ConstantUtils.SUCESSO_BUSCA_CONTA_POR_TIPO, clienteId, tipoConta);
-			return contas;
-		} catch (SystemException e) {
-			log.error(ConstantUtils.ERRO_BUSCA_CONTA_POR_TIPO, clienteId, tipoConta, e);
-			throw new SystemException(ConstantUtils.ERRO_BUSCA_CONTA_POR_TIPO);
 		}
 	}
 
