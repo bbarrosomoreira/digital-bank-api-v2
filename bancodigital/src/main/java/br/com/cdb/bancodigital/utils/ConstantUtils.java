@@ -307,7 +307,7 @@ public class ConstantUtils {
     public static final String ERRO_CARTAO_NULO = "Cartão não pode ser nulo";
     public static final String INICIO_SALVAR_CARTAO = "Iniciando operação de salvar cartão.";
     public static final String ERRO_SALVAR_CARTAO = "Erro ao salvar cartão.";
-    public static final String INICIO_EMISSAO_CARTAO = "Iniciando emissão de cartão para cliente ID: {}";
+    public static final String INICIO_EMISSAO_CARTAO = "Iniciando emissão de cartão para cliente.";
     public static final String SUCESSO_EMISSAO_CARTAO = "Emissão de cartão realizada com sucesso para cliente ID: {}";
     public static final String ERRO_EMISSAO_CARTAO = "Erro ao emitir cartão";
     public static final String INICIO_BUSCA_CARTAO = "Iniciando busca de informação de cartão(ões)";

@@ -115,7 +115,7 @@ public class AdminService {
     // Emitir cartao
     @Transactional
     public CartaoResponse emitirCartao(Long id_conta, Usuario usuarioLogado, TipoCartao tipo, String senha) {
-        log.info(ConstantUtils.INICIO_EMISSAO_CARTAO, id_conta);
+        log.info(ConstantUtils.INICIO_EMISSAO_CARTAO);
 
         Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);
         log.info(ConstantUtils.CONTA_ENCONTRADA, conta.getId());
@@ -300,6 +300,7 @@ public class AdminService {
         return switch (tipo) {
             case FRAUDE -> {
                 Seguro sf = new Seguro(ccr);
+                sf.setTipoSeguro(tipo);
                 sf.setValorApolice(parametros.getValorApoliceFraude());
                 sf.setPremioApolice(parametros.getTarifaSeguroFraude());
                 sf.setDescricaoCondicoes(TipoSeguro.FRAUDE.getDescricao());
@@ -307,6 +308,7 @@ public class AdminService {
             }
             case VIAGEM -> {
                 Seguro sv = new Seguro(ccr);
+                sv.setTipoSeguro(tipo);
                 sv.setValorApolice(parametros.getValorApoliceViagem());
                 sv.setPremioApolice(parametros.getTarifaSeguroViagem());
                 sv.setDescricaoCondicoes(TipoSeguro.VIAGEM.getDescricao());

@@ -52,7 +52,7 @@ public class CartaoService {
     // add cartao
     @Transactional
     public CartaoResponse emitirCartao(Long id_conta, Usuario usuarioLogado, TipoCartao tipo, String senha) {
-        log.info(ConstantUtils.INICIO_EMISSAO_CARTAO, id_conta);
+        log.info(ConstantUtils.INICIO_EMISSAO_CARTAO);
 
         // Busca e validações
         Conta conta = Validator.verificarContaExistente(contaDAO, id_conta);

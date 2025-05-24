@@ -78,7 +78,7 @@ public class AdminController {
 			@Valid @RequestBody EmitirCartaoDTO dto,
 			Authentication authentication) {
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_EMISSAO_CARTAO, id_cliente);
+		log.info(ConstantUtils.INICIO_EMISSAO_CARTAO);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
