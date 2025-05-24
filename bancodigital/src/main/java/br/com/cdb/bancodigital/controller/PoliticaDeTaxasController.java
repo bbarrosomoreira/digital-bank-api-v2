@@ -2,18 +2,16 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
+import br.com.cdb.bancodigital.dto.PoliticaTaxaDTO;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.service.PoliticaDeTaxasService;
 
 @RestController
@@ -27,12 +25,11 @@ public class PoliticaDeTaxasController {
 	@GetMapping(ConstantUtils.GET_CATEGORIA)
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	public ResponseEntity<PoliticaDeTaxas> buscarPorCategoria(
-			@PathVariable CategoriaCliente categoria){
+			@Valid @RequestBody PoliticaTaxaDTO dto) {
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_BUSCA_POLITICA_TAXAS, categoria);
-
-		PoliticaDeTaxas parametros = parametrosService.buscarParametosPorCategoria(categoria);
-		log.info(ConstantUtils.SUCESSO_BUSCA_POLITICA_TAXAS, categoria);
+		log.info(ConstantUtils.INICIO_BUSCA_POLITICA_TAXAS, dto.getCategoria());
+		PoliticaDeTaxas parametros = parametrosService.buscarParametosPorCategoria(dto.getCategoria());
+		log.info(ConstantUtils.SUCESSO_BUSCA_POLITICA_TAXAS, dto.getCategoria());
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
