@@ -20,7 +20,9 @@ public class SqlQueries {
     public static final String SQL_READ_CLIENTE_BY_USUARIO = "SELECT * FROM public.lst_cli_usu_id_v1(?)";
     public static final String SQL_EXIST_CLIENTE = "SELECT public.ext_cli_cpf_v1(?)";
     public static final String SQL_UPDATE_CLIENTE = "SELECT public.upd_cli_v1(?, ?, ?, ?, ?, ?)";
+    public static final String SQL_UPDATE_CATEGORIA_CLIENTE = "CALL public.upd_cnd_cli_cat_v1(?, ?)";
     public static final String SQL_DELETE_CLIENTE = "SELECT public.dlt_cli_v1(?)";
+    public static final String SQL_VALIDAR_VINCULOS_CLIENTE = "CALL public.vld_vnc_cli_v1(?)";
 
     // endClienteDAO
     public static final String SQL_CREATE_ENDERECO_CLIENTE = "SELECT * FROM public.add_end_cli_v1(?, ?, ?, ?, ?, ?, ?, ?)";

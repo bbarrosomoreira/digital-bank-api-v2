@@ -4,7 +4,7 @@ import java.util.List;
 
 import br.com.cdb.bancodigital.dao.*;
 import br.com.cdb.bancodigital.dto.ClienteAtualizadoDTO;
-import br.com.cdb.bancodigital.exceptions.custom.SystemException;
+import br.com.cdb.bancodigital.exceptions.custom.*;
 import br.com.cdb.bancodigital.resttemplate.BrasilApiRestTemplate;
 import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
 import br.com.cdb.bancodigital.utils.Validator;
@@ -18,17 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brasilapi.api.CEP2;
 import br.com.cdb.bancodigital.dto.ClienteDTO;
-import br.com.cdb.bancodigital.model.Cartao;
 import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.Conta;
 import br.com.cdb.bancodigital.model.EnderecoCliente;
-import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.model.Seguro;
 import br.com.cdb.bancodigital.model.Usuario;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
-import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigital.dto.response.ClienteResponse;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
@@ -41,10 +34,6 @@ public class ClienteService {
 
     private final ClienteDAO clienteDAO;
     private final EnderecoClienteDAO enderecoClienteDAO;
-    private final ContaDAO contaDAO;
-    private final CartaoDAO cartaoDAO;
-    private final SeguroDAO seguroDAO;
-    private final PoliticaDeTaxasDAO politicaDeTaxasDAO;
     private final ReceitaFederalRestTemplate receitaService;
     private final SecurityService securityService;
     private final BrasilApiRestTemplate brasilApiRestTemplate;
@@ -112,7 +101,12 @@ public class ClienteService {
         log.info(ConstantUtils.INICIO_DELETE_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
 
-        validarVinculosCliente(id_cliente);
+        try {
+            clienteDAO.validarVinculosCliente(id_cliente);
+        } catch (DataAccessException e) {
+            log.warn(ConstantUtils.CLIENTE_POSSUI_VINCULOS, id_cliente);
+            throw new ValidationException(ConstantUtils.ERRO_CLIENTE_POSSUI_VINCULOS);
+        }
 
         try {
             clienteDAO.deletarClientePorId(cliente.getId());
@@ -123,20 +117,11 @@ public class ClienteService {
         }
     }
 
-    private void validarVinculosCliente(Long id_cliente) {
-        boolean temContas = contaDAO.existsByClienteId(id_cliente);
-        boolean temCartoes = cartaoDAO.existsByContaClienteId(id_cliente);
-        boolean temSeguros = seguroDAO.existsByCartaoContaClienteId(id_cliente);
-
-        if (temContas || temCartoes || temSeguros) {
-            log.warn(ConstantUtils.CLIENTE_POSSUI_VINCULOS, id_cliente);
-            throw new ValidationException(ConstantUtils.ERRO_CLIENTE_POSSUI_VINCULOS);
-        }
-    }
 
     // Atualizações de cliente
     @Transactional
     public ClienteResponse atualizarCliente(Long id_cliente, ClienteAtualizadoDTO dto, Usuario usuarioLogado) {
+        log.info(ConstantUtils.INICIO_UPDATE_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
         securityService.validateAccess(usuarioLogado, cliente);
 
@@ -184,33 +169,24 @@ public class ClienteService {
     }
 
     @Transactional
-    public ClienteResponse updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) throws AccessDeniedException { // só admin
+    public void updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) throws AccessDeniedException {
+        log.info(ConstantUtils.INICIO_UPDATE_CATEGORIA_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
-        if (cliente.getCategoria().equals(novaCategoria))
+        log.info(ConstantUtils.CLIENTE_ENCONTRADO, cliente.getId());
+        if (cliente.getCategoria().equals(novaCategoria)) {
+            log.error(ConstantUtils.ERRO_CLIENTE_JA_NA_CATEGORIA, id_cliente, novaCategoria);
             throw new InvalidInputParameterException(ConstantUtils.ERRO_CLIENTE_JA_NA_CATEGORIA + id_cliente + novaCategoria);
+        }
 
-        cliente.setCategoria(novaCategoria);
-
-        atualizarTaxasDoCliente(id_cliente, novaCategoria);
-
-        return toResponse(cliente);
-    }
-
-    @Transactional
-    public void atualizarTaxasDoCliente(Long id_cliente, CategoriaCliente novaCategoria) {
         try {
-            PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxasDAO, novaCategoria);
-
-            atualizarTaxasDasContas(id_cliente, parametros);
-            atualizarTaxasDosCartoes(id_cliente, parametros);
-            atualizarTaxasDosSeguros(id_cliente, parametros);
-
-        } catch (InvalidInputParameterException e) {
-            log.warn(ConstantUtils.ERRO_VALIDACAO_ATUALIZACAO_CATEGORIA, id_cliente, e.getMessage());
-            throw e;
+            clienteDAO.atualizarCondicoesPorCategoria(id_cliente, novaCategoria);
+            log.info(ConstantUtils.SUCESSO_UPDATE_CATEGORIA_CLIENTE, id_cliente, novaCategoria);
         } catch (DataAccessException e) {
-            log.error(ConstantUtils.ERRO_BANCO_DADOS_ATUALIZACAO_CATEGORIA, id_cliente, e.getMessage(), e);
-            throw new SystemException(ConstantUtils.ERRO_INTERNO_ATUALIZACAO_CATEGORIA);
+            log.error(ConstantUtils.ERRO_ACESSO_DADOS, e.getMessage(), e);
+            throw new CommunicationException(ConstantUtils.ERRO_ACESSO_DADOS);
+        } catch (Exception e) {
+            log.error(ConstantUtils.ERRO_UPDATE_CATEGORIA_CLIENTE, id_cliente, e.getMessage(), e);
+            throw new SystemException(ConstantUtils.ERRO_UPDATE_CATEGORIA_CLIENTE + id_cliente);
         }
     }
 
@@ -219,70 +195,7 @@ public class ClienteService {
         EnderecoCliente endereco = enderecoClienteDAO.buscarEnderecoporClienteOuErro(cliente);
         return new ClienteResponse(cliente, endereco);
     }
-    @Transactional
-    public void atualizarTaxasDasContas(Long id_cliente, PoliticaDeTaxas parametros) {
-        List<Conta> contas = contaDAO.buscarContaPorClienteId(id_cliente);
 
-        if (contas.isEmpty()) {
-            log.info(ConstantUtils.CLIENTE_SEM_CONTAS, id_cliente);
-        } else {
-            contas.forEach(conta -> {
-                switch (conta.getTipoConta()) {
-                    case CORRENTE -> {
-                        conta.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
-                    }
-                    case POUPANCA -> {
-                        conta.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
-                    }
-                    case INTERNACIONAL -> {
-                        conta.setTarifaManutencao(parametros.getTarifaManutencaoContaInternacional());
-                    }
-                }
-                contaDAO.salvar(conta);
-            });
-        }
-    }
-    @Transactional
-    public void atualizarTaxasDosCartoes(Long id_cliente, PoliticaDeTaxas parametros) {
-        List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
-
-        if (cartoes.isEmpty()) {
-            log.info(ConstantUtils.CLIENTE_SEM_CARTOES, id_cliente);
-        } else {
-            cartoes.forEach(cartao -> {
-                switch (cartao.getTipoCartao()) {
-                    case CREDITO -> {
-                        cartao.setLimite(parametros.getLimiteCartaoCredito());
-                    }
-                    case DEBITO -> {
-                        cartao.setLimite(parametros.getLimiteDiarioDebito());
-                    }
-                }
-                cartaoDAO.salvar(cartao);
-            });
-        }
-    }
-    @Transactional
-    public void atualizarTaxasDosSeguros(Long id_cliente, PoliticaDeTaxas parametros) {
-        List<Seguro> seguros = seguroDAO.findSegurosByClienteId(id_cliente);
-
-        if (seguros.isEmpty()) {
-            log.info(ConstantUtils.CLIENTE_SEM_SEGUROS, id_cliente);
-        } else {
-            seguros.forEach(seguro -> {
-                switch (seguro.getTipoSeguro()) {
-                    case FRAUDE -> {
-                        seguro.setPremioApolice(parametros.getTarifaSeguroFraude());
-                    }
-                    case VIAGEM -> {
-                        seguro.setPremioApolice(parametros.getTarifaSeguroViagem());
-                    }
-                }
-
-                seguroDAO.salvar(seguro);
-            });
-        }
-    }
     private boolean possuiDadosDeEndereco(ClienteAtualizadoDTO dto) {
         return dto.getRua() != null || dto.getNumero() != null || dto.getComplemento() != null ||
                 dto.getBairro() != null || dto.getCidade() != null || dto.getEstado() != null || dto.getCep() != null;

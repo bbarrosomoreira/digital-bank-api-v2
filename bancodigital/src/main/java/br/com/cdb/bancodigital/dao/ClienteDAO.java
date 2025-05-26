@@ -6,6 +6,7 @@ import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.mapper.ClienteMapper;
 import br.com.cdb.bancodigital.model.Cliente;
 import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.sql.CallableStatement;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -124,6 +127,15 @@ public class ClienteDAO {
 		}
 	}
 
+	public void validarVinculosCliente(Long id) {
+		log.info(ConstantUtils.INICIO_VALIDAR_VINCULOS_CLIENTE, id);
+		jdbcTemplate.call(con -> {
+					CallableStatement cs = con.prepareCall(SqlQueries.SQL_VALIDAR_VINCULOS_CLIENTE);
+					cs.setLong(1, id);
+					return cs;
+				}, Collections.emptyList());
+	}
+
 	// UPDATE | Atualizar clientes
 	private Cliente atualizarCliente(Cliente cliente) {
 		log.info(ConstantUtils.INICIO_UPDATE_CLIENTE, cliente.getId());
@@ -146,6 +158,12 @@ public class ClienteDAO {
 			log.error(ConstantUtils.ERRO_INESPERADO_UPDATE_CLIENTE, cliente.getId(), e);
 			throw new SystemException(ConstantUtils.ERRO_INESPERADO_UPDATE_CLIENTE + cliente.getId());
 		}
+	}
+
+	// UPDATE | Atualizar categoria do cliente
+	public void atualizarCondicoesPorCategoria(Long id, CategoriaCliente novaCategoria) {
+		log.info(ConstantUtils.INICIO_UPDATE_CATEGORIA_CLIENTE, id);
+		jdbcTemplate.update(SqlQueries.SQL_UPDATE_CATEGORIA_CLIENTE, id, novaCategoria.name());
 	}
 
 	// DELETE | Excluir clientes

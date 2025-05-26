@@ -10,6 +10,7 @@ public class ConstantUtils {
     public static final String INICIO_CONEXAO_BANCO = "Iniciando conexão com o banco de dados";
     public static final String SUCESSO_CONEXAO_BANCO = "Conexão com o banco de dados estabelecida com sucesso";
     public static final String ERRO_CONEXAO_BANCO = "Erro ao estabelecer conexão com o banco de dados";
+    public static final String ERRO_ACESSO_DADOS = "Erro ao acessar dados no banco de dados";
 
     // Autenticação e Autorização
     public static final String INICIO_FILTRO_JWT = "Iniciando o filtro de autenticação JWT";
@@ -178,6 +179,7 @@ public class ConstantUtils {
     public static final String SUCESSO_UPDATE_CLIENTE = "Cliente atualizado com sucesso ID: {}";
     public static final String ERRO_INESPERADO_UPDATE_CLIENTE = "Erro inesperado ao atualizar cliente com ID: {}";
     public static final String ERRO_INESPERADO_DELETE_CLIENTE = "Erro inesperado ao deletar cliente com ID: {}";
+    public static final String INICIO_VALIDAR_VINCULOS_CLIENTE = "Iniciando validação de vínculos do cliente ID: {}";
 
     // ClienteService
     public static final String CLIENTE_POSSUI_VINCULOS = "Cliente ID {} possui vínculos com contas, cartões ou seguros";
@@ -189,6 +191,9 @@ public class ConstantUtils {
     public static final String ERRO_VALIDACAO_ATUALIZACAO_CATEGORIA = "Erro de validação ao atualizar categoria do cliente com ID {}: ";
     public static final String ERRO_BANCO_DADOS_ATUALIZACAO_CATEGORIA = "Erro ao acessar o banco de dados ao atualizar categoria do cliente com ID {}: ";
     public static final String ERRO_INTERNO_ATUALIZACAO_CATEGORIA = "Erro ao atualizar Política de Taxas do cliente. Tente novamente mais tarde.";
+    public static final String INICIO_UPDATE_CATEGORIA_CLIENTE = "Iniciando atualização de categoria do cliente com ID: {}";
+    public static final String SUCESSO_UPDATE_CATEGORIA_CLIENTE = "Categoria do cliente e suas respectivas condições atualizadas com sucesso. ID: {}";
+    public static final String ERRO_UPDATE_CATEGORIA_CLIENTE = "Erro ao atualizar categoria do cliente com ID: {}. Verifique os dados informados e tente novamente.";
 
     // EnderecoCliente
     public static final String INICIO_SALVAR_ENDERECO = "Iniciando operação de salvar endereço.";

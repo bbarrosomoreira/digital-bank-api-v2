@@ -164,18 +164,18 @@ public class ClienteController {
 	
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PatchMapping(ConstantUtils.CATEGORIA_EP + ConstantUtils.CLIENTE_ID)
-	public ResponseEntity<ClienteResponse> updateCategoriaCliente(
+	public ResponseEntity<Void> updateCategoriaCliente(
 			@PathVariable Long id_cliente, 
-			@Valid @RequestBody AtualizarCategoriaClienteDTO dto) {
+			@Valid @RequestBody AtualizarCategoriaClienteDTO dto){
 		long startTime = System.currentTimeMillis();
 		log.info(ConstantUtils.INICIO_ATUALIZACAO_CATEGORIA_CLIENTE, id_cliente);
 		
-		ClienteResponse atualizado = clienteService.updateCategoriaCliente(id_cliente, dto.getCategoriaCliente());
+		clienteService.updateCategoriaCliente(id_cliente, dto.getCategoriaCliente());
 		log.info(ConstantUtils.SUCESSO_ATUALIZACAO_CATEGORIA_CLIENTE);
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
-		return ResponseEntity.ok(atualizado);
+		return ResponseEntity.noContent().build();
 	}
 	
 }

@@ -8,9 +8,11 @@ import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigital.model.*;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.model.enums.Status;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 
+@Slf4j
 public class Validator {
 
     private Validator() {

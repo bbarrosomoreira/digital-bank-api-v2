@@ -19,7 +19,7 @@ BEGIN
 
     -- 2. Busca política da nova categoria
     SELECT * INTO v_politica
-    FROM politica_taxa
+    FROM politica_de_taxas
     WHERE categoria = p_nova_categoria;
 
     -- 3. Verifica se cliente possui conta
@@ -30,9 +30,16 @@ BEGIN
 	IF v_possui_conta THEN
 		-- Atualiza conta(s)
 	    UPDATE conta
-	    SET tarifa_manutencao_mensal_conta_corrente = v_politica.tarifa_manutencao_mensal_conta_corrente,
-	        rendimento_percentual_mensal_conta_poupanca = v_politica.rendimento_percentual_mensal_conta_poupanca,
-			tarifa_manutencao_conta_internacional = v_politica.tarifa_manutencao_conta_internacional
+	    SET
+			tarifa_manutencao = CASE
+				WHEN tipo_conta = 'CORRENTE' THEN v_politica.tarifa_manutencao_mensal_conta_corrente
+				WHEN tipo_conta = 'INTERNACIONAL' THEN v_politica.tarifa_manutencao_conta_internacional
+				ELSE tarifa_manutencao
+			END,
+			taxa_rendimento = CASE
+				WHEN tipo_conta = 'POUPANCA' THEN v_politica.rendimento_percentual_mensal_conta_poupanca
+				ELSE taxa_rendimento
+			END
 	    WHERE cliente_id = p_cliente_id;
 
 	    -- 4. Verifica se cliente possui cartão
@@ -46,18 +53,29 @@ BEGIN
 		IF v_possui_cartao THEN
 			-- Atualiza cartão(ões)
 		    UPDATE cartao
-		    SET limite_cartao_credito = v_politica.limite_cartao_credito,
-		        limite_diario_debito = v_politica.limite_diario_debito
+		    SET
+				limite = CASE
+					WHEN tipo_cartao = 'CREDITO' THEN v_politica.limite_cartao_credito
+					WHEN tipo_cartao = 'DEBITO' THEN v_politica.limite_diario_debito
+					ELSE limite
+				END
 		    WHERE conta_id IN (
 		        SELECT id FROM conta WHERE cliente_id = p_cliente_id
 		    );
 
 		    -- 5. Atualiza seguro(s)
 		    UPDATE seguro
-		    SET tarifa_seguro_viagem = v_politica.tarifa_seguro_viagem,
-		        tarifa_seguro_fraude = v_politica.tarifa_seguro_fraude,
-				valor_apolice_fraude = v_politica.valor_apolice_fraude,
-				valor_apolice_viagem = v_politica.valor_apolice_viagem
+		    SET
+				premio_apolice = CASE
+					WHEN tipo_seguro = 'VIAGEM' THEN v_politica.tarifa_seguro_viagem
+					WHEN tipo_seguro = 'FRAUDE' THEN v_politica.tarifa_seguro_fraude
+					ELSE premio_apolice
+				END,
+				valor_apolice = CASE
+					WHEN tipo_seguro = 'FRAUDE' THEN v_politica.valor_apolice_fraude
+					WHEN tipo_seguro = 'VIAGEM' THEN v_politica.valor_apolice_viagem
+					ELSE valor_apolice
+				END
 		    WHERE cartao_id IN (
 		        SELECT id FROM cartao
 		        WHERE conta_id IN (
