@@ -123,7 +123,8 @@ public class AdminService {
         securityService.validateAccess(usuarioLogado, conta.getCliente());
         log.info(ConstantUtils.ACESSO_VALIDADO_USUARIO, usuarioLogado.getId());
 
-        Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senha);
+        String senhaCriptografada = passwordEncoder.encode(senha);
+        Cartao cartaoNovo = criarCartaoPorTipo(tipo, conta, senhaCriptografada);
         log.info(ConstantUtils.CARTAO_CRIADO, cartaoNovo.getId());
 
         try {
