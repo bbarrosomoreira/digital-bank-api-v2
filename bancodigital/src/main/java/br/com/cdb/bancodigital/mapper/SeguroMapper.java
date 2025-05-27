@@ -29,7 +29,7 @@ public class SeguroMapper implements RowMapper<Seguro> {
         seguro.setNumApolice(rs.getString("num_apolice"));
 
         Long cartaoId = rs.getLong("cartao_id");
-        Cartao cartao = cartaoDAO.findCartaoById(cartaoId)
+        Cartao cartao = cartaoDAO.buscarCartaoById(cartaoId)
                         .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CARTAO + cartaoId));
         seguro.setCartao(cartao);
 

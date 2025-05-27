@@ -105,28 +105,6 @@ public class SeguroDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_SEGURO);
 		}
 	}
-	public boolean existsByCartaoId(Long cartaoId) {
-		log.info(ConstantUtils.INICIO_VERIFICAR_SEGURO_POR_CARTAO, cartaoId);
-		try {
-			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_SEGURO_CARTAO, Boolean.class, cartaoId);
-			log.info(ConstantUtils.SUCESSO_VERIFICAR_SEGURO_POR_CARTAO, cartaoId, exists);
-			return Boolean.TRUE.equals(exists);
-		} catch (SystemException e) {
-			log.error(ConstantUtils.ERRO_VERIFICAR_SEGURO_POR_CARTAO, cartaoId, e);
-			throw new SystemException(ConstantUtils.ERRO_VERIFICAR_SEGURO_POR_CARTAO);
-		}
-	}
-	public boolean existsByCartaoContaClienteId(Long clienteId) {
-		log.info(ConstantUtils.INICIO_VERIFICAR_SEGURO_POR_CLIENTE, clienteId);
-		try {
-			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_SEGURO_CLIENTE, Boolean.class, clienteId);
-			log.info(ConstantUtils.SUCESSO_VERIFICAR_SEGURO_POR_CLIENTE, clienteId, exists);
-			return Boolean.TRUE.equals(exists);
-		} catch (SystemException e) {
-			log.error(ConstantUtils.ERRO_VERIFICAR_SEGURO_POR_CLIENTE, clienteId, e);
-			throw new SystemException(ConstantUtils.ERRO_VERIFICAR_SEGURO_POR_CLIENTE);
-		}
-	}
 	public List<Seguro> findSegurosByClienteId(Long clienteId) {
 		log.info(ConstantUtils.INICIO_BUSCA_SEGURO_POR_CLIENTE, clienteId);
 		try {
