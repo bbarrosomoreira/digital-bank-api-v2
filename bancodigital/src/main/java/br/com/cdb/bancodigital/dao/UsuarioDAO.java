@@ -86,8 +86,15 @@ public class UsuarioDAO {
 	public void atualizarUsuario(Long id, String email, String senha, Role role) {
 		log.info(ConstantUtils.INICIO_UPDATE_USUARIO, id);
 		try {
-			int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_USUARIO, email, senha, role.name(), id);
-			if (linhasAfetadas == 0) {
+			Integer linhasAfetadas = jdbcTemplate.queryForObject(
+					SqlQueries.SQL_UPDATE_USUARIO,
+					Integer.class,
+					id,
+					email,
+					senha,
+					role.name()
+					);
+			if (linhasAfetadas == null || linhasAfetadas == 0) {
 				log.warn(ConstantUtils.ERRO_UPDATE);
 				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO);
 			}

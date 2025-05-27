@@ -140,15 +140,18 @@ public class ClienteDAO {
 	private Cliente atualizarCliente(Cliente cliente) {
 		log.info(ConstantUtils.INICIO_UPDATE_CLIENTE, cliente.getId());
 		try{
-			int linhasAfetadas = jdbcTemplate.update(
+			Integer linhasAfetadas = jdbcTemplate.queryForObject(
 					SqlQueries.SQL_UPDATE_CLIENTE,
+					Integer.class,
+					cliente.getId(),
 					cliente.getNome(),
 					cliente.getCpf(),
 					cliente.getCategoria().name(),
 					cliente.getDataNascimento(),
-					cliente.getId()
+					cliente.getUsuario().getId()
+
 			);
-			if (linhasAfetadas == 0) {
+			if (linhasAfetadas == null || linhasAfetadas == 0) {
 				log.warn(ConstantUtils.ERRO_UPDATE);
 				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CLIENTE);
 			}

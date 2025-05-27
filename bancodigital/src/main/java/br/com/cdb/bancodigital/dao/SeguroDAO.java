@@ -132,7 +132,10 @@ public class SeguroDAO {
 	public Seguro atualizarSeguro(Seguro seguro) {
 		log.info(ConstantUtils.INICIO_UPDATE_SEGURO, seguro.getId());
 		try{
-			int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_SEGURO,
+			Integer linhasAfetadas = jdbcTemplate.queryForObject(
+					SqlQueries.SQL_UPDATE_SEGURO,
+					Integer.class,
+					seguro.getId(),
 					seguro.getTipoSeguro().name(),
 					seguro.getNumApolice(),
 					seguro.getCartao().getId(),
@@ -142,10 +145,9 @@ public class SeguroDAO {
 					seguro.getPremioApolice(),
 					seguro.getStatusSeguro().name(),
 					seguro.getDataAcionamento(),
-					seguro.getValorFraude(),
-					seguro.getId()
+					seguro.getValorFraude()
 			);
-			if (linhasAfetadas == 0) {
+			if (linhasAfetadas == null || linhasAfetadas == 0) {
 				log.warn(ConstantUtils.ERRO_UPDATE);
 				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_SEGURO + seguro.getId());
 			}

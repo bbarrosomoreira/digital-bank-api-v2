@@ -144,7 +144,10 @@ public class CartaoDAO {
 	public Cartao atualizarCartao(Cartao cartao) {
 		log.info(ConstantUtils.INICIO_UPDATE_CARTAO, cartao.getId());
 		try {
-			int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_CARTAO,
+			Integer linhasAfetadas = jdbcTemplate.queryForObject(
+					SqlQueries.SQL_UPDATE_CARTAO,
+					Integer.class,
+					cartao.getId(),
 					cartao.getTipoCartao().name(),
 					cartao.getNumeroCartao(),
 					cartao.getConta().getId(),
@@ -156,10 +159,9 @@ public class CartaoDAO {
 					cartao.getLimite(),
 					cartao.getLimiteAtual(),
 					cartao.getTotalFatura(),
-					cartao.getTotalFaturaPaga(),
-					cartao.getId()
+					cartao.getTotalFaturaPaga()
 			);
-			if (linhasAfetadas == 0) {
+			if (linhasAfetadas == null || linhasAfetadas == 0) {
 				log.warn(ConstantUtils.ERRO_UPDATE);
 				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CARTAO + cartao.getId());
 			}

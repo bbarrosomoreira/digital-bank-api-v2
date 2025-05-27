@@ -45,7 +45,9 @@ public class EnderecoClienteDAO {
     public EnderecoCliente criarEndereco(EnderecoCliente endereco) {
         log.info(ConstantUtils.INICIO_CRIAR_ENDERECO);
         try {
-            Long id = jdbcTemplate.queryForObject(SqlQueries.SQL_CREATE_ENDERECO_CLIENTE, Long.class,
+            Long id = jdbcTemplate.queryForObject(
+                    SqlQueries.SQL_CREATE_ENDERECO_CLIENTE,
+                    Long.class,
                     endereco.getCep(),
                     endereco.getRua(),
                     endereco.getNumero(),

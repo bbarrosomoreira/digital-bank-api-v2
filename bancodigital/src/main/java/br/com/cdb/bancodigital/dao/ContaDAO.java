@@ -131,7 +131,10 @@ public class ContaDAO {
 	public Conta atualizarConta(Conta conta) {
 		log.info(ConstantUtils.INICIO_UPDATE_CONTA, conta.getId());
 		try {
-			int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_UPDATE_CONTA,
+			Integer linhasAfetadas = jdbcTemplate.queryForObject(
+					SqlQueries.SQL_UPDATE_CONTA,
+					Integer.class,
+					conta.getId(),
 					conta.getNumeroConta(),
 					conta.getSaldo(),
 					conta.getMoeda().name(),
@@ -140,10 +143,9 @@ public class ContaDAO {
 					conta.getTipoConta().name(),
 					conta.getTarifaManutencao(),
 					conta.getTaxaRendimento(),
-					conta.getSaldoEmReais(),
-					conta.getId()
+					conta.getSaldoEmReais()
 			);
-			if (linhasAfetadas == 0) {
+			if (linhasAfetadas == null || linhasAfetadas == 0) {
 				log.warn(ConstantUtils.ERRO_UPDATE);
 				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CONTA + conta.getId());
 			}
