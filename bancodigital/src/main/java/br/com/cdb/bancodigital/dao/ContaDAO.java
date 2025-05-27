@@ -1,9 +1,10 @@
 package br.com.cdb.bancodigital.dao;
 
+import java.sql.CallableStatement;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.mapper.ContaMapper;
@@ -94,18 +95,6 @@ public class ContaDAO {
 			return Optional.empty();
 		}
 	}
-	// Verifica se existe uma conta associada ao cliente (por ID)
-	public boolean existsByClienteId(Long clienteId) {
-		log.info(ConstantUtils.INICIO_VERIFICAR_CONTA_CLIENTE);
-		try {
-			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_CONTA, Boolean.class, clienteId);
-			log.info(ConstantUtils.SUCESSO_VERIFICAR_CONTA_CLIENTE);
-			return Boolean.TRUE.equals(exists);
-		} catch (CommunicationException e) {
-			log.error(ConstantUtils.ERRO_VERIFICAR_CONTA_CLIENTE, e);
-			throw new CommunicationException(ConstantUtils.ERRO_VERIFICAR_CONTA_CLIENTE + e.getMessage());
-		}
-	}
 	public List<Conta> buscarContaPorClienteId(Long clienteId) {
 		log.info(ConstantUtils.INICIO_BUSCA_CONTA_POR_CLIENTE, clienteId);
 		try {
@@ -127,6 +116,15 @@ public class ContaDAO {
 			log.error(ConstantUtils.ERRO_BUSCA_CONTA_POR_USUARIO, usuario.getId(), e);
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CONTA_POR_USUARIO);
 		}
+	}
+
+	public void validarVinculosConta(Long id) {
+		log.info(ConstantUtils.INICIO_VALIDAR_VINCULOS_CONTA, id);
+		jdbcTemplate.call(con -> {
+			CallableStatement cs = con.prepareCall(SqlQueries.SQL_VALIDAR_VINCULOS_CONTA);
+			cs.setLong(1, id);
+			return cs;
+		}, Collections.emptyList());
 	}
 
 	// UPDATE

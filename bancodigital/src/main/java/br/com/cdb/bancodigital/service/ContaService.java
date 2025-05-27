@@ -17,7 +17,6 @@ import br.com.cdb.bancodigital.model.Conta;
 import br.com.cdb.bancodigital.model.enums.Moeda;
 import br.com.cdb.bancodigital.model.enums.TipoConta;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.dao.CartaoDAO;
 import br.com.cdb.bancodigital.dao.ClienteDAO;
 import br.com.cdb.bancodigital.dao.ContaDAO;
 import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
@@ -37,7 +36,6 @@ public class ContaService {
 
     private final ContaDAO contaDAO;
     private final ClienteDAO clienteDAO;
-    private final CartaoDAO cartaoDAO;
     private final PoliticaDeTaxasDAO politicaDeTaxaDAO;
     private final ConversorMoedasService conversorMoedasService;
     private final SecurityService securityService;
@@ -154,7 +152,7 @@ public class ContaService {
         }
         for (Conta conta : contas) {
             try {
-                Validator.verificarCartoesVinculados(cartaoDAO, conta);
+                contaDAO.validarVinculosConta(conta.getId());
                 Validator.verificarSaldoRemanescente(conta);
                 contaDAO.deletarContaPorId(conta.getId());
                 log.info(ConstantUtils.SUCESSO_DELETE_CONTA, conta.getCliente().getId());
