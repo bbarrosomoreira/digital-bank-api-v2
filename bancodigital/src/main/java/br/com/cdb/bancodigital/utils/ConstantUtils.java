@@ -237,6 +237,7 @@ public class ConstantUtils {
     public static final String INICIO_LEITURA_SALDO = "Iniciando consulta de saldo da conta ID: {}";
     public static final String SUCESSO_LEITURA_SALDO = "Saldo consultado com sucesso";
     public static final String SALDO_SUFICIENTE = "Saldo suficiente para a transação";
+    public static final String ERRO_SALDO_REMANESCENTE = "Não é possivel excluir uma conta com saldo remanescente.";
     public static final String INICIO_CRIAR_CONTA_BANCO_DADOS = "Iniciando criação de conta no banco de dados";
     public static final String SUCESSO_CRIAR_CONTA_BANCO_DADOS = "Conta criada no banco de dados com sucesso";
     public static final String ERRO_CRIAR_CONTA_BANCO_DADOS = "Erro ao criar conta no banco de dados";
@@ -257,6 +258,7 @@ public class ConstantUtils {
     public static final String INICIO_BUSCA_CONTA_POR_TIPO = "Iniciando busca de contas do tipo '{}' para o cliente com ID: {}.";
     public static final String SUCESSO_BUSCA_CONTA_POR_TIPO = "Busca de contas do tipo '{}' para o cliente com ID: {} concluída com sucesso.";
     public static final String ERRO_BUSCA_CONTA_POR_TIPO = "Erro ao buscar contas do tipo '{}' para o cliente com ID: {}.";
+    public static final String INICIO_VALIDAR_VINCULOS_CONTA = "Iniciando validação de vínculos da conta ID: {}";
 
     // Mensagens de validação - DTO
     public static final String TIPO_CONTA_OBRIGATORIO = "Tipo de conta é obrigatório";
@@ -364,6 +366,7 @@ public class ConstantUtils {
     public static final String INICIO_BUSCA_CARTAO_POR_TIPO = "Iniciando busca de cartões do tipo '{}' para o cliente com ID: {}.";
     public static final String SUCESSO_BUSCA_CARTAO_POR_TIPO = "Busca de cartões do tipo '{}' para o cliente com ID: {} concluída com sucesso.";
     public static final String ERRO_BUSCA_CARTAO_POR_TIPO = "Erro ao buscar cartões do tipo '{}' para o cliente com ID: {}.";
+    public static final String INICIO_VALIDAR_VINCULOS_CARTAO = "Iniciando validação de vínculos do cartão ID: {}";
 
     // CartaoService
     public static final String BUSCANDO_CARTOES_VINCULADOS_CONTA = "Buscando cartões vinculados à conta ID: {}";

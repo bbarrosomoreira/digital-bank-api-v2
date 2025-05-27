@@ -1,5 +1,7 @@
 package br.com.cdb.bancodigital.dao;
 
+import java.sql.CallableStatement;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,7 +82,7 @@ public class CartaoDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO);
 		}
 	}
-	public Optional<Cartao> findCartaoById(Long id) {
+	public Optional<Cartao> buscarCartaoById(Long id) {
 		log.info(ConstantUtils.INICIO_BUSCA_CARTAO);
 		try {
 			Cartao cartao = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CARTAO_BY_ID, cartaoMapper, id);
@@ -106,28 +108,6 @@ public class CartaoDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO_POR_CONTA);
 		}
 	}
-	public boolean existsByContaId(Long contaId) {
-		log.info(ConstantUtils.INICIO_VERIFICAR_CARTAO_POR_CONTA, contaId);
-		try {
-			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_CARTAO_CONTA, Boolean.class, contaId);
-			log.info(ConstantUtils.SUCESSO_VERIFICAR_CARTAO_POR_CONTA, contaId, exists);
-			return Boolean.TRUE.equals(exists);
-		} catch (SystemException e) {
-			log.error(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CONTA, contaId, e);
-			throw new SystemException(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CONTA);
-		}
-	}
-	public boolean existsByContaClienteId(Long clienteId) {
-		log.info(ConstantUtils.INICIO_VERIFICAR_CARTAO_POR_CLIENTE, clienteId);
-		try {
-			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_CARTAO_CLIENTE, Boolean.class, clienteId);
-			log.info(ConstantUtils.SUCESSO_VERIFICAR_CARTAO_POR_CLIENTE, clienteId, exists);
-			return Boolean.TRUE.equals(exists);
-		} catch (SystemException e) {
-			log.error(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CLIENTE, clienteId, e);
-			throw new SystemException(ConstantUtils.ERRO_VERIFICAR_CARTAO_POR_CLIENTE);
-		}
-	}
 	public List<Cartao> findByContaClienteUsuario(Usuario usuario) {
 		log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_USUARIO, usuario.getId());
 		try {
@@ -149,6 +129,15 @@ public class CartaoDAO {
 			log.error(ConstantUtils.ERRO_BUSCA_CARTAO_POR_CLIENTE, clienteId, e);
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO_POR_CLIENTE);
 		}
+	}
+
+	public void validarVinculosCartao(Long id) {
+		log.info(ConstantUtils.INICIO_VALIDAR_VINCULOS_CARTAO, id);
+		jdbcTemplate.call(con -> {
+			CallableStatement cs = con.prepareCall(SqlQueries.SQL_VALIDAR_VINCULOS_CARTAO);
+			cs.setLong(1, id);
+			return cs;
+		}, Collections.emptyList());
 	}
 
 	// UPDATE

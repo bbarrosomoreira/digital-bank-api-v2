@@ -36,7 +36,7 @@ public class Validator {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CONTA, id_conta)));
     }
     public static Cartao verificarCartaoExistente(CartaoDAO cartaoDAO, Long id_cartao) {
-        return cartaoDAO.findCartaoById(id_cartao)
+        return cartaoDAO.buscarCartaoById(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CARTAO, id_cartao)));
     }
     public static Seguro verificarSeguroExistente(SeguroDAO seguroDAO, Long id_seguro) {
@@ -62,23 +62,12 @@ public class Validator {
         if (valor.compareTo(limiteAtual) > 0)
             throw new InvalidInputParameterException(String.format(ConstantUtils.LIMITE_INSUFICIENTE, limiteAtual));
     }
-    public static void verificarSegurosVinculados(SeguroDAO seguroDAO, Cartao cartao) {
-        Long id = cartao.getId();
-        boolean existeSeguro = seguroDAO.existsByCartaoId(id);
-        if (existeSeguro) {
-            throw new InvalidInputParameterException(ConstantUtils.CARTAO_SEGUROS_VINCULADOS);
-        }
-    }
     public static void verificarSaldoSuficiente(BigDecimal valor, BigDecimal saldo) {
         if (valor.compareTo(saldo) > 0)
             throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_INSUFICIENTE);
     }
-    public static void verificarCartoesVinculados(CartaoDAO cartaoDAO, Conta conta) {
-        if (cartaoDAO.existsByContaId(conta.getId()))
-            throw new InvalidInputParameterException("Conta não pode ser excluída com cartões vinculados.");
-    }
     public static void verificarSaldoRemanescente(Conta conta) {
         if (conta.getSaldo() != null && conta.getSaldo().compareTo(BigDecimal.ZERO) > 0)
-            throw new InvalidInputParameterException("Não é possivel excluir uma conta com saldo remanescente.");
+            throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_REMANESCENTE);
     }
 }

@@ -35,9 +35,9 @@ public class SqlQueries {
     public static final String SQL_READ_CONTA_BY_ID = "SELECT * FROM public.lst_con_id_v1(?)";
     public static final String SQL_READ_CONTA_BY_CLIENTE = "SELECT * FROM public.lst_con_cli_id_v1(?)";
     public static final String SQL_READ_CONTA_BY_CLIENTE_USUARIO = "SELECT * FROM public.lst_con_usu_id_v1(?)";
-    public static final String SQL_EXIST_CONTA = "SELECT public.ext_con_cli_id_v1(?)";
     public static final String SQL_UPDATE_CONTA = "SELECT public.upd_con_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     public static final String SQL_DELETE_CONTA = "SELECT public.dlt_con_v1(?)";
+    public static final String SQL_VALIDAR_VINCULOS_CONTA = "CALL public.vld_vnc_con_v1(?)";
 
     // CartaoDAO
     public static final String SQL_CREATE_CARTAO = "SELECT * FROM public.add_crt_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -50,6 +50,7 @@ public class SqlQueries {
     public static final String SQL_EXIST_CARTAO_CLIENTE = "SELECT public.ext_crt_cli_id_v1(?)";
     public static final String SQL_UPDATE_CARTAO = "SELECT public.upd_crt_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     public static final String SQL_DELETE_CARTAO = "SELECT public.dlt_crt_v1(?)";
+    public static final String SQL_VALIDAR_VINCULOS_CARTAO = "CALL public.vld_vnc_crt_v1(?)";
 
     // SeguroDAO
     public static final String SQL_CREATE_SEGURO = "SELECT * FROM public.add_seg_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";

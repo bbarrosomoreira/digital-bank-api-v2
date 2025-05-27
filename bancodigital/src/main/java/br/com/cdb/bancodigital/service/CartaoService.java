@@ -27,7 +27,6 @@ import br.com.cdb.bancodigital.dao.CartaoDAO;
 import br.com.cdb.bancodigital.dao.ClienteDAO;
 import br.com.cdb.bancodigital.dao.ContaDAO;
 import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
-import br.com.cdb.bancodigital.dao.SeguroDAO;
 import br.com.cdb.bancodigital.dto.response.CartaoResponse;
 import br.com.cdb.bancodigital.dto.response.FaturaResponse;
 import br.com.cdb.bancodigital.dto.response.LimiteResponse;
@@ -44,7 +43,6 @@ public class CartaoService {
     private final CartaoDAO cartaoDAO;
     private final ContaDAO contaDAO;
     private final ClienteDAO clienteDAO;
-    private final SeguroDAO seguroDAO;
     private final PoliticaDeTaxasDAO politicaDeTaxasDAO;
     private final SecurityService securityService;
     private final PasswordEncoder passwordEncoder;
@@ -161,7 +159,7 @@ public class CartaoService {
         }
         for (Cartao cartao : cartoes) {
             try {
-                Validator.verificarSegurosVinculados(seguroDAO, cartao);
+                cartaoDAO.validarVinculosCartao(cartao.getId());
                 Validator.verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
                 Long id = cartao.getId();
                 cartaoDAO.deletarCartaoPorId(cartao.getId());
