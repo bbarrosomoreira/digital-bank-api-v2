@@ -76,19 +76,11 @@ cd digital-bank-springboot
 
 3. **Configure environment variables**
 
-Create a `.env` file at the root of the project with the following content:
-
-```env
-API_KEY=j6k9BY4OO4oXOOhLiUbdjPzfsKKcxoIZ
-```
-
-> ⚠️ Make sure `.env` is listed in `.gitignore` to protect your secret keys.
-
 > ℹ️ **Note:** 
-This `API_KEY` is used to access an **external currency conversion API**.  
+An `API_KEY` is used to access an **external currency conversion API**.  
 In a real-world project, this key should be kept private and **never exposed publicly**, for security reasons.
 However, **for educational purposes**, the key has been included here so that anyone can test and explore **all features** of the system without restrictions.
-You can also generate your own key on the API provider's website and replace it in the `.env` file.
+You can also generate your own key on the API provider's website /and replace it in the `application.properties` file.
 
 ### 🔁 Receita Federal API Simulation
 
@@ -192,19 +184,11 @@ cd digital-bank-springboot
 
 3. **Configure as variáveis de ambiente**
 
-Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
-
-```env
-API_KEY=j6k9BY4OO4oXOOhLiUbdjPzfsKKcxoIZ
-```
-
-> ⚠️ Certifique-se de que o `.env` está listado no `.gitignore` para proteger suas chaves secretas.
-
 > ℹ️ **Observação:** 
-Esta `API_KEY` é utilizada para acessar uma **API externa de conversão de moedas**.  
+Uma `API_KEY` é utilizada para acessar uma **API externa de conversão de moedas**.  
 Em um projeto real, essa chave deveria ser mantida em sigilo e **nunca ser exposta publicamente**, por questões de segurança.
 No entanto, **para fins didáticos**, a chave foi incluída aqui para que qualquer pessoa consiga testar e explorar **todas as funcionalidades** do sistema sem restrições.
-Você também pode gerar a sua própria chave diretamente no site da API e substituí-la no arquivo `.env`.
+Você também pode gerar a sua própria chave diretamente no site da API e substituí-la no arquivo `application.properties`.
 
 ### 🔁 Simulação da API da Receita Federal
 
