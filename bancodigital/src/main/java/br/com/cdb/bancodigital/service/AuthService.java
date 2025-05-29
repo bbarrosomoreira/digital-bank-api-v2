@@ -1,6 +1,7 @@
 package br.com.cdb.bancodigital.service;
 
 import br.com.cdb.bancodigital.dao.UsuarioDAO;
+import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
@@ -17,8 +18,6 @@ import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.dto.response.LoginResponse;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 
-import java.util.Optional;
-
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -33,8 +32,7 @@ public class AuthService {
 
         // verificar se email está em uso
         log.info(ConstantUtils.LOG_VERIFICANDO_EMAIL_CADASTRADO);
-        Optional<Usuario> usuarioExistente = usuarioDAO.buscarUsuarioPorEmail(dto.getEmail());
-        if (usuarioExistente.isPresent()) {
+        if (usuarioDAO.existByEmail(dto.getEmail())) {
             log.error(ConstantUtils.LOG_EMAIL_JA_CADASTRADO);
             throw new ResourceAlreadyExistsException(ConstantUtils.EXC_EMAIL_JA_CADASTRADO);
         }
@@ -76,7 +74,12 @@ public class AuthService {
 
         // buscar usuário
         log.info(ConstantUtils.LOG_BUSCANDO_USUARIO_BANCO);
-        Usuario usuario = usuarioDAO.buscarUsuarioPorEmailOuErro(dto.getEmail());
+        Usuario usuario = usuarioDAO.buscarUsuarioPorEmail(dto.getEmail());
+        if (usuario == null) {
+            log.error(ConstantUtils.ERRO_BUSCA_USUARIO, dto.getEmail());
+            throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO);
+        }
+
         log.info(ConstantUtils.LOG_USUARIO_ENCONTRADO_SUCESSO);
 
         try {

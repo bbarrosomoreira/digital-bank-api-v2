@@ -18,7 +18,7 @@ public class UsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return usuarioDAO.buscarUsuarioPorEmailOuErro(email);
+        return usuarioDAO.buscarUsuarioPorEmail(email);
     }
 
     // DELETE | Deletar usuário

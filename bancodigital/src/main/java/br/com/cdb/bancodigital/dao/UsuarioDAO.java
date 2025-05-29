@@ -8,6 +8,7 @@ import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -44,25 +45,38 @@ public class UsuarioDAO {
 	}
 
 	// READ | Listar usuários
-	public Optional<Usuario> buscarUsuarioPorEmail(String email) {
+	public boolean existByEmail(String email) {
+		log.info(ConstantUtils.INICIO_BUSCA_USUARIO);
+		try {
+			Boolean existe = jdbcTemplate.queryForObject(
+					SqlQueries.SQL_EXIST_USUARIO_BY_EMAIL,
+					Boolean.class,
+					email);
+
+			log.info(ConstantUtils.USUARIO_ENCONTRADO);
+			return Boolean.TRUE.equals(existe);
+		} catch (EmptyResultDataAccessException e) {
+			log.warn("{} - {}", ConstantUtils.ERRO_BUSCA_USUARIO, ConstantUtils.RETORNO_VAZIO);
+			return false;
+		}
+	}
+	public Usuario buscarUsuarioPorEmail(String email) {
 		log.info(ConstantUtils.INICIO_BUSCA_USUARIO);
 		try {
 			Usuario usuario = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_USUARIO_BY_EMAIL, usuarioMapper, email);
 			if (usuario == null) {
 				log.warn(ConstantUtils.ERRO_USUARIO_NULO);
-				return Optional.empty();
+				return null;
 			}
 			log.info(ConstantUtils.USUARIO_ENCONTRADO);
-			return Optional.of(usuario);
+			return usuario;
 		} catch (EmptyResultDataAccessException e) {
 			log.warn("{} - {}", ConstantUtils.ERRO_BUSCA_USUARIO, ConstantUtils.RETORNO_VAZIO);
-			return Optional.empty();
+			return null;
+		} catch (DataAccessException e) {
+			log.error(ConstantUtils.ERRO_BUSCA_USUARIO, email, e);
+			throw new SystemException(ConstantUtils.ERRO_BUSCA_USUARIO + email);
 		}
-	}
-	public Usuario buscarUsuarioPorEmailOuErro(String email) {
-		log.info(ConstantUtils.INICIO_BUSCA_USUARIO);
-		return buscarUsuarioPorEmail(email)
-				.orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO));
 	}
 
 	// Encontrar usuário pelo ID
