@@ -109,8 +109,11 @@ public class UsuarioDAO {
 	public void deletarUsuario(Long id) {
 		log.info(ConstantUtils.INICIO_DELETE_USUARIO, id);
 		try {
-			int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_DELETE_USUARIO, id);
-			if (linhasAfetadas == 0) {
+			Integer linhasAfetadas = jdbcTemplate.queryForObject(
+					SqlQueries.SQL_DELETE_USUARIO,
+					Integer.class,
+					id);
+			if (linhasAfetadas == null || linhasAfetadas == 0) {
 				log.warn(ConstantUtils.ERRO_DELETE);
 				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO);
 			}

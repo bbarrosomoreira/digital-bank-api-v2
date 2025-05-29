@@ -163,8 +163,11 @@ public class SeguroDAO {
 	public void deletarSeguroPorId(Long id) {
 		log.info(ConstantUtils.INICIO_DELETE_SEGURO, id);
 		try {
-			int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_DELETE_SEGURO, id);
-			if (linhasAfetadas == 0) {
+			Integer linhasAfetadas = jdbcTemplate.queryForObject(
+					SqlQueries.SQL_DELETE_SEGURO,
+					Integer.class,
+					id);
+			if (linhasAfetadas == null || linhasAfetadas == 0) {
 				log.warn(ConstantUtils.ERRO_DELETE);
 				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_SEGURO + id);
 			}

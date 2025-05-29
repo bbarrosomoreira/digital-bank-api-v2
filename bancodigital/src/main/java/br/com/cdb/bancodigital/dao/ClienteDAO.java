@@ -173,8 +173,11 @@ public class ClienteDAO {
 	public void deletarClientePorId(Long id) {
 		log.info(ConstantUtils.INICIO_DELETE_CLIENTE, id);
 		try {
-			int linhasAfetadas = jdbcTemplate.update(SqlQueries.SQL_DELETE_CLIENTE, id);
-			if (linhasAfetadas == 0) {
+			Integer linhasAfetadas = jdbcTemplate.queryForObject(
+					SqlQueries.SQL_DELETE_CLIENTE,
+					Integer.class,
+					id);
+			if (linhasAfetadas == null || linhasAfetadas == 0) {
 				log.warn(ConstantUtils.ERRO_DELETE);
 				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CLIENTE);
 			}
