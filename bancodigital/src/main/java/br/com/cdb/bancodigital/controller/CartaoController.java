@@ -2,6 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
+import br.com.cdb.bancodigital.dto.response.*;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +25,6 @@ import br.com.cdb.bancodigital.dto.AlterarStatusCartaoDTO;
 import br.com.cdb.bancodigital.dto.EmitirCartaoDTO;
 import br.com.cdb.bancodigital.dto.PagamentoDTO;
 import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.dto.response.CartaoResponse;
-import br.com.cdb.bancodigital.dto.response.FaturaResponse;
-import br.com.cdb.bancodigital.dto.response.LimiteResponse;
-import br.com.cdb.bancodigital.dto.response.PagamentoResponse;
-import br.com.cdb.bancodigital.dto.response.RessetarLimiteDiarioResponse;
-import br.com.cdb.bancodigital.dto.response.StatusCartaoResponse;
 import br.com.cdb.bancodigital.service.CartaoService;
 import jakarta.validation.Valid;
 
@@ -277,7 +272,7 @@ public class CartaoController {
 	//post pagamento fatura
 	// admin tem acesso ao id, cliente só pode ver se for dele
 	@PostMapping(ConstantUtils.CARTAO_ID + ConstantUtils.FATURA_ENDPOINT + ConstantUtils.PAGAMENTO_ENDPOINT)
-	public ResponseEntity<FaturaResponse> pagarFatura(
+	public ResponseEntity<FaturaPagaResponse> pagarFatura(
 			@PathVariable Long id_cartao,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
@@ -286,7 +281,7 @@ public class CartaoController {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-		FaturaResponse response = cartaoService.pagarFatura(id_cartao, usuarioLogado);
+		FaturaPagaResponse response = cartaoService.pagarFatura(id_cartao, usuarioLogado);
 		log.info(ConstantUtils.SUCESSO_PAGAMENTO_FATURA);
 
 		long endTime = System.currentTimeMillis();

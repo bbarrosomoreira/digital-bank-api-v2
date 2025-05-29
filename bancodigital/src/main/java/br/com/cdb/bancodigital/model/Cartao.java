@@ -66,7 +66,10 @@ public class Cartao implements CartaoBase {
 	}
 
 	public void alterarLimite(BigDecimal limiteNovo) {
+		if (this.limite.equals(this.limiteAtual))
+			this.setLimiteAtual(limiteNovo);
 		this.setLimite(limiteNovo);
+
 	}
 	
 	@Override

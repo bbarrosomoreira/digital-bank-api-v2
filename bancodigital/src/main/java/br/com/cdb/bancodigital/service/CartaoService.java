@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import br.com.cdb.bancodigital.dto.response.*;
 import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
@@ -27,12 +28,6 @@ import br.com.cdb.bancodigital.dao.CartaoDAO;
 import br.com.cdb.bancodigital.dao.ClienteDAO;
 import br.com.cdb.bancodigital.dao.ContaDAO;
 import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
-import br.com.cdb.bancodigital.dto.response.CartaoResponse;
-import br.com.cdb.bancodigital.dto.response.FaturaResponse;
-import br.com.cdb.bancodigital.dto.response.LimiteResponse;
-import br.com.cdb.bancodigital.dto.response.PagamentoResponse;
-import br.com.cdb.bancodigital.dto.response.RessetarLimiteDiarioResponse;
-import br.com.cdb.bancodigital.dto.response.StatusCartaoResponse;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Service
@@ -88,6 +83,7 @@ public class CartaoService {
                 ccr.setLimite(parametros.getLimiteCartaoCredito());
                 ccr.setLimiteAtual(ccr.getLimite());
                 ccr.setTotalFatura(BigDecimal.ZERO);
+                ccr.setTotalFaturaPaga(BigDecimal.ZERO);
                 yield ccr;
             }
             case DEBITO -> {
@@ -178,7 +174,7 @@ public class CartaoService {
         Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
         securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
         Validator.verificarCartaoAtivo(cartao.getStatus());
-        Validator.verificarSenhaCorreta(senha, cartao.getSenha());
+        Validator.verificarSenhaCorreta(senha, cartao.getSenha(), passwordEncoder);
         Validator.verificarLimiteSuficiente(valor, cartao.getLimiteAtual());
 
         if (cartao.getTipoCartao().equals(TipoCartao.DEBITO) && cartao.getLimiteAtual().compareTo(valor) < 0) {
@@ -193,8 +189,11 @@ public class CartaoService {
     // alter limite
     @Transactional
     public LimiteResponse alterarLimite(Long id_cartao, BigDecimal valor) {
+        log.info(ConstantUtils.INICIO_ALTERACAO_LIMITE, id_cartao);
         Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
+        log.info(ConstantUtils.CARTAO_ENCONTRADO, cartao.getId());
         Validator.verificarCartaoAtivo(cartao.getStatus());
+        log.info(ConstantUtils.CARTAO_ATIVO, cartao.getId());
 
         BigDecimal limiteConsumido = cartao.getLimite().subtract(cartao.getLimiteAtual());
 
@@ -212,7 +211,7 @@ public class CartaoService {
         Cartao cartao = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
         securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 
-        if (statusNovo.equals(Status.INATIVO)) {
+        if (statusNovo.equals(Status.INATIVO) && cartao.getTipoCartao().equals(TipoCartao.CREDITO)) {
             Validator.verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
         }
 
@@ -239,12 +238,15 @@ public class CartaoService {
         securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
         Validator.verificarCartaoAtivo(ccr.getStatus());
 
+        if (ccr.getTipoCartao() != TipoCartao.CREDITO)
+            throw new InvalidInputParameterException(ConstantUtils.ERRO_CARTAO_NAO_CREDITO);
+
         return FaturaResponse.toFaturaResponse(ccr);
     }
 
     // ressetar limite credito
     @Transactional
-    public FaturaResponse pagarFatura(Long id_cartao, Usuario usuarioLogado) {
+    public FaturaPagaResponse pagarFatura(Long id_cartao, Usuario usuarioLogado) {
         Cartao ccr = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
         securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
 
@@ -254,7 +256,7 @@ public class CartaoService {
 
         ccr.pagarFatura();
         cartaoDAO.salvar(ccr);
-        return FaturaResponse.toFaturaResponse(ccr);
+        return FaturaPagaResponse.toFaturaPagaResponse(ccr);
     }
 
     // ressetar limite diario
