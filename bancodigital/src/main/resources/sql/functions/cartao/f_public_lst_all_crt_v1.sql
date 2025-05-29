@@ -1,0 +1,15 @@
+CREATE OR REPLACE FUNCTION public_lst_all_crt_v1()
+
+RETURNS SETOF cartao
+
+LANGUAGE 'plpgsql'
+
+AS $BODY$
+
+BEGIN
+		RETURN QUERY
+
+		SELECT * FROM cartao;
+
+END;
+$BODY$

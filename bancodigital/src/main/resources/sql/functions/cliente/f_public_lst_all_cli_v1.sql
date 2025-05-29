@@ -1,0 +1,15 @@
+CREATE OR REPLACE FUNCTION public_lst_all_cli_v1()
+
+RETURNS SETOF cliente
+
+LANGUAGE 'plpgsql'
+
+AS $BODY$
+
+BEGIN
+		RETURN QUERY
+
+		SELECT * FROM cliente;
+
+END;
+$BODY$

@@ -1,0 +1,15 @@
+package br.com.cdb.bancodigital.dto;
+
+import br.com.cdb.bancodigital.model.enums.Status;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class AlterarStatusCartaoDTO {
+	
+	private Status status;
+
+}
