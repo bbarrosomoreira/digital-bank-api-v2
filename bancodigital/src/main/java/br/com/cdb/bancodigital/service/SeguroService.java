@@ -188,7 +188,7 @@ public class SeguroService {
         securityService.validateAccess(usuarioLogado, seguro.getCartao().getConta().getCliente());
         log.info(ConstantUtils.ACESSO_VALIDADO);
 
-        if (seguro.getStatusSeguro().equals(Status.INATIVO))
+        if (seguro.getTipoSeguro().equals(TipoSeguro.FRAUDE) && seguro.getStatusSeguro().equals(Status.INATIVO))
             throw new InvalidInputParameterException(ConstantUtils.ERRO_SEGURO_DESATIVADO);
         if (seguro.getTipoSeguro().equals(TipoSeguro.FRAUDE)) seguro.setValorFraude(valor);
 
