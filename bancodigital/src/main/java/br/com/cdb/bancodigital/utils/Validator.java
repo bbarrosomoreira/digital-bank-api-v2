@@ -9,6 +9,7 @@ import br.com.cdb.bancodigital.model.*;
 import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.model.enums.Status;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 
@@ -55,8 +56,8 @@ public class Validator {
         if (cartao.getTotalFatura().compareTo(BigDecimal.ZERO) > 0)
             throw new InvalidInputParameterException(ConstantUtils.CARTAO_FATURA_ABERTA);
     }
-    public static void verificarSenhaCorreta(String senhaDigitada, String senhaCartao) {
-        if (!senhaDigitada.equals(senhaCartao)) throw new ValidationException(ConstantUtils.SENHA_INCORRETA);
+    public static void verificarSenhaCorreta(String senhaDigitada, String senhaCartao, PasswordEncoder passwordEncoder) {
+        if (!passwordEncoder.matches(senhaDigitada, senhaCartao)) throw new ValidationException(ConstantUtils.SENHA_INCORRETA);
     }
     public static void verificarLimiteSuficiente(BigDecimal valor, BigDecimal limiteAtual) {
         if (valor.compareTo(limiteAtual) > 0)

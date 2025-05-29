@@ -215,7 +215,7 @@ public class ConstantUtils {
     public static final String ERRO_CONTA_NULA = "Conta não pode ser nula";
     public static final String INICIO_SALVAR_CONTA = "Iniciando operação de salvar conta.";
     public static final String ERRO_SALVAR_CONTA = "Erro ao salvar conta.";
-    public static final String INICIO_ABERTURA_CONTA = "Iniciando abertura de conta para cliente ID: {}";
+    public static final String INICIO_ABERTURA_CONTA = "Iniciando abertura de conta para cliente.";
     public static final String SUCESSO_ABERTURA_CONTA = "Abertura de conta realizada com sucesso para cliente ID: {}";
     public static final String ERRO_ABERTURA_CONTA = "Erro ao abrir conta";
     public static final String INICIO_LISTAGEM_TIPO_CONTA = "Listando tipos de contas disponíveis.";
@@ -367,6 +367,7 @@ public class ConstantUtils {
     public static final String SUCESSO_BUSCA_CARTAO_POR_TIPO = "Busca de cartões do tipo '{}' para o cliente com ID: {} concluída com sucesso.";
     public static final String ERRO_BUSCA_CARTAO_POR_TIPO = "Erro ao buscar cartões do tipo '{}' para o cliente com ID: {}.";
     public static final String INICIO_VALIDAR_VINCULOS_CARTAO = "Iniciando validação de vínculos do cartão ID: {}";
+    public static final String ERRO_CARTAO_NAO_CREDITO = "Cartão não é do tipo crédito. Operação não permitida.";
 
     // CartaoService
     public static final String BUSCANDO_CARTOES_VINCULADOS_CONTA = "Buscando cartões vinculados à conta ID: {}";
