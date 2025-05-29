@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public_lst_usu_ema_v1(
+CREATE OR REPLACE FUNCTION public.lst_usu_ema_v1(
 		p_email VARCHAR(255)
 )
 

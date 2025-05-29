@@ -8,6 +8,7 @@ public class SqlQueries {
 
     // UsuarioDAO
     public static final String SQL_CREATE_USUARIO = "SELECT * FROM public.add_usu_v1(?, ?, ?)";
+    public static final String SQL_EXIST_USUARIO_BY_EMAIL = "SELECT public.ext_usu_ema_v1(?)";
     public static final String SQL_READ_USUARIO_BY_EMAIL = "SELECT * FROM public.lst_usu_ema_v1(?)";
     public static final String SQL_READ_USUARIO_BY_ID = "SELECT * FROM public.lst_usu_id_v1(?)";
     public static final String SQL_UPDATE_USUARIO = "SELECT public.upd_usu_v1(?, ?, ?, ?)";
