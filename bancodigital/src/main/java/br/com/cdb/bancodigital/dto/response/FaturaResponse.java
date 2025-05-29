@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 public record FaturaResponse (
 		String numCartao,
-		BigDecimal totalFaturaPaga,
+		BigDecimal totalFatura,
 		BigDecimal limiteAtual,
 		BigDecimal limite
 		) {
@@ -15,7 +15,7 @@ public record FaturaResponse (
 	public static FaturaResponse toFaturaResponse (Cartao ccr) {
 		return new FaturaResponse(
 				ccr.getNumeroCartao(),
-				ccr.getTotalFaturaPaga(),
+				ccr.getTotalFatura(),
 				ccr.getLimiteAtual(),
 				ccr.getLimite()
 				);
