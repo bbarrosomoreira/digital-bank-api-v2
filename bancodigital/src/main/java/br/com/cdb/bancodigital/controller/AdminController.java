@@ -51,20 +51,19 @@ public class AdminController {
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PostMapping(ConstantUtils.CONTA + ConstantUtils.CLIENTE_ID)
 	public ResponseEntity<ContaResponse> abrirConta(
-			@PathVariable Long id_cliente,
 			@Valid @RequestBody AbrirContaDTO dto,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_ABERTURA_CONTA, id_cliente);
+		log.info(ConstantUtils.INICIO_ABERTURA_CONTA);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-		Usuario usuarioCliente = adminService.getClienteById(id_cliente, usuarioLogado).getUsuario();
+		Usuario usuarioCliente = adminService.getClienteById(dto.getId_cliente(), usuarioLogado).getUsuario();
 		log.info(ConstantUtils.CLIENTE_ENCONTRADO);
 
 		ContaResponse response = adminService.abrirConta(dto.getId_cliente(), usuarioCliente, dto.getTipoConta(), dto.getMoeda(), dto.getValorDeposito());
-		log.info(ConstantUtils.SUCESSO_ABERTURA_CONTA, id_cliente);
+		log.info(ConstantUtils.SUCESSO_ABERTURA_CONTA, dto.getId_cliente());
 
 		long endTime = System.currentTimeMillis();
 		log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
