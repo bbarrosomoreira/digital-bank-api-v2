@@ -43,7 +43,7 @@ public class ContaService {
     // addConta de forma genérica
     @Transactional
     public ContaResponse abrirConta(Long id_cliente, Usuario usuarioLogado, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito) {
-        log.info(ConstantUtils.INICIO_ABERTURA_CONTA, id_cliente);
+        log.info(ConstantUtils.INICIO_ABERTURA_CONTA);
         Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
         log.info(ConstantUtils.CLIENTE_ENCONTRADO);
         securityService.validateAccess(usuarioLogado, cliente);

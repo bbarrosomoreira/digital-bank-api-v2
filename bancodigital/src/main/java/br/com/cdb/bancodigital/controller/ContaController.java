@@ -52,7 +52,7 @@ public class ContaController {
 			@Valid @RequestBody AbrirContaDTO dto,
 			Authentication authentication){
 		long startTime = System.currentTimeMillis();
-		log.info(ConstantUtils.INICIO_ABERTURA_CONTA, dto.getId_cliente());
+		log.info(ConstantUtils.INICIO_ABERTURA_CONTA);
 
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
