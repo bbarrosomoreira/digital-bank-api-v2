@@ -1,7 +1,6 @@
-package br.com.cdb.bancodigital.dto;
+package br.com.cdb.bancodigital.application.core.domain.dto;
 
-import br.com.cdb.bancodigital.model.enums.TipoSeguro;
-import jakarta.validation.constraints.NotNull;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

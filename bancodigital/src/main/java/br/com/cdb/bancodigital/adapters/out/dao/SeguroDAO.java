@@ -1,10 +1,11 @@
-package br.com.cdb.bancodigital.dao;
+package br.com.cdb.bancodigital.adapters.out.dao;
 
+import br.com.cdb.bancodigital.application.port.out.repository.SeguroRepository;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.mapper.SeguroMapper;
-import br.com.cdb.bancodigital.model.Seguro;
-import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -20,30 +21,29 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SeguroDAO {
+public class SeguroDAO implements SeguroRepository {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final SeguroMapper seguroMapper;
 
 	// SAVE | Criar ou atualizar cartão
-	public Seguro salvar(Seguro seguro) {
+	public Seguro save(Seguro seguro) {
 		log.info(ConstantUtils.INICIO_SALVAR_SEGURO);
 		try {
 			if (seguro.getId() == null) {
 				// Se não tiver ID, é um novo seguro (INSERT)
-				return criarSeguro(seguro);
+				return addSeguro(seguro);
 			} else {
 				// Se tiver ID, é um seguro existente (UPDATE)
-				return atualizarSeguro(seguro);
+				return updateSeguro(seguro);
 			}
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_SALVAR_SEGURO, e);
 			throw new SystemException(ConstantUtils.ERRO_SALVAR_SEGURO);
 		}
 	}
-
 	// CREATE
-	public Seguro criarSeguro(Seguro seguro) {
+	public Seguro addSeguro(Seguro seguro) {
 		log.info(ConstantUtils.INICIO_CRIAR_SEGURO_BANCO_DADOS);
 		try {
 			Long id = jdbcTemplate.queryForObject(SqlQueries.SQL_CREATE_SEGURO, Long.class,
@@ -66,9 +66,8 @@ public class SeguroDAO {
 			throw new SystemException(ConstantUtils.ERRO_CRIAR_SEGURO_BANCO_DADOS);
 		}
 	}
-
 	// READ - buscar seguros
-	public List<Seguro> buscarTodosSeguros() {
+	public List<Seguro> findAllSeguros() {
 		log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
 		try {
 			List<Seguro> seguros = jdbcTemplate.query(SqlQueries.SQL_READ_ALL_SEGUROS, seguroMapper);
@@ -79,7 +78,7 @@ public class SeguroDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_SEGURO);
 		}
 	}
-	public Optional<Seguro> buscarSeguroPorId(Long id) {
+	public Optional<Seguro> findById(Long id) {
 		log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
 		try {
 			Seguro seguro = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_SEGURO_BY_ID, seguroMapper, id);
@@ -105,7 +104,7 @@ public class SeguroDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_SEGURO);
 		}
 	}
-	public List<Seguro> findSegurosByClienteId(Long clienteId) {
+	public List<Seguro> findyClienteId(Long clienteId) {
 		log.info(ConstantUtils.INICIO_BUSCA_SEGURO_POR_CLIENTE, clienteId);
 		try {
 			List<Seguro> seguros = jdbcTemplate.query(SqlQueries.SQL_READ_SEGURO_BY_CARTAO_CLIENTE_ID, seguroMapper, clienteId);
@@ -127,9 +126,8 @@ public class SeguroDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_SEGURO_POR_USUARIO);
 		}
 	}
-
 	// UPDATE
-	public Seguro atualizarSeguro(Seguro seguro) {
+	public Seguro updateSeguro(Seguro seguro) {
 		log.info(ConstantUtils.INICIO_UPDATE_SEGURO, seguro.getId());
 		try{
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(
@@ -158,9 +156,8 @@ public class SeguroDAO {
 			throw new SystemException(ConstantUtils.ERRO_INESPERADO_UPDATE_SEGURO);
 		}
 	}
-
 	// DELETE
-	public void deletarSeguroPorId(Long id) {
+	public void deleteSeguroById(Long id) {
 		log.info(ConstantUtils.INICIO_DELETE_SEGURO, id);
 		try {
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(

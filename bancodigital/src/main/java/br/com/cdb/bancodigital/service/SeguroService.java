@@ -11,23 +11,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigital.model.Cartao;
-import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.model.Seguro;
-import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
-import br.com.cdb.bancodigital.model.enums.Status;
-import br.com.cdb.bancodigital.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
 import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.dao.CartaoDAO;
-import br.com.cdb.bancodigital.dao.ClienteDAO;
-import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
-import br.com.cdb.bancodigital.dao.SeguroDAO;
-import br.com.cdb.bancodigital.dto.response.CancelarSeguroResponse;
-import br.com.cdb.bancodigital.dto.response.DebitarPremioSeguroResponse;
-import br.com.cdb.bancodigital.dto.response.SeguroResponse;
+import br.com.cdb.bancodigital.adapters.out.dao.CartaoDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.ClienteDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.PoliticaDeTaxasDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.SeguroDAO;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.CancelarSeguroResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.DebitarPremioSeguroResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.SeguroResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -55,7 +55,7 @@ public class SeguroService {
         log.info(ConstantUtils.SEGURO_CRIADO, seguroNovo.getId());
 
         try {
-            seguroDAO.salvar(seguroNovo);
+            seguroDAO.save(seguroNovo);
             log.info(ConstantUtils.SEGURO_SALVO_BANCO, seguroNovo.getId());
         } catch (Exception e) {
             log.error(ConstantUtils.ERRO_CONTRATAR_SEGURO, e.getMessage());
@@ -64,8 +64,7 @@ public class SeguroService {
         log.info(ConstantUtils.SUCESSO_CONTRATACAO_SEGURO);
         return toResponse(seguroNovo);
     }
-
-    public Seguro contratarSeguroPorTipo(TipoSeguro tipo, Cartao ccr) {
+    private Seguro contratarSeguroPorTipo(TipoSeguro tipo, Cartao ccr) {
         log.info(ConstantUtils.VERIFICANDO_POLITICA_TAXAS);
         CategoriaCliente categoria = ccr.getConta().getCliente().getCategoria();
         PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxasDAO, categoria);
@@ -90,7 +89,6 @@ public class SeguroService {
             }
         };
     }
-
     // obtemDetalhesApolice
     public SeguroResponse getSeguroById(Long id_seguro, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
@@ -100,14 +98,12 @@ public class SeguroService {
         log.info(ConstantUtils.ACESSO_VALIDADO);
         return SeguroResponse.toSeguroResponse(seguro);
     }
-
     // get seguro por usuario
     public List<SeguroResponse> listarPorUsuario(Usuario usuario) {
         log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
         List<Seguro> seguros = seguroDAO.findByCartaoContaClienteUsuario(usuario);
         return seguros.stream().map(this::toResponse).toList();
     }
-
     // cancelar apolice seguro
     @Transactional
     public CancelarSeguroResponse cancelarSeguro(Long id_seguro, Usuario usuarioLogado) {
@@ -118,7 +114,7 @@ public class SeguroService {
         log.info(ConstantUtils.ACESSO_VALIDADO);
         seguro.setarStatusSeguro(Status.INATIVO);
         try {
-            seguroDAO.salvar(seguro);
+            seguroDAO.save(seguro);
             log.info(ConstantUtils.SUCESSO_CANCELAMENTO_SEGURO, seguro.getId());
         } catch (DataIntegrityViolationException e) {
             log.error(ConstantUtils.ERRO_CANCELAMENTO_SEGURO, e.getMessage());
@@ -126,21 +122,20 @@ public class SeguroService {
         }
         return CancelarSeguroResponse.toCancelarSeguroResponse(seguro);
     }
-
     // deletar seguros de cliente
     @Transactional
     public void deleteSegurosByCliente(Long id_cliente) {
         log.info(ConstantUtils.INICIO_DELETE_SEGURO);
         Validator.verificarClienteExistente(clienteDAO, id_cliente);
         log.info(ConstantUtils.CLIENTE_ENCONTRADO, id_cliente);
-        List<Seguro> seguros = seguroDAO.findSegurosByClienteId(id_cliente);
+        List<Seguro> seguros = seguroDAO.findyClienteId(id_cliente);
         if (seguros.isEmpty()) {
             log.info(ConstantUtils.CLIENTE_SEM_SEGUROS, id_cliente);
             return;
         }
         for (Seguro seguro : seguros) {
             try {
-                seguroDAO.deletarSeguroPorId(seguro.getId());
+                seguroDAO.deleteSeguroById(seguro.getId());
                 log.info(ConstantUtils.SUCESSO_DELETE_SEGURO, id_cliente);
 
             } catch (DataIntegrityViolationException e) {
@@ -149,14 +144,12 @@ public class SeguroService {
             }
         }
     }
-
     // get seguros
     public List<SeguroResponse> getSeguros() {
         log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
-        List<Seguro> seguros = seguroDAO.buscarTodosSeguros();
+        List<Seguro> seguros = seguroDAO.findAllSeguros();
         return seguros.stream().map(this::toResponse).toList();
     }
-
     // get seguros by cartao
     public List<SeguroResponse> getSeguroByCartaoId(Long id_cartao, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
@@ -167,7 +160,6 @@ public class SeguroService {
         List<Seguro> seguros = seguroDAO.findByCartaoId(id_cartao);
         return seguros.stream().map(this::toResponse).toList();
     }
-
     // get seguros by cliente
     public List<SeguroResponse> getSeguroByClienteId(Long id_cliente, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
@@ -175,10 +167,9 @@ public class SeguroService {
         log.info(ConstantUtils.CLIENTE_ENCONTRADO, cliente.getId());
         securityService.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
-        List<Seguro> seguros = seguroDAO.findSegurosByClienteId(id_cliente);
+        List<Seguro> seguros = seguroDAO.findyClienteId(id_cliente);
         return seguros.stream().map(this::toResponse).toList();
     }
-
     @Transactional
     // acionarSeguro
     public Seguro acionarSeguro(Long id_seguro, Usuario usuarioLogado, BigDecimal valor) {
@@ -194,7 +185,7 @@ public class SeguroService {
 
         seguro.acionarSeguro();
         try {
-            seguroDAO.salvar(seguro);
+            seguroDAO.save(seguro);
             log.info(ConstantUtils.SUCESSO_ACIONAMENTO_SEGURO, seguro.getId());
         } catch (DataIntegrityViolationException e) {
             log.error(ConstantUtils.ERRO_ACIONAMENTO_SEGURO, e.getMessage());
@@ -202,7 +193,6 @@ public class SeguroService {
         }
         return seguro;
     }
-
     @Transactional
     // debitarPremioSeguro
     public DebitarPremioSeguroResponse debitarPremioSeguro(Long id_seguro) {
@@ -216,7 +206,7 @@ public class SeguroService {
             throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_INSUFICIENTE);
         try {
             seguro.aplicarPremio();
-            seguroDAO.salvar(seguro);
+            seguroDAO.save(seguro);
             log.info(ConstantUtils.SUCESSO_DEBITO_PREMIO_SEGURO, seguro.getId());
         } catch (DataIntegrityViolationException e) {
             log.error(ConstantUtils.ERRO_DEBITO_PREMIO_SEGURO, e.getMessage());
@@ -224,8 +214,7 @@ public class SeguroService {
         }
         return DebitarPremioSeguroResponse.toDebitarPremioSeguroResponse(seguro);
     }
-
-    public SeguroResponse toResponse(Seguro seguro) {
+    private SeguroResponse toResponse(Seguro seguro) {
         return SeguroResponse.toSeguroResponse(seguro);
     }
 

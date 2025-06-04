@@ -20,17 +20,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigital.dto.AcionarSeguroFraudeDTO;
-import br.com.cdb.bancodigital.dto.ContratarSeguroDTO;
-import br.com.cdb.bancodigital.model.Seguro;
-import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.model.enums.TipoSeguro;
-import br.com.cdb.bancodigital.dto.response.AcionarSeguroFraudeResponse;
-import br.com.cdb.bancodigital.dto.response.AcionarSeguroViagemResponse;
-import br.com.cdb.bancodigital.dto.response.CancelarSeguroResponse;
-import br.com.cdb.bancodigital.dto.response.DebitarPremioSeguroResponse;
-import br.com.cdb.bancodigital.dto.response.SeguroResponse;
-import br.com.cdb.bancodigital.dto.response.TipoSeguroResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.AcionarSeguroFraudeDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.ContratarSeguroDTO;
+import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.AcionarSeguroFraudeResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.AcionarSeguroViagemResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.CancelarSeguroResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.DebitarPremioSeguroResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.SeguroResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.TipoSeguroResponse;
 import br.com.cdb.bancodigital.service.SeguroService;
 import jakarta.validation.Valid;
 

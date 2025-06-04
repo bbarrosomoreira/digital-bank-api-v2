@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.model;
+package br.com.cdb.bancodigital.application.core.domain.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -7,8 +7,8 @@ import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.NumberGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigital.model.enums.Status;
-import br.com.cdb.bancodigital.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 

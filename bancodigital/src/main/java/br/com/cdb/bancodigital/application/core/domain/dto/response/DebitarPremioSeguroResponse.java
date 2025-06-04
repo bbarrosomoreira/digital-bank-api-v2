@@ -1,8 +1,8 @@
-package br.com.cdb.bancodigital.dto.response;
+package br.com.cdb.bancodigital.application.core.domain.dto.response;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigital.model.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
 
 public record DebitarPremioSeguroResponse (
 		String tipoSeguro,

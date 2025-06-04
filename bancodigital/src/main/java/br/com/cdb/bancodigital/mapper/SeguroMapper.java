@@ -1,11 +1,11 @@
 package br.com.cdb.bancodigital.mapper;
 
-import br.com.cdb.bancodigital.dao.CartaoDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.CartaoDAO;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.model.Cartao;
-import br.com.cdb.bancodigital.model.Seguro;
-import br.com.cdb.bancodigital.model.enums.Status;
-import br.com.cdb.bancodigital.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ public class SeguroMapper implements RowMapper<Seguro> {
         seguro.setNumApolice(rs.getString("num_apolice"));
 
         Long cartaoId = rs.getLong("cartao_id");
-        Cartao cartao = cartaoDAO.buscarCartaoById(cartaoId)
+        Cartao cartao = cartaoDAO.findById(cartaoId)
                         .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CARTAO + cartaoId));
         seguro.setCartao(cartao);
 
