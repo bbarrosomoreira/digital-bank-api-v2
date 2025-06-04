@@ -1,8 +1,9 @@
-package br.com.cdb.bancodigital.resttemplate;
+package br.com.cdb.bancodigital.adapters.out.resttemplate;
 
-import br.com.cdb.bancodigital.dto.response.ApiConversorMoedasResponse;
+import br.com.cdb.bancodigital.application.port.out.api.ConversorMoedasPort;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ApiConversorMoedasResponse;
 import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
-import br.com.cdb.bancodigital.model.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import java.math.BigDecimal;
 
 @Component
 @Slf4j
-public class ConversorMoedasRestTemplate {
+public class ConversorMoedasRestTemplate implements ConversorMoedasPort {
 
     @Autowired
     private RestTemplate restTemplate;
@@ -30,7 +31,7 @@ public class ConversorMoedasRestTemplate {
     @Value("${api.currency.key}")
     private String apiKey;
 
-    public ApiConversorMoedasResponse chamarApiConversao(@NonNull Moeda from, @NonNull Moeda to, @NonNull BigDecimal amount) {
+    public ApiConversorMoedasResponse converterMoeda(@NonNull Moeda from, @NonNull Moeda to, @NonNull BigDecimal amount) {
         String url = String.format("%s?from=%s&to=%s&amount=%s", apiUrl, from, to, amount);
 
         HttpHeaders headers = new HttpHeaders();

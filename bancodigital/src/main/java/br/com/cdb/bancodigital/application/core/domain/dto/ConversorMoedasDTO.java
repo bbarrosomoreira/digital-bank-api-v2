@@ -1,8 +1,8 @@
-package br.com.cdb.bancodigital.dto;
+package br.com.cdb.bancodigital.application.core.domain.dto;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigital.model.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

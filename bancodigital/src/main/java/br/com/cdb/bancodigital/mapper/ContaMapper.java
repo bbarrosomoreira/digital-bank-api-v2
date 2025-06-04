@@ -1,11 +1,11 @@
 package br.com.cdb.bancodigital.mapper;
 
-import br.com.cdb.bancodigital.dao.ClienteDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.ClienteDAO;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.Conta;
-import br.com.cdb.bancodigital.model.enums.Moeda;
-import br.com.cdb.bancodigital.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.Conta;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +30,7 @@ public class ContaMapper implements RowMapper<Conta> {
         conta.setMoeda(Moeda.fromString(rs.getString("moeda")));
 
         Long clienteId = rs.getLong("cliente_id");
-        Cliente cliente = clienteDAO.buscarClienteporId(clienteId)
+        Cliente cliente = clienteDAO.findById(clienteId)
                         .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CLIENTE));
         conta.setCliente(cliente);
 

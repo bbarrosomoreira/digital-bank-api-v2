@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.model.enums;
+package br.com.cdb.bancodigital.application.core.domain.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;

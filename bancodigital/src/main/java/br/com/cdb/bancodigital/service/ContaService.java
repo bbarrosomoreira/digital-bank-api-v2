@@ -3,7 +3,9 @@ package br.com.cdb.bancodigital.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import br.com.cdb.bancodigital.model.*;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
@@ -13,21 +15,21 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.cdb.bancodigital.model.Conta;
-import br.com.cdb.bancodigital.model.enums.Moeda;
-import br.com.cdb.bancodigital.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.core.domain.model.Conta;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.dao.ClienteDAO;
-import br.com.cdb.bancodigital.dao.ContaDAO;
-import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
-import br.com.cdb.bancodigital.dto.response.AplicarTxManutencaoResponse;
-import br.com.cdb.bancodigital.dto.response.AplicarTxRendimentoResponse;
-import br.com.cdb.bancodigital.dto.response.ContaResponse;
-import br.com.cdb.bancodigital.dto.response.DepositoResponse;
-import br.com.cdb.bancodigital.dto.response.PixResponse;
-import br.com.cdb.bancodigital.dto.response.SaldoResponse;
-import br.com.cdb.bancodigital.dto.response.SaqueResponse;
-import br.com.cdb.bancodigital.dto.response.TransferenciaResponse;
+import br.com.cdb.bancodigital.adapters.out.dao.ClienteDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.ContaDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.PoliticaDeTaxasDAO;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.AplicarTxManutencaoResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.AplicarTxRendimentoResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ContaResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.DepositoResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.PixResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.SaldoResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.SaqueResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.TransferenciaResponse;
 
 @Service
 @AllArgsConstructor
@@ -51,7 +53,7 @@ public class ContaService {
         Conta contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
         log.info(ConstantUtils.CONTA_CRIADA, contaNova.getId());
         try {
-            contaDAO.salvar(contaNova);
+            contaDAO.save(contaNova);
             log.info(ConstantUtils.CONTA_SALVA_BANCO, contaNova.getId());
         } catch (DataAccessException e) {
             log.error(ConstantUtils.ERRO_SALVAR_CONTA, e.getMessage());
@@ -60,7 +62,6 @@ public class ContaService {
         log.info(ConstantUtils.SUCESSO_ABERTURA_CONTA, id_cliente);
         return toResponse(contaNova);
     }
-
     private Conta criarContaPorTipo(TipoConta tipo, Cliente cliente, Moeda moeda, BigDecimal valorDeposito) {
         log.info(ConstantUtils.VERIFICANDO_POLITICA_TAXAS);
         PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxaDAO, cliente.getCategoria());
@@ -78,7 +79,6 @@ public class ContaService {
             }
         };
     }
-
     private Conta criarContaCorrente(Cliente cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
         Conta cc = new Conta(cliente, tipo);
         cc.setTarifaManutencao(parametros.getTarifaManutencaoMensalContaCorrente());
@@ -86,7 +86,6 @@ public class ContaService {
         cc.setSaldo(valorDeposito);
         return cc;
     }
-
     private Conta criarContaPoupanca(Cliente cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
         Conta cp = new Conta(cliente, tipo);
         cp.setTaxaRendimento(parametros.getRendimentoPercentualMensalContaPoupanca());
@@ -94,7 +93,6 @@ public class ContaService {
         cp.setSaldo(valorDeposito);
         return cp;
     }
-
     private Conta criarContaInternacional(Cliente cliente, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito, PoliticaDeTaxas parametros) {
         Conta ci = new Conta(cliente, tipo);
         ci.setTarifaManutencao(parametros.getTarifaManutencaoContaInternacional());
@@ -104,21 +102,18 @@ public class ContaService {
         ci.setSaldo(saldoMoedaExtrangeira);
         return ci;
     }
-
     // get contas
     public List<ContaResponse> getContas() {
         log.info(ConstantUtils.INICIO_BUSCA_CONTA);
-        List<Conta> contas = contaDAO.buscarTodasContas();
+        List<Conta> contas = contaDAO.findAll();
         return contas.stream().map(this::toResponse).toList();
     }
-
     // get conta por usuário
     public List<ContaResponse> listarPorUsuario(Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_CONTA_POR_USUARIO, usuarioLogado.getId());
-        List<Conta> contas = contaDAO.buscarContaPorClienteUsuario(usuarioLogado);
+        List<Conta> contas = contaDAO.findByClienteUsuario(usuarioLogado);
         return contas.stream().map(this::toResponse).toList();
     }
-
     // get conta por cliente
     public List<ContaResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_CONTA_POR_CLIENTE, id_cliente);
@@ -126,10 +121,9 @@ public class ContaService {
         log.info(ConstantUtils.CLIENTE_ENCONTRADO);
         securityService.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
-        List<Conta> contas = contaDAO.buscarContaPorClienteId(id_cliente);
+        List<Conta> contas = contaDAO.findByClienteId(id_cliente);
         return contas.stream().map(this::toResponse).toList();
     }
-
     // get uma conta
     public ContaResponse getContaById(Long id_conta, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_CONTA);
@@ -140,21 +134,20 @@ public class ContaService {
         log.info(ConstantUtils.ACESSO_VALIDADO);
         return toResponse(conta);
     }
-
     // deletar contas de cliente
     @Transactional
     public void deleteContasByCliente(Long id_cliente) {
         log.info(ConstantUtils.INICIO_DELETE_CONTA, id_cliente);
-        List<Conta> contas = contaDAO.buscarContaPorClienteId(id_cliente);
+        List<Conta> contas = contaDAO.findByClienteId(id_cliente);
         if (contas.isEmpty()) {
             log.info(ConstantUtils.CLIENTE_SEM_CONTAS, id_cliente);
             return;
         }
         for (Conta conta : contas) {
             try {
-                contaDAO.validarVinculosConta(conta.getId());
+                contaDAO.validateVinculosConta(conta.getId());
                 Validator.verificarSaldoRemanescente(conta);
-                contaDAO.deletarContaPorId(conta.getId());
+                contaDAO.delete(conta.getId());
                 log.info(ConstantUtils.SUCESSO_DELETE_CONTA, conta.getCliente().getId());
 
             } catch (DataIntegrityViolationException e) {
@@ -163,7 +156,6 @@ public class ContaService {
             }
         }
     }
-
     // transferencia
     @Transactional
     public TransferenciaResponse transferir(Long id_contaOrigem, Usuario usuarioLogado, Long id_contaDestino, BigDecimal valor) {
@@ -179,8 +171,8 @@ public class ContaService {
         log.info(ConstantUtils.SALDO_SUFICIENTE);
         try {
             origem.transferir(destino, valor);
-            contaDAO.salvar(origem);
-            contaDAO.salvar(destino);
+            contaDAO.save(origem);
+            contaDAO.save(destino);
         } catch (ValidationException e) {
             log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, origem.getId(), e);
             throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + origem.getId());
@@ -188,7 +180,6 @@ public class ContaService {
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, origem.getId());
         return TransferenciaResponse.toTransferenciaResponse(origem.getNumeroConta(), destino.getNumeroConta(), valor);
     }
-
     // pix
     @Transactional
     public PixResponse pix(Long id_contaOrigem, Usuario usuarioLogado, Long id_contaDestino, BigDecimal valor) {
@@ -204,8 +195,8 @@ public class ContaService {
         log.info(ConstantUtils.SALDO_SUFICIENTE);
         try {
         origem.pix(destino, valor);
-        contaDAO.salvar(origem);
-        contaDAO.salvar(destino);
+        contaDAO.save(origem);
+        contaDAO.save(destino);
         } catch (ValidationException e) {
             log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, origem.getId(), e);
             throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + origem.getId());
@@ -213,7 +204,6 @@ public class ContaService {
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, origem.getId());
         return PixResponse.toPixResponse(origem.getNumeroConta(), destino.getNumeroConta(), valor);
     }
-
     // get saldo
     public SaldoResponse getSaldo(Long id_conta, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_LEITURA_SALDO, id_conta);
@@ -224,7 +214,6 @@ public class ContaService {
         log.info(ConstantUtils.ACESSO_VALIDADO);
         return SaldoResponse.toSaldoResponse(conta);
     }
-
     // deposito
     @Transactional
     public DepositoResponse depositar(Long id_conta, BigDecimal valor) {
@@ -233,7 +222,7 @@ public class ContaService {
         log.info(ConstantUtils.CONTA_ENCONTRADA);
         try {
         conta.depositar(valor);
-        contaDAO.salvar(conta);
+        contaDAO.save(conta);
         } catch (ValidationException e) {
             log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, conta.getId(), e);
             throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + conta.getId());
@@ -241,7 +230,6 @@ public class ContaService {
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, conta.getId());
         return DepositoResponse.toDepositoResponse(conta.getNumeroConta(), valor, conta.getSaldo());
     }
-
     // saque
     @Transactional
     public SaqueResponse sacar(Long id_conta, Usuario usuarioLogado, BigDecimal valor) {
@@ -255,7 +243,7 @@ public class ContaService {
         log.info(ConstantUtils.SALDO_SUFICIENTE);
         try {
         conta.sacar(valor);
-        contaDAO.salvar(conta);
+        contaDAO.save(conta);
         } catch (ValidationException e) {
             log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, conta.getId(), e);
             throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + conta.getId());
@@ -263,7 +251,6 @@ public class ContaService {
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, conta.getId());
         return SaqueResponse.toSaqueResponse(conta.getNumeroConta(), valor, conta.getSaldo());
     }
-
     // txmanutencao
     @Transactional
     public AplicarTxManutencaoResponse debitarTarifaManutencao(Long id_conta) {
@@ -274,7 +261,7 @@ public class ContaService {
         log.info(ConstantUtils.SALDO_SUFICIENTE);
         try {
         cc.aplicarTarifaManutencao();
-        contaDAO.salvar(cc);
+        contaDAO.save(cc);
         } catch (ValidationException e) {
             log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, cc.getId(), e);
             throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + cc.getId());
@@ -282,7 +269,6 @@ public class ContaService {
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, cc.getId());
         return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), cc.getTarifaManutencao(), cc.getSaldo());
     }
-
     // rendimento
     @Transactional
     public AplicarTxRendimentoResponse creditarRendimento(Long id_conta) {
@@ -291,7 +277,7 @@ public class ContaService {
         log.info(ConstantUtils.CONTA_ENCONTRADA);
         try {
         cp.aplicarRendimento();
-        contaDAO.salvar(cp);
+        contaDAO.save(cp);
         } catch (ValidationException e) {
             log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, cp.getId(), e);
             throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + cp.getId());
@@ -302,7 +288,7 @@ public class ContaService {
     }
 
     //M
-    public ContaResponse toResponse(Conta conta) {
+    private ContaResponse toResponse(Conta conta) {
         BigDecimal tarifa;
         switch (conta.getTipoConta()) {
             case CORRENTE, INTERNACIONAL -> {

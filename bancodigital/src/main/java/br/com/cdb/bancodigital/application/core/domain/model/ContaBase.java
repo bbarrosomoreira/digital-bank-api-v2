@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.model;
+package br.com.cdb.bancodigital.application.core.domain.model;
 
 import java.math.BigDecimal;
 

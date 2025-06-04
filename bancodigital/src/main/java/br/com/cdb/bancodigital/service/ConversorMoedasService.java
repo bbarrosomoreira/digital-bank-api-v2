@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
-import br.com.cdb.bancodigital.resttemplate.ConversorMoedasRestTemplate;
+import br.com.cdb.bancodigital.adapters.out.resttemplate.ConversorMoedasRestTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigital.model.enums.Moeda;
-import br.com.cdb.bancodigital.dto.response.ApiConversorMoedasResponse;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ApiConversorMoedasResponse;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Service
@@ -27,7 +27,7 @@ public class ConversorMoedasService {
 		}
 
 		try {
-			ApiConversorMoedasResponse resposta = conversorMoedasRestTemplate.chamarApiConversao(from, to, amount);
+			ApiConversorMoedasResponse resposta = conversorMoedasRestTemplate.converterMoeda(from, to, amount);
 			return Optional.ofNullable(resposta);
 		} catch (Exception e) {
 			log.error(ConstantUtils.ERRO_CONVERSAO + " {}", e.getMessage());
@@ -46,7 +46,7 @@ public class ConversorMoedasService {
 		}
 
 		try {
-			ApiConversorMoedasResponse resposta = conversorMoedasRestTemplate.chamarApiConversao(Moeda.BRL, to, amount);
+			ApiConversorMoedasResponse resposta = conversorMoedasRestTemplate.converterMoeda(Moeda.BRL, to, amount);
 			if (resposta != null && resposta.getResult() != null) {
 				return resposta.getResult().setScale(2, RoundingMode.HALF_UP);
 			}

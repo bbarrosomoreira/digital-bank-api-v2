@@ -1,14 +1,15 @@
-package br.com.cdb.bancodigital.dao;
+package br.com.cdb.bancodigital.adapters.out.dao;
 
 import java.sql.CallableStatement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import br.com.cdb.bancodigital.application.port.out.repository.ContaRepository;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.mapper.ContaMapper;
-import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -16,36 +17,35 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import br.com.cdb.bancodigital.model.Conta;
+import br.com.cdb.bancodigital.application.core.domain.model.Conta;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ContaDAO {
+public class ContaDAO implements ContaRepository {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final ContaMapper contaMapper;
 
 	// SAVE | Criar ou atualizar conta
-	public Conta salvar(Conta conta) {
+	public Conta save(Conta conta) {
 		log.info(ConstantUtils.INICIO_SALVAR_CONTA);
 		try{
 			if (conta.getId() == null) {
 				// Se não tiver ID, é uma nova conta (INSERT)
-				return criarConta(conta);
+				return add(conta);
 			} else {
 				// Se tiver ID, é uma conta existente (UPDATE)
-				return atualizarConta(conta);
+				return update(conta);
 			}
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_SALVAR_CONTA, e);
 			throw new SystemException(ConstantUtils.ERRO_SALVAR_CONTA);
 		}
 	}
-
 	// CREATE
-	public Conta criarConta(Conta conta) {
+	public Conta add(Conta conta) {
 		log.info(ConstantUtils.INICIO_CRIAR_CONTA_BANCO_DADOS);
 		try {
 			Long id = jdbcTemplate.queryForObject(SqlQueries.SQL_CREATE_CONTA, Long.class,
@@ -67,9 +67,8 @@ public class ContaDAO {
 			throw new SystemException(ConstantUtils.ERRO_CRIAR_CONTA_BANCO_DADOS);
 		}
 	}
-
 	// READ - listar todas
-	public List<Conta> buscarTodasContas() {
+	public List<Conta> findAll() {
 		log.info(ConstantUtils.INICIO_BUSCA_CONTA);
 		try {
 			List<Conta> contas = jdbcTemplate.query(SqlQueries.SQL_READ_ALL_CONTAS, contaMapper);
@@ -80,7 +79,7 @@ public class ContaDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CONTA);
 		}
 	}
-	public Optional<Conta> buscarContaPorId(Long id) {
+	public Optional<Conta> findById(Long id) {
 		log.info(ConstantUtils.INICIO_BUSCA_CONTA);
 		try {
 			Conta conta = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CONTA_BY_ID, contaMapper, id);
@@ -95,7 +94,7 @@ public class ContaDAO {
 			return Optional.empty();
 		}
 	}
-	public List<Conta> buscarContaPorClienteId(Long clienteId) {
+	public List<Conta> findByClienteId(Long clienteId) {
 		log.info(ConstantUtils.INICIO_BUSCA_CONTA_POR_CLIENTE, clienteId);
 		try {
 			List<Conta> contas = jdbcTemplate.query(SqlQueries.SQL_READ_CONTA_BY_CLIENTE, contaMapper, clienteId);
@@ -106,7 +105,7 @@ public class ContaDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CONTA_POR_CLIENTE);
 		}
 	}
-	public List<Conta> buscarContaPorClienteUsuario(Usuario usuario) {
+	public List<Conta> findByClienteUsuario(Usuario usuario) {
 		log.info(ConstantUtils.INICIO_BUSCA_CONTA_POR_USUARIO, usuario.getId());
 		try {
 			List<Conta> contas = jdbcTemplate.query(SqlQueries.SQL_READ_CONTA_BY_CLIENTE_USUARIO, contaMapper, usuario.getId());
@@ -117,8 +116,7 @@ public class ContaDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CONTA_POR_USUARIO);
 		}
 	}
-
-	public void validarVinculosConta(Long id) {
+	public void validateVinculosConta(Long id) {
 		log.info(ConstantUtils.INICIO_VALIDAR_VINCULOS_CONTA, id);
 		jdbcTemplate.call(con -> {
 			CallableStatement cs = con.prepareCall(SqlQueries.SQL_VALIDAR_VINCULOS_CONTA);
@@ -126,9 +124,8 @@ public class ContaDAO {
 			return cs;
 		}, Collections.emptyList());
 	}
-
 	// UPDATE
-	public Conta atualizarConta(Conta conta) {
+	public Conta update(Conta conta) {
 		log.info(ConstantUtils.INICIO_UPDATE_CONTA, conta.getId());
 		try {
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(
@@ -156,9 +153,8 @@ public class ContaDAO {
 			throw new SystemException(ConstantUtils.ERRO_INESPERADO_UPDATE_CONTA);
 		}
 	}
-
 	// DELETE
-	public void deletarContaPorId(Long id) {
+	public void delete(Long id) {
 		log.info(ConstantUtils.INICIO_DELETE_CONTA, id);
 		try {
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(

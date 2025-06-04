@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.dto.response;
+package br.com.cdb.bancodigital.application.core.domain.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -6,8 +6,8 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import br.com.cdb.bancodigital.model.enums.Moeda;
-import br.com.cdb.bancodigital.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
 import jakarta.validation.constraints.Digits;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigital.dto.ConversorMoedasDTO;
-import br.com.cdb.bancodigital.dto.response.ApiConversorMoedasResponse;
-import br.com.cdb.bancodigital.dto.response.ConversorMoedasResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.ConversorMoedasDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ApiConversorMoedasResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ConversorMoedasResponse;
 import br.com.cdb.bancodigital.service.ConversorMoedasService;
 
 @RestController
