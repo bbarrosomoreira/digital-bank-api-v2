@@ -1,12 +1,13 @@
-package br.com.cdb.bancodigital.dao;
+package br.com.cdb.bancodigital.adapters.out.dao;
 
 import java.util.List;
 import java.util.Optional;
 
+import br.com.cdb.bancodigital.application.port.out.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.mapper.PoliticaDeTaxasMapper;
-import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PoliticaDeTaxasDAO{
+public class PoliticaDeTaxasDAO implements PoliticaDeTaxasRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final PoliticaDeTaxasMapper politicaDeTaxasMapper;

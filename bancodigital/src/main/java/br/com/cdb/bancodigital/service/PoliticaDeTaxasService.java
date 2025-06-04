@@ -6,10 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.PoliticaDeTaxasDAO;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Service

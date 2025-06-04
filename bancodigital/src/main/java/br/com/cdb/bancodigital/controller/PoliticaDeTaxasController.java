@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
-import br.com.cdb.bancodigital.dto.PoliticaTaxaDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.PoliticaTaxaDTO;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigital.service.PoliticaDeTaxasService;
 
 @RestController

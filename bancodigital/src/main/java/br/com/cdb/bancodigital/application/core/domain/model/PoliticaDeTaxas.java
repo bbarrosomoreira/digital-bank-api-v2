@@ -1,8 +1,8 @@
-package br.com.cdb.bancodigital.model;
+package br.com.cdb.bancodigital.application.core.domain.model;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
 import lombok.*;
 
 @Getter

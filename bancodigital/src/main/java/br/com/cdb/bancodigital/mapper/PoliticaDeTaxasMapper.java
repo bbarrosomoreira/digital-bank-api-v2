@@ -1,7 +1,7 @@
 package br.com.cdb.bancodigital.mapper;
 
-import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
