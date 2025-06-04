@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -52,6 +54,41 @@ public class ConversorMoedasRestTemplate implements ConversorMoedasPort {
             throw new CommunicationException(ConstantUtils.ERRO_CONVERSAO);
         }
     }
+    public Optional<ApiConversorMoedasResponse> fazerConversao(Moeda from, Moeda to, BigDecimal amount) {
+        if (from == null || to == null || amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            log.warn(ConstantUtils.ERRO_CONVERSAO);
+            return Optional.empty();
+        }
 
+        try {
+            ApiConversorMoedasResponse resposta = converterMoeda(from, to, amount);
+            return Optional.ofNullable(resposta);
+        } catch (Exception e) {
+            log.error(ConstantUtils.ERRO_CONVERSAO + " {}", e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public BigDecimal converterDeBrl(Moeda to, BigDecimal amount) {
+        if (to == null || amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            log.warn(ConstantUtils.ERRO_CONVERSAO);
+            return BigDecimal.ZERO;
+        }
+
+        if (to == Moeda.BRL) {
+            return amount.setScale(2, RoundingMode.HALF_UP);
+        }
+
+        try {
+            ApiConversorMoedasResponse resposta = converterMoeda(Moeda.BRL, to, amount);
+            if (resposta != null && resposta.getResult() != null) {
+                return resposta.getResult().setScale(2, RoundingMode.HALF_UP);
+            }
+        } catch (Exception e) {
+            log.error(ConstantUtils.ERRO_CONVERSAO + " {}", e.getMessage());
+        }
+
+        return BigDecimal.ZERO;
+    }
 
 }
