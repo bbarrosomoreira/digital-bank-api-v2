@@ -47,8 +47,6 @@ public class SqlQueries {
     public static final String SQL_READ_CARTAO_BY_CONTA = "SELECT * FROM public.lst_crt_con_id_v1(?)";
     public static final String SQL_READ_CARTAO_BY_CONTA_CLIENTE_ID = "SELECT * FROM public.lst_crt_cli_id_v1(?)";
     public static final String SQL_READ_CARTAO_BY_CONTA_CLIENTE_USUARIO = "SELECT * FROM public.lst_crt_usu_id_v1(?)";
-    public static final String SQL_EXIST_CARTAO_CONTA = "SELECT public.ext_crt_con_id_v1(?)";
-    public static final String SQL_EXIST_CARTAO_CLIENTE = "SELECT public.ext_crt_cli_id_v1(?)";
     public static final String SQL_UPDATE_CARTAO = "SELECT public.upd_crt_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     public static final String SQL_DELETE_CARTAO = "SELECT public.dlt_crt_v1(?)";
     public static final String SQL_VALIDAR_VINCULOS_CARTAO = "CALL public.vld_vnc_crt_v1(?)";
@@ -60,8 +58,6 @@ public class SqlQueries {
     public static final String SQL_READ_SEGURO_BY_CARTAO = "SELECT * FROM public.lst_seg_crt_id_v1(?)";
     public static final String SQL_READ_SEGURO_BY_CARTAO_CLIENTE_ID = "SELECT * FROM public.lst_seg_cli_id_v1(?)";
     public static final String SQL_READ_SEGURO_BY_CARTAO_CLIENTE_USUARIO = "SELECT * FROM public.lst_seg_usu_id_v1(?)";
-    public static final String SQL_EXIST_SEGURO_CARTAO = "SELECT public.ext_seg_crt_id_v1(?)";
-    public static final String SQL_EXIST_SEGURO_CLIENTE = "SELECT public.ext_seg_cli_id_v1(?)";
     public static final String SQL_UPDATE_SEGURO = "SELECT public.upd_seg_v1(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     public static final String SQL_DELETE_SEGURO = "SELECT public.dlt_seg_v1(?)";
 

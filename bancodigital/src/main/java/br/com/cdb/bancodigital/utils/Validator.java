@@ -1,13 +1,17 @@
 package br.com.cdb.bancodigital.utils;
 
-import br.com.cdb.bancodigital.dao.*;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.model.Conta;
+import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
+import br.com.cdb.bancodigital.application.port.out.repository.*;
 import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.model.*;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
-import br.com.cdb.bancodigital.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -20,32 +24,32 @@ public class Validator {
         throw new IllegalStateException("Utility class");
     }
 
-    public static void validarCpfUnico(ClienteDAO clienteDAO, String cpf) {
-        if (clienteDAO.existsByCpf(cpf))
+    public static void validarCpfUnico(ClienteRepository clienteRepository, String cpf) {
+        if (clienteRepository.existsWithCpf(cpf))
             throw new ResourceAlreadyExistsException(ConstantUtils.CPF_JA_CADASTRADO);
     }
     public static void validarMaiorIdade(Cliente cliente) {
         if (cliente.isMenorDeIdade())
             throw new ValidationException(ConstantUtils.CLIENTE_MAIOR_18);
     }
-    public static Cliente verificarClienteExistente(ClienteDAO clienteDAO, Long id_cliente) {
-        return clienteDAO.buscarClienteporId(id_cliente)
+    public static Cliente verificarClienteExistente(ClienteRepository clienteRepository, Long id_cliente) {
+        return clienteRepository.findById(id_cliente)
                 .orElseThrow(() -> new ResourceNotFoundException((ConstantUtils.ERRO_BUSCA_CLIENTE + id_cliente)));
     }
-    public static Conta verificarContaExistente(ContaDAO contaDAO, Long id_conta) {
-        return contaDAO.buscarContaPorId(id_conta)
+    public static Conta verificarContaExistente(ContaRepository contaRepository, Long id_conta) {
+        return contaRepository.findById(id_conta)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CONTA, id_conta)));
     }
-    public static Cartao verificarCartaoExistente(CartaoDAO cartaoDAO, Long id_cartao) {
-        return cartaoDAO.buscarCartaoById(id_cartao)
+    public static Cartao verificarCartaoExistente(CartaoRepository cartaoRepository, Long id_cartao) {
+        return cartaoRepository.findById(id_cartao)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_CARTAO, id_cartao)));
     }
-    public static Seguro verificarSeguroExistente(SeguroDAO seguroDAO, Long id_seguro) {
-        return seguroDAO.buscarSeguroPorId(id_seguro)
+    public static Seguro verificarSeguroExistente(SeguroRepository seguroRepository, Long id_seguro) {
+        return seguroRepository.findById(id_seguro)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(ConstantUtils.ERRO_BUSCA_SEGURO, id_seguro)));
     }
-    public static PoliticaDeTaxas verificarPoliticaExitente(PoliticaDeTaxasDAO politicaDeTaxasDAO, CategoriaCliente categoria) {
-        return politicaDeTaxasDAO.findByCategoria(categoria)
+    public static PoliticaDeTaxas verificarPoliticaExitente(PoliticaDeTaxasRepository politicaDeTaxasRepository, CategoriaCliente categoria) {
+        return politicaDeTaxasRepository.findByCategoria(categoria)
                 .orElseThrow(() -> new ResourceNotFoundException((ConstantUtils.ERRO_BUSCA_POLITICA_TAXAS + categoria)));
     }
     public static void verificarCartaoAtivo(Status status) {

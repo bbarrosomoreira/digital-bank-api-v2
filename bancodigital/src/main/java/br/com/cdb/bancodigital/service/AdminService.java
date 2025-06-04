@@ -2,11 +2,12 @@ package br.com.cdb.bancodigital.service;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigital.dao.*;
+import br.com.cdb.bancodigital.adapters.out.dao.*;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.*;
 import br.com.cdb.bancodigital.exceptions.custom.*;
-import br.com.cdb.bancodigital.model.*;
-import br.com.cdb.bancodigital.resttemplate.BrasilApiRestTemplate;
-import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
+import br.com.cdb.bancodigital.adapters.out.resttemplate.BrasilApiRestTemplate;
+import br.com.cdb.bancodigital.application.port.out.api.ReceitaFederalPort;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
@@ -17,16 +18,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brasilapi.api.CEP2;
-import br.com.cdb.bancodigital.dto.ClienteUsuarioDTO;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
-import br.com.cdb.bancodigital.model.enums.Moeda;
-import br.com.cdb.bancodigital.model.enums.TipoCartao;
-import br.com.cdb.bancodigital.model.enums.TipoConta;
-import br.com.cdb.bancodigital.model.enums.TipoSeguro;
-import br.com.cdb.bancodigital.dto.response.CartaoResponse;
-import br.com.cdb.bancodigital.dto.response.ClienteResponse;
-import br.com.cdb.bancodigital.dto.response.ContaResponse;
-import br.com.cdb.bancodigital.dto.response.SeguroResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.ClienteUsuarioDTO;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoCartao;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.CartaoResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ClienteResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ContaResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.SeguroResponse;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -44,7 +45,7 @@ public class AdminService {
     private final PoliticaDeTaxasDAO politicaDeTaxasDAO;
     private final SecurityService securityService;
     private final PasswordEncoder passwordEncoder;
-    private final ReceitaFederalRestTemplate receitaFederalRestTemplate;
+    private final ReceitaFederalPort receitaFederalRestTemplate;
     private final BrasilApiRestTemplate brasilApiRestTemplate;
     private final ConversorMoedasService conversorMoedasService;
 
@@ -102,7 +103,7 @@ public class AdminService {
         log.info(ConstantUtils.CONTA_CRIADA, contaNova.getId());
 
         try {
-            contaDAO.salvar(contaNova);
+            contaDAO.save(contaNova);
             log.info(ConstantUtils.CONTA_SALVA_BANCO, contaNova.getId());
         } catch (Exception e) {
             log.error(ConstantUtils.ERRO_ABRIR_CONTA, e.getMessage());
@@ -128,7 +129,7 @@ public class AdminService {
         log.info(ConstantUtils.CARTAO_CRIADO, cartaoNovo.getId());
 
         try {
-            cartaoDAO.salvar(cartaoNovo);
+            cartaoDAO.save(cartaoNovo);
             log.info(ConstantUtils.CARTAO_SALVO_BANCO, cartaoNovo.getId());
         } catch (DataAccessException e) {
             log.error(ConstantUtils.ERRO_SALVAR_CARTAO_BANCO, e);
@@ -153,7 +154,7 @@ public class AdminService {
         log.info(ConstantUtils.SEGURO_CRIADO, seguroNovo.getId());
 
         try {
-            seguroDAO.salvar(seguroNovo);
+            seguroDAO.save(seguroNovo);
             log.info(ConstantUtils.SEGURO_SALVO_BANCO, seguroNovo.getId());
         } catch (Exception e) {
             log.error(ConstantUtils.ERRO_CONTRATAR_SEGURO, e.getMessage());
@@ -178,7 +179,7 @@ public class AdminService {
     private Usuario criarUsuario(ClienteUsuarioDTO dto) {
         log.info(ConstantUtils.CRIANDO_USUARIO);
         String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
-        return usuarioDAO.criarUsuario(dto.getEmail(), senhaCriptografada, dto.getRole());
+        return usuarioDAO.add(dto.getEmail(), senhaCriptografada, dto.getRole());
     }
 
     private Cliente criarCliente(ClienteUsuarioDTO dto, Usuario usuario) {
@@ -192,7 +193,7 @@ public class AdminService {
 
     private void salvarCliente(Cliente cliente) {
         log.info(ConstantUtils.SALVANDO_CLIENTE_BANCO);
-        clienteDAO.salvar(cliente);
+        clienteDAO.save(cliente);
     }
 
     private void salvarEndereco(ClienteUsuarioDTO dto, Cliente cliente, CEP2 cepInfo) {
@@ -203,7 +204,7 @@ public class AdminService {
         enderecoCliente.setCidade(cepInfo.getCity());
         enderecoCliente.setEstado(cepInfo.getState());
         enderecoCliente.setRua(cepInfo.getStreet());
-        enderecoClienteDAO.salvar(enderecoCliente);
+        enderecoClienteDAO.save(enderecoCliente);
     }
 
     public void validarCliente(Cliente cliente) {
@@ -319,7 +320,8 @@ public class AdminService {
     }
 
     public ClienteResponse toClienteResponse(Cliente cliente) {
-        EnderecoCliente endereco = enderecoClienteDAO.buscarEnderecoporClienteOuErro(cliente);
+        EnderecoCliente endereco = enderecoClienteDAO.findByCliente(cliente)
+                .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_ENDERECO));;
         log.info(ConstantUtils.ENDERECO_ENCONTRADO, endereco.getId());
 
         return new ClienteResponse(cliente, endereco);

@@ -6,8 +6,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import br.com.cdb.bancodigital.exceptions.custom.ApiException;
-import br.com.cdb.bancodigital.dto.response.ErrorResponse;
-import br.com.cdb.bancodigital.dto.response.ValidationErrorResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ErrorResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ValidationErrorResponse;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 import lombok.extern.slf4j.Slf4j;

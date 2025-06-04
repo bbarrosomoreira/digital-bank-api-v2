@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.service;
 
-import br.com.cdb.bancodigital.dao.UsuarioDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.UsuarioDAO;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
 import io.jsonwebtoken.JwtException;
@@ -11,11 +11,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigital.dto.LoginDTO;
-import br.com.cdb.bancodigital.dto.UsuarioDTO;
-import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.dto.LoginDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.UsuarioDTO;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
-import br.com.cdb.bancodigital.dto.response.LoginResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginResponse;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Service
@@ -32,16 +32,16 @@ public class AuthService {
 
         // verificar se email está em uso
         log.info(ConstantUtils.LOG_VERIFICANDO_EMAIL_CADASTRADO);
-        if (usuarioDAO.existByEmail(dto.getEmail())) {
+        if (usuarioDAO.existWithEmail(dto.getEmail())) {
             log.error(ConstantUtils.LOG_EMAIL_JA_CADASTRADO);
             throw new ResourceAlreadyExistsException(ConstantUtils.EXC_EMAIL_JA_CADASTRADO);
         }
         log.info(ConstantUtils.LOG_EMAIL_DISPONIVEL);
 
-        // criar novo usuário e salvar no banco
+        // criar novo usuário e save no banco
         log.info(ConstantUtils.LOG_CRIANDO_NOVO_USUARIO);
         String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
-        Usuario novoUsuario = usuarioDAO.criarUsuario(dto.getEmail(), senhaCriptografada, dto.getRole());
+        Usuario novoUsuario = usuarioDAO.add(dto.getEmail(), senhaCriptografada, dto.getRole());
         log.info(ConstantUtils.LOG_USUARIO_CRIADO_SUCESSO);
 
         try {
@@ -74,7 +74,7 @@ public class AuthService {
 
         // buscar usuário
         log.info(ConstantUtils.LOG_BUSCANDO_USUARIO_BANCO);
-        Usuario usuario = usuarioDAO.buscarUsuarioPorEmail(dto.getEmail());
+        Usuario usuario = usuarioDAO.findByEmail(dto.getEmail());
         if (usuario == null) {
             log.error(ConstantUtils.ERRO_BUSCA_USUARIO, dto.getEmail());
             throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO);

@@ -150,8 +150,8 @@ public class ConstantUtils {
     // Cliente
     public static final String ID_CLIENTE = "ID do cliente: {}";
     public static final String CATEGORIA = "categoria";
-    public static final String INICIO_SALVAR_CLIENTE = "Iniciando operação de salvar cliente.";
-    public static final String ERRO_SALVAR_CLIENTE = "Erro ao salvar cliente.";
+    public static final String INICIO_SALVAR_CLIENTE = "Iniciando operação de save cliente.";
+    public static final String ERRO_SALVAR_CLIENTE = "Erro ao save cliente.";
     public static final String INICIO_CADASTRO_CLIENTE = "Iniciando cadastro de cliente";
     public static final String SUCESSO_CADASTRO_CLIENTE = "Cliente cadastrado com sucesso: ID: {}";
     public static final String ERRO_CADASTRO_CLIENTE = "Erro ao cadastrar cliente";
@@ -196,8 +196,8 @@ public class ConstantUtils {
     public static final String ERRO_UPDATE_CATEGORIA_CLIENTE = "Erro ao atualizar categoria do cliente com ID: {}. Verifique os dados informados e tente novamente.";
 
     // EnderecoCliente
-    public static final String INICIO_SALVAR_ENDERECO = "Iniciando operação de salvar endereço.";
-    public static final String ERRO_SALVAR_ENDERECO = "Erro ao salvar endereço.";
+    public static final String INICIO_SALVAR_ENDERECO = "Iniciando operação de save endereço.";
+    public static final String ERRO_SALVAR_ENDERECO = "Erro ao save endereço.";
     public static final String INICIO_CRIAR_ENDERECO = "Iniciando criação de endereço.";
     public static final String SUCESSO_CRIAR_ENDERECO = "Endereço criado com sucesso. ID: {}.";
     public static final String ERRO_CRIAR_ENDERECO = "Erro ao criar endereço.";
@@ -213,8 +213,8 @@ public class ConstantUtils {
     // Conta
     public static final String ID_CONTA = "ID da conta: {}";
     public static final String ERRO_CONTA_NULA = "Conta não pode ser nula";
-    public static final String INICIO_SALVAR_CONTA = "Iniciando operação de salvar conta.";
-    public static final String ERRO_SALVAR_CONTA = "Erro ao salvar conta.";
+    public static final String INICIO_SALVAR_CONTA = "Iniciando operação de save conta.";
+    public static final String ERRO_SALVAR_CONTA = "Erro ao save conta.";
     public static final String INICIO_ABERTURA_CONTA = "Iniciando abertura de conta para cliente.";
     public static final String SUCESSO_ABERTURA_CONTA = "Abertura de conta realizada com sucesso para cliente ID: {}";
     public static final String ERRO_ABERTURA_CONTA = "Erro ao abrir conta";
@@ -312,8 +312,8 @@ public class ConstantUtils {
     // Cartão
     public static final String ID_CARTAO = "ID do cartão: {}";
     public static final String ERRO_CARTAO_NULO = "Cartão não pode ser nulo";
-    public static final String INICIO_SALVAR_CARTAO = "Iniciando operação de salvar cartão.";
-    public static final String ERRO_SALVAR_CARTAO = "Erro ao salvar cartão.";
+    public static final String INICIO_SALVAR_CARTAO = "Iniciando operação de save cartão.";
+    public static final String ERRO_SALVAR_CARTAO = "Erro ao save cartão.";
     public static final String INICIO_EMISSAO_CARTAO = "Iniciando emissão de cartão para cliente.";
     public static final String SUCESSO_EMISSAO_CARTAO = "Emissão de cartão realizada com sucesso para cliente ID: {}";
     public static final String ERRO_EMISSAO_CARTAO = "Erro ao emitir cartão";
@@ -382,8 +382,8 @@ public class ConstantUtils {
     // Seguro
     public static final String ID_SEGURO = "ID do seguro: {}";
     public static final String ERRO_SEGURO_NULO = "Seguro não pode ser nulo";
-    public static final String INICIO_SALVAR_SEGURO = "Iniciando operação de salvar seguro.";
-    public static final String ERRO_SALVAR_SEGURO = "Erro ao salvar seguro.";
+    public static final String INICIO_SALVAR_SEGURO = "Iniciando operação de save seguro.";
+    public static final String ERRO_SALVAR_SEGURO = "Erro ao save seguro.";
     public static final String INICIO_CONTRATACAO_SEGURO = "Iniciando contratação de seguro.";
     public static final String SUCESSO_CONTRATACAO_SEGURO = "Contratação de seguro realizada com sucesso.";
     public static final String ERRO_CONTRATACAO_SEGURO = "Erro ao contratar seguro";
@@ -538,7 +538,7 @@ public class ConstantUtils {
     public static final String USUARIO_CRIADO_SUCESSO = "Usuário criado: ID {}";
     public static final String CLIENTE_CRIADO = "Cliente criado";
     public static final String VALIDACAO_CLIENTE_CONCLUIDA = "Validação do cliente concluída";
-    public static final String ERRO_SALVAR_CLIENTE_BANCO = "Erro ao salvar cliente no banco: ID {}";
+    public static final String ERRO_SALVAR_CLIENTE_BANCO = "Erro ao save cliente no banco: ID {}";
     public static final String DADOS_CEP_SUCESSO = "Dados do CEP encontrados com sucesso";
     public static final String ERRO_BUSCAR_CEP_BRASILAPI = "Erro ao buscar CEP na BrasilAPI: {}";
     public static final String ERRO_BUSCAR_CEP_MENSAGEM_EXCEPTION = "Erro ao consultar CEP. Tente novamente mais tarde.";
@@ -550,8 +550,8 @@ public class ConstantUtils {
     public static final String ERRO_ABRIR_CONTA_MENSAGEM_EXCEPTION = "Erro ao abrir conta. Tente novamente mais tarde.";
     public static final String CARTAO_CRIADO = "Cartão criado: ID {}";
     public static final String CARTAO_SALVO_BANCO = "Cartão salvo no banco de dados: ID {}";
-    public static final String ERRO_SALVAR_CARTAO_BANCO = "Erro ao salvar o cartão no banco de dados";
-    public static final String ERRO_SALVAR_CARTAO_BANCO_MENSAGEM_EXCEPTION = "Erro ao salvar cartão. Tente novamente mais tarde.";
+    public static final String ERRO_SALVAR_CARTAO_BANCO = "Erro ao save o cartão no banco de dados";
+    public static final String ERRO_SALVAR_CARTAO_BANCO_MENSAGEM_EXCEPTION = "Erro ao save cartão. Tente novamente mais tarde.";
     public static final String SEGURO_CRIADO = "Seguro criado: ID {}";
     public static final String SEGURO_SALVO_BANCO = "Seguro salvo no banco de dados: ID {}";
     public static final String ERRO_CONTRATAR_SEGURO = "Erro ao contratar seguro: {}";

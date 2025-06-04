@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigital.dto.LoginDTO;
-import br.com.cdb.bancodigital.dto.UsuarioDTO;
-import br.com.cdb.bancodigital.dto.response.LoginResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.LoginDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.UsuarioDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginResponse;
 import br.com.cdb.bancodigital.service.AuthService;
 import jakarta.validation.Valid;
 

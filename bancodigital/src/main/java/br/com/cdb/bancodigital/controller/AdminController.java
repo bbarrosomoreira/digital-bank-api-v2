@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigital.dto.AbrirContaDTO;
-import br.com.cdb.bancodigital.dto.ClienteUsuarioDTO;
-import br.com.cdb.bancodigital.dto.ContratarSeguroDTO;
-import br.com.cdb.bancodigital.dto.EmitirCartaoDTO;
-import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.dto.response.CartaoResponse;
-import br.com.cdb.bancodigital.dto.response.ClienteResponse;
-import br.com.cdb.bancodigital.dto.response.ContaResponse;
-import br.com.cdb.bancodigital.dto.response.SeguroResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.AbrirContaDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.ClienteUsuarioDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.ContratarSeguroDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.EmitirCartaoDTO;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.CartaoResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ClienteResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ContaResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.SeguroResponse;
 import br.com.cdb.bancodigital.service.AdminService;
 import jakarta.validation.Valid;
 
