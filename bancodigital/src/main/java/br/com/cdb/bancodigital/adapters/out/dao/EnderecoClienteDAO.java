@@ -1,10 +1,11 @@
-package br.com.cdb.bancodigital.dao;
+package br.com.cdb.bancodigital.adapters.out.dao;
 
+import br.com.cdb.bancodigital.application.port.out.repository.EnderecoClienteRepository;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.mapper.EnderecoClienteMapper;
-import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.EnderecoCliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -13,27 +14,26 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class EnderecoClienteDAO {
+public class EnderecoClienteDAO implements EnderecoClienteRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final EnderecoClienteMapper enderecoClienteMapper;
 
     // SAVE | Criar ou atualizar endereço
-    public EnderecoCliente salvar(EnderecoCliente endereco) {
+    public EnderecoCliente save(EnderecoCliente endereco) {
         log.info(ConstantUtils.INICIO_SALVAR_ENDERECO);
         try {
             if (endereco.getId() == null) {
                 // Se não tiver ID, é um novo endereço (INSERT)
-                return criarEndereco(endereco);
+                return add(endereco);
             } else {
                 // Se tiver ID, é um endereço existente (UPDATE)
-                return atualizarEndereco(endereco);
+                return update(endereco);
             }
         } catch (SystemException e) {
             log.error(ConstantUtils.ERRO_SALVAR_ENDERECO, e);
@@ -42,7 +42,7 @@ public class EnderecoClienteDAO {
     }
 
     // CREATE | Criar endereço
-    public EnderecoCliente criarEndereco(EnderecoCliente endereco) {
+    public EnderecoCliente add(EnderecoCliente endereco) {
         log.info(ConstantUtils.INICIO_CRIAR_ENDERECO);
         try {
             Long id = jdbcTemplate.queryForObject(
@@ -67,12 +67,7 @@ public class EnderecoClienteDAO {
     }
 
     // READ | Listar endereço
-    public List<EnderecoCliente> listarEnderecosPorCliente(Long clienteId) {
-        log.info(ConstantUtils.INICIO_BUSCA_ENDERECO, clienteId);
-        return jdbcTemplate.query(SqlQueries.SQL_READ_ENDERECO_CLIENTE_BY_CLIENTE, enderecoClienteMapper, clienteId);
-    }
-
-    public Optional<EnderecoCliente> buscarEnderecoporCliente(Cliente cliente) {
+    public Optional<EnderecoCliente> findByCliente(Cliente cliente) {
         log.info(ConstantUtils.INICIO_BUSCA_ENDERECO, cliente.getId());
         try {
             EnderecoCliente endereco = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_ENDERECO_CLIENTE_BY_CLIENTE, enderecoClienteMapper, cliente.getId());
@@ -87,17 +82,8 @@ public class EnderecoClienteDAO {
             return Optional.empty();
         }
     }
-    public EnderecoCliente buscarEnderecoporClienteOuErro(Cliente cliente) {
-        log.info(ConstantUtils.INICIO_BUSCA_ERRO_ENDERECO);
-        return buscarEnderecoporCliente(cliente)
-                .orElseThrow(() -> {
-                    log.error(ConstantUtils.ERRO_BUSCA_ENDERECO);
-                    return new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_ENDERECO);
-                });
-    }
-
     // UPDATE | Atualizar endereço
-    public EnderecoCliente atualizarEndereco(EnderecoCliente endereco) {
+    public EnderecoCliente update(EnderecoCliente endereco) {
         log.info(ConstantUtils.INICIO_UPDATE_ENDERECO);
         try {
             Integer linhasAfetadas = jdbcTemplate.queryForObject(

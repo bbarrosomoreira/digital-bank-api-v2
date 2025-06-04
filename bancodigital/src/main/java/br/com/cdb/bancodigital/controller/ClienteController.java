@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
-import br.com.cdb.bancodigital.dto.ClienteAtualizadoDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.ClienteAtualizadoDTO;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigital.dto.AtualizarCategoriaClienteDTO;
-import br.com.cdb.bancodigital.dto.ClienteDTO;
-import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.dto.response.ClienteResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.AtualizarCategoriaClienteDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.ClienteDTO;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ClienteResponse;
 import br.com.cdb.bancodigital.service.ClienteService;
 import jakarta.validation.Valid;
 
@@ -47,7 +47,7 @@ public class ClienteController {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-		ClienteResponse response = clienteService.cadastrarCliente(dto, usuarioLogado);
+		ClienteResponse response = clienteService.addCliente(dto, usuarioLogado);
 		log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, response.getId());
 
 		long endTime = System.currentTimeMillis();
@@ -66,7 +66,7 @@ public class ClienteController {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-		ClienteResponse cliente = clienteService.buscarClienteDoUsuario(usuarioLogado);
+		ClienteResponse cliente = clienteService.getClientePorUsuario(usuarioLogado);
 		log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE);
 
 		long endTime = System.currentTimeMillis();
@@ -99,7 +99,7 @@ public class ClienteController {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-		ClienteResponse cliente = clienteService.toResponse(clienteService.getClienteById(id_cliente, usuarioLogado));
+		ClienteResponse cliente = clienteService.getClientePorId(id_cliente, usuarioLogado);
 		log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE + ConstantUtils.ID_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();
@@ -134,7 +134,7 @@ public class ClienteController {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-		ClienteResponse atualizado = clienteService.atualizarCliente(id_cliente, clienteAtualizado, usuarioLogado);
+		ClienteResponse atualizado = clienteService.updateCliente(id_cliente, clienteAtualizado, usuarioLogado);
 		log.info(ConstantUtils.SUCESSO_ATUALIZACAO_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();
@@ -154,7 +154,7 @@ public class ClienteController {
 		Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 		log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-		ClienteResponse atualizado = clienteService.atualizarCliente(id_cliente, clienteAtualizado, usuarioLogado);
+		ClienteResponse atualizado = clienteService.updateCliente(id_cliente, clienteAtualizado, usuarioLogado);
 		log.info(ConstantUtils.SUCESSO_ATUALIZACAO_CLIENTE, id_cliente);
 
 		long endTime = System.currentTimeMillis();

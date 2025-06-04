@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.model;
+package br.com.cdb.bancodigital.application.core.domain.model;
 
 import java.time.LocalDate;
 
@@ -6,7 +6,7 @@ import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.*;
 
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
 
 
 @Getter

@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.dto.response;
+package br.com.cdb.bancodigital.application.core.domain.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

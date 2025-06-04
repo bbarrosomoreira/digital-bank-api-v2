@@ -1,16 +1,17 @@
-package br.com.cdb.bancodigital.resttemplate;
+package br.com.cdb.bancodigital.adapters.out.resttemplate;
 
+import br.com.cdb.bancodigital.application.port.out.api.ReceitaFederalPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import br.com.cdb.bancodigital.dto.response.CpfValidationResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.CpfValidationResponse;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Component
 @Slf4j
 @Profile("dev")  // Ativo apenas no perfil de desenvolvimento
-public class ReceitaFederalRestTemplateMock implements ReceitaFederalRestTemplate {
+public class ReceitaFederalRestTemplateMock implements ReceitaFederalPort {
 
 	@Override
 	public boolean isCpfInvalidoOuInativo(String cpf) {

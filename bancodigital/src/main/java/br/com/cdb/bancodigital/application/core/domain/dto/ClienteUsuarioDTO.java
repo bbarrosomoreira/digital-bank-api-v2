@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.dto;
+package br.com.cdb.bancodigital.application.core.domain.dto;
 
 import java.time.LocalDate;
 
@@ -9,9 +9,9 @@ import org.hibernate.validator.constraints.br.CPF;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.EnderecoCliente;
-import br.com.cdb.bancodigital.model.enums.Role;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,6 +1,7 @@
-package br.com.cdb.bancodigital.resttemplate;
+package br.com.cdb.bancodigital.adapters.out.resttemplate;
 
-import br.com.cdb.bancodigital.dto.response.CpfValidationResponse;
+import br.com.cdb.bancodigital.application.port.out.api.ReceitaFederalPort;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.CpfValidationResponse;
 import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 @Slf4j
 @Profile("prod") // roda apenas com a API externa de simulação da Receita Federal
-public class ReceitaFederalRestTemplateImpl implements ReceitaFederalRestTemplate {
+public class ReceitaFederalRestTemplateImpl implements ReceitaFederalPort {
 
     @Autowired
     private RestTemplate restTemplate;

@@ -1,5 +1,6 @@
-package br.com.cdb.bancodigital.resttemplate;
+package br.com.cdb.bancodigital.adapters.out.resttemplate;
 
+import br.com.cdb.bancodigital.application.port.out.api.BrasilApiPort;
 import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Component
 @Slf4j
-public class BrasilApiRestTemplate {
+public class BrasilApiRestTemplate implements BrasilApiPort {
 
 	public CEP2 buscarEnderecoPorCep(String cep) throws ValidationException {
         if (cep == null || cep.isBlank()) {
@@ -36,7 +37,6 @@ public class BrasilApiRestTemplate {
     private boolean isApiError(Exception e) {
         return e.getMessage().contains("java.net") || e.getMessage().contains("503") || e.getCause() instanceof java.io.IOException;
     }
-	
     // Fallback para quando a API não retorna o endereço
     private CEP2 fallbackCep(String cep) {
         log.info(ConstantUtils.INICIO_FALLBACK_CEP);

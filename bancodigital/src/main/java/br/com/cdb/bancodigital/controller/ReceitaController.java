@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.controller;
 
-import br.com.cdb.bancodigital.dto.ConsultaCpfDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.ConsultaCpfDTO;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import br.com.cdb.bancodigital.dto.response.CpfValidationResponse;
-import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.CpfValidationResponse;
+import br.com.cdb.bancodigital.application.port.out.api.ReceitaFederalPort;
 
 @RestController
 @RequestMapping(ConstantUtils.RECEITA_FEDERAL)
@@ -18,7 +18,7 @@ import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
 @Slf4j
 public class ReceitaController {
 	
-	private final ReceitaFederalRestTemplate receitaFederalRestTemplate;
+	private final ReceitaFederalPort receitaFederalRestTemplate;
 
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@GetMapping(ConstantUtils.GET_CPF)

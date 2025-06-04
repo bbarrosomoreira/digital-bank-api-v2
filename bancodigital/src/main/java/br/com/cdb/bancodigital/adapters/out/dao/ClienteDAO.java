@@ -1,12 +1,13 @@
-package br.com.cdb.bancodigital.dao;
+package br.com.cdb.bancodigital.adapters.out.dao;
 
+import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
 import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.mapper.ClienteMapper;
-import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -24,21 +25,22 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ClienteDAO {
+public class ClienteDAO implements ClienteRepository {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final ClienteMapper clienteMapper;
 
 	// SAVE | Criar ou atualizar cliente
-	public Cliente salvar(Cliente cliente) {
+	@Override
+	public Cliente save(Cliente cliente) {
 		log.info(ConstantUtils.INICIO_SALVAR_CLIENTE);
 		try {
 			if (cliente.getId() == null) {
 				// Se não tiver ID, é um novo cliente (INSERT)
-				return criarCliente(cliente);
+				return add(cliente);
 			} else {
 				// Se tiver ID, é um cliente existente (UPDATE)
-				return atualizarCliente(cliente);
+				return update(cliente);
 			}
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_SALVAR_CLIENTE, e);
@@ -47,7 +49,8 @@ public class ClienteDAO {
 	}
 
 	// CREATE | Criar cliente
-	public Cliente criarCliente(Cliente cliente) {
+	@Override
+	public Cliente add(Cliente cliente) {
 		log.info(ConstantUtils.INICIO_CRIAR_CLIENTE_BANCO_DADOS);
 		try {
 			Long id = jdbcTemplate.queryForObject(
@@ -69,7 +72,8 @@ public class ClienteDAO {
 	}
 
 	// READ | Listar clientes
-	public List<Cliente> buscarTodosClientes() {
+	@Override
+	public List<Cliente> findAll() {
 		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
 		try {
 			List<Cliente> clientes = jdbcTemplate.query(SqlQueries.SQL_READ_ALL_CLIENTES, clienteMapper);
@@ -80,8 +84,8 @@ public class ClienteDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CLIENTE);
 		}
 	}
-
-	public Optional<Cliente> buscarClienteporId(Long id) {
+	@Override
+	public Optional<Cliente> findById(Long id) {
 		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
 		try {
 			Cliente cliente = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_ID, clienteMapper, id);
@@ -99,7 +103,8 @@ public class ClienteDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CLIENTE + id);
 		}
 	}
-	public Optional<Cliente> buscarClienteporUsuario(Usuario usuario) {
+	@Override
+	public Optional<Cliente> findByUsuario(Usuario usuario) {
 		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
 		try {
 			Cliente cliente = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_USUARIO, clienteMapper, usuario.getId());
@@ -115,7 +120,8 @@ public class ClienteDAO {
 		}
 	}
 	// Verificar se existe cliente com o CPF
-	public boolean existsByCpf(String cpf) {
+	@Override
+	public boolean existsWithCpf(String cpf) {
 		log.info(ConstantUtils.INICIO_VERIFICAR_CLIENTE_CPF);
 		try {
 			Boolean exists = jdbcTemplate.queryForObject(SqlQueries.SQL_EXIST_CLIENTE, Boolean.class, cpf);
@@ -126,8 +132,8 @@ public class ClienteDAO {
 			throw new CommunicationException(ConstantUtils.ERRO_VERIFICAR_CLIENTE_CPF + e.getMessage());
 		}
 	}
-
-	public void validarVinculosCliente(Long id) {
+	@Override
+	public void validateVinculosCliente(Long id) {
 		log.info(ConstantUtils.INICIO_VALIDAR_VINCULOS_CLIENTE, id);
 		jdbcTemplate.call(con -> {
 					CallableStatement cs = con.prepareCall(SqlQueries.SQL_VALIDAR_VINCULOS_CLIENTE);
@@ -137,7 +143,8 @@ public class ClienteDAO {
 	}
 
 	// UPDATE | Atualizar clientes
-	private Cliente atualizarCliente(Cliente cliente) {
+	@Override
+	public Cliente update(Cliente cliente) {
 		log.info(ConstantUtils.INICIO_UPDATE_CLIENTE, cliente.getId());
 		try{
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(
@@ -164,13 +171,14 @@ public class ClienteDAO {
 	}
 
 	// UPDATE | Atualizar categoria do cliente
-	public void atualizarCondicoesPorCategoria(Long id, CategoriaCliente novaCategoria) {
+	@Override
+	public void updateCondicoesByCategoria(Long id, CategoriaCliente novaCategoria) {
 		log.info(ConstantUtils.INICIO_UPDATE_CATEGORIA_CLIENTE, id);
 		jdbcTemplate.update(SqlQueries.SQL_UPDATE_CATEGORIA_CLIENTE, id, novaCategoria.name());
 	}
 
 	// DELETE | Excluir clientes
-	public void deletarClientePorId(Long id) {
+	public void delete(Long id) {
 		log.info(ConstantUtils.INICIO_DELETE_CLIENTE, id);
 		try {
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(

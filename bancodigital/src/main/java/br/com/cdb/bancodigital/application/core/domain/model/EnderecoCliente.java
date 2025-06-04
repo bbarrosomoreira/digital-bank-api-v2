@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.model;
+package br.com.cdb.bancodigital.application.core.domain.model;
 
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.constraints.NotBlank;

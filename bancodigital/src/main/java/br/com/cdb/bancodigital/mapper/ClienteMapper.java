@@ -1,10 +1,10 @@
 package br.com.cdb.bancodigital.mapper;
 
-import br.com.cdb.bancodigital.dao.UsuarioDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.UsuarioDAO;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +30,7 @@ public class ClienteMapper implements RowMapper<Cliente> {
         cliente.setDataNascimento(rs.getDate("data_nascimento").toLocalDate());
 
         Long usuarioId = rs.getLong("usuario_id");
-        Usuario usuario = usuarioDAO.buscarUsuarioporId(usuarioId)
+        Usuario usuario = usuarioDAO.findById(usuarioId)
                         .orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO));
         cliente.setUsuario(usuario);
 

@@ -2,11 +2,12 @@ package br.com.cdb.bancodigital.service;
 
 import java.util.List;
 
-import br.com.cdb.bancodigital.dao.*;
-import br.com.cdb.bancodigital.dto.ClienteAtualizadoDTO;
+import br.com.cdb.bancodigital.adapters.out.dao.ClienteDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.EnderecoClienteDAO;
+import br.com.cdb.bancodigital.application.core.domain.dto.ClienteAtualizadoDTO;
 import br.com.cdb.bancodigital.exceptions.custom.*;
-import br.com.cdb.bancodigital.resttemplate.BrasilApiRestTemplate;
-import br.com.cdb.bancodigital.resttemplate.ReceitaFederalRestTemplate;
+import br.com.cdb.bancodigital.adapters.out.resttemplate.BrasilApiRestTemplate;
+import br.com.cdb.bancodigital.application.port.out.api.ReceitaFederalPort;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.brasilapi.api.CEP2;
-import br.com.cdb.bancodigital.dto.ClienteDTO;
-import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.EnderecoCliente;
-import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
-import br.com.cdb.bancodigital.dto.response.ClienteResponse;
+import br.com.cdb.bancodigital.application.core.domain.dto.ClienteDTO;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.ClienteResponse;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
@@ -34,13 +35,13 @@ public class ClienteService {
 
     private final ClienteDAO clienteDAO;
     private final EnderecoClienteDAO enderecoClienteDAO;
-    private final ReceitaFederalRestTemplate receitaService;
+    private final ReceitaFederalPort receitaFederalPort;
     private final SecurityService securityService;
     private final BrasilApiRestTemplate brasilApiRestTemplate;
 
     // Cadastrar cliente
     @Transactional
-    public ClienteResponse cadastrarCliente(ClienteDTO dto, Usuario usuario) {
+    public ClienteResponse addCliente(ClienteDTO dto, Usuario usuario) {
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
         CEP2 cepInfo = buscarEnderecoPorCep(dto.getCep());
@@ -60,41 +61,26 @@ public class ClienteService {
         log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, cliente.getId());
         return toResponse(cliente);
     }
-
-    private CEP2 buscarEnderecoPorCep(String cep) {
-        try {
-            CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(cep);
-            log.info(ConstantUtils.DADOS_CEP_SUCESSO);
-            return cepInfo;
-        } catch (HttpClientErrorException | ResourceAccessException e) {
-            log.error(ConstantUtils.ERRO_BUSCAR_CEP_BRASILAPI, e.getMessage(), e);
-            throw new SystemException(ConstantUtils.ERRO_BUSCAR_CEP_MENSAGEM_EXCEPTION);
-        }
-    }
-
     // Ver cliente(s)
     public List<ClienteResponse> getClientes() throws AccessDeniedException { //só admin
         log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
-        List<Cliente> clientes = clienteDAO.buscarTodosClientes();
+        List<Cliente> clientes = clienteDAO.findAll();
         return clientes.stream().map(this::toResponse).toList();
     }
-
-    public Cliente getClienteById(Long id_cliente, Usuario usuarioLogado) {
+    public ClienteResponse getClientePorId(Long id_cliente, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
         log.info(ConstantUtils.CLIENTE_ENCONTRADO, cliente.getId());
         securityService.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
-        return cliente;
+        return toResponse(cliente);
     }
-
-    public ClienteResponse buscarClienteDoUsuario(Usuario usuario) {
+    public ClienteResponse getClientePorUsuario(Usuario usuario) {
         log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
-        Cliente cliente = clienteDAO.buscarClienteporUsuario(usuario)
+        Cliente cliente = clienteDAO.findByUsuario(usuario)
                 .orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_CLIENTE_NAO_ENCONTRADO_USUARIO_LOGADO));
         return toResponse(cliente);
     }
-
     // deletar cadastro de cliente
     @Transactional
     public void deleteCliente(Long id_cliente) {
@@ -102,34 +88,32 @@ public class ClienteService {
         Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
 
         try {
-            clienteDAO.validarVinculosCliente(id_cliente);
+            clienteDAO.validateVinculosCliente(id_cliente);
         } catch (DataAccessException e) {
             log.warn(ConstantUtils.CLIENTE_POSSUI_VINCULOS, id_cliente);
             throw new ValidationException(ConstantUtils.ERRO_CLIENTE_POSSUI_VINCULOS);
         }
 
         try {
-            clienteDAO.deletarClientePorId(cliente.getId());
+            clienteDAO.delete(cliente.getId());
             log.info(ConstantUtils.SUCESSO_DELETE_CLIENTE, id_cliente);
         } catch (DataAccessException e) {
             log.error(ConstantUtils.ERRO_DELETE_CLIENTE, id_cliente, e);
             throw new SystemException(ConstantUtils.ERRO_DELETE_CLIENTE + id_cliente);
         }
     }
-
-
     // Atualizações de cliente
     @Transactional
-    public ClienteResponse atualizarCliente(Long id_cliente, ClienteAtualizadoDTO dto, Usuario usuarioLogado) {
+    public ClienteResponse updateCliente(Long id_cliente, ClienteAtualizadoDTO dto, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_UPDATE_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteDAO, id_cliente);
         securityService.validateAccess(usuarioLogado, cliente);
 
-        atualizarDadosCliente(cliente, dto);
+        updateDadosCliente(cliente, dto);
 
         try {
-            clienteDAO.salvar(cliente);
-            atualizarEnderecoSeNecessario(cliente, dto);
+            clienteDAO.save(cliente);
+            updateEnderecoSeNecessario(cliente, dto);
         } catch (DataAccessException e) {
             log.error(ConstantUtils.ERRO_UPDATE_CLIENTE, id_cliente, e);
             throw new SystemException(ConstantUtils.ERRO_UPDATE_CLIENTE + id_cliente);
@@ -137,37 +121,6 @@ public class ClienteService {
 
         return toResponse(cliente);
     }
-
-    private void atualizarDadosCliente(Cliente cliente, ClienteAtualizadoDTO dto) {
-        if (dto.getNome() != null) {
-            cliente.setNome(dto.getNome());
-        }
-        if (dto.getCpf() != null && !dto.getCpf().equals(cliente.getCpf())) {
-            if (receitaService.isCpfInvalidoOuInativo(dto.getCpf())) {
-                throw new InvalidInputParameterException(ConstantUtils.CPF_INVALIDO_RECEITA_FEDERAL);
-            }
-            Validator.validarCpfUnico(clienteDAO, dto.getCpf());
-            cliente.setCpf(dto.getCpf());
-        }
-        if (dto.getDataNascimento() != null) {
-            cliente.setDataNascimento(dto.getDataNascimento());
-        }
-        Validator.validarMaiorIdade(cliente);
-    }
-
-    private void atualizarEnderecoSeNecessario(Cliente cliente, ClienteAtualizadoDTO dto) {
-        if (possuiDadosDeEndereco(dto)) {
-            EnderecoCliente enderecoExistente = enderecoClienteDAO.buscarEnderecoporCliente(cliente).orElse(null);
-            if (enderecoExistente == null) {
-                EnderecoCliente novoEndereco = construirEndereco(dto, cliente);
-                enderecoClienteDAO.salvar(novoEndereco);
-            } else {
-                atualizarEnderecoExistente(enderecoExistente, dto);
-                enderecoClienteDAO.atualizarEndereco(enderecoExistente);
-            }
-        }
-    }
-
     @Transactional
     public void updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) throws AccessDeniedException {
         log.info(ConstantUtils.INICIO_UPDATE_CATEGORIA_CLIENTE, id_cliente);
@@ -179,7 +132,7 @@ public class ClienteService {
         }
 
         try {
-            clienteDAO.atualizarCondicoesPorCategoria(id_cliente, novaCategoria);
+            clienteDAO.updateCondicoesByCategoria(id_cliente, novaCategoria);
             log.info(ConstantUtils.SUCESSO_UPDATE_CATEGORIA_CLIENTE, id_cliente, novaCategoria);
         } catch (DataAccessException e) {
             log.error(ConstantUtils.ERRO_ACESSO_DADOS, e.getMessage(), e);
@@ -191,8 +144,9 @@ public class ClienteService {
     }
 
     // M
-    public ClienteResponse toResponse(Cliente cliente) {
-        EnderecoCliente endereco = enderecoClienteDAO.buscarEnderecoporClienteOuErro(cliente);
+    private ClienteResponse toResponse(Cliente cliente) {
+        EnderecoCliente endereco = enderecoClienteDAO.findByCliente(cliente)
+                .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_ENDERECO));
         return new ClienteResponse(cliente, endereco);
     }
 
@@ -239,13 +193,12 @@ public class ClienteService {
         Cliente cliente = dto.transformaClienteParaObjeto();
         cliente.setCategoria(CategoriaCliente.COMUM);
         cliente.setUsuario(usuario);
-
         return cliente;
     }
 
     private void salvarCliente(Cliente cliente) {
         log.info(ConstantUtils.SALVANDO_CLIENTE_BANCO);
-        clienteDAO.salvar(cliente);
+        clienteDAO.save(cliente);
     }
 
     private void salvarEndereco(ClienteDTO dto, Cliente cliente, CEP2 cepInfo) {
@@ -256,11 +209,11 @@ public class ClienteService {
         enderecoCliente.setCidade(cepInfo.getCity());
         enderecoCliente.setEstado(cepInfo.getState());
         enderecoCliente.setRua(cepInfo.getStreet());
-        enderecoClienteDAO.salvar(enderecoCliente);
+        enderecoClienteDAO.save(enderecoCliente);
     }
 
-    public void validarCliente(Cliente cliente) {
-        if (receitaService.isCpfInvalidoOuInativo(cliente.getCpf())) {
+    private void validarCliente(Cliente cliente) {
+        if (receitaFederalPort.isCpfInvalidoOuInativo(cliente.getCpf())) {
             log.error(ConstantUtils.CPF_INVALIDO_RECEITA_FEDERAL);
             throw new InvalidInputParameterException(ConstantUtils.CPF_INVALIDO_RECEITA_FEDERAL);
         }
@@ -269,6 +222,44 @@ public class ClienteService {
 
         Validator.validarMaiorIdade(cliente);
         log.info(ConstantUtils.CLIENTE_MAIOR_IDADE);
+    }
+    private CEP2 buscarEnderecoPorCep(String cep) {
+        try {
+            CEP2 cepInfo = brasilApiRestTemplate.buscarEnderecoPorCep(cep);
+            log.info(ConstantUtils.DADOS_CEP_SUCESSO);
+            return cepInfo;
+        } catch (HttpClientErrorException | ResourceAccessException e) {
+            log.error(ConstantUtils.ERRO_BUSCAR_CEP_BRASILAPI, e.getMessage(), e);
+            throw new SystemException(ConstantUtils.ERRO_BUSCAR_CEP_MENSAGEM_EXCEPTION);
+        }
+    }
+    private void updateDadosCliente(Cliente cliente, ClienteAtualizadoDTO dto) {
+        if (dto.getNome() != null) {
+            cliente.setNome(dto.getNome());
+        }
+        if (dto.getCpf() != null && !dto.getCpf().equals(cliente.getCpf())) {
+            if (receitaFederalPort.isCpfInvalidoOuInativo(dto.getCpf())) {
+                throw new InvalidInputParameterException(ConstantUtils.CPF_INVALIDO_RECEITA_FEDERAL);
+            }
+            Validator.validarCpfUnico(clienteDAO, dto.getCpf());
+            cliente.setCpf(dto.getCpf());
+        }
+        if (dto.getDataNascimento() != null) {
+            cliente.setDataNascimento(dto.getDataNascimento());
+        }
+        Validator.validarMaiorIdade(cliente);
+    }
+    private void updateEnderecoSeNecessario(Cliente cliente, ClienteAtualizadoDTO dto) {
+        if (possuiDadosDeEndereco(dto)) {
+            EnderecoCliente enderecoExistente = enderecoClienteDAO.findByCliente(cliente).orElse(null);
+            if (enderecoExistente == null) {
+                EnderecoCliente novoEndereco = construirEndereco(dto, cliente);
+                enderecoClienteDAO.save(novoEndereco);
+            } else {
+                atualizarEnderecoExistente(enderecoExistente, dto);
+                enderecoClienteDAO.update(enderecoExistente);
+            }
+        }
     }
 
 
