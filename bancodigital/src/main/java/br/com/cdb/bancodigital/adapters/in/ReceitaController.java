@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.controller;
+package br.com.cdb.bancodigital.adapters.in;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.ConsultaCpfDTO;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
@@ -18,7 +18,7 @@ import br.com.cdb.bancodigital.application.port.out.api.ReceitaFederalPort;
 @Slf4j
 public class ReceitaController {
 	
-	private final ReceitaFederalPort receitaFederalRestTemplate;
+	private final ReceitaFederalPort receitaFederalPort;
 
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@GetMapping(ConstantUtils.GET_CPF)
@@ -26,7 +26,7 @@ public class ReceitaController {
 		long startTime = System.currentTimeMillis();
 		log.info(ConstantUtils.INICIO_CONSULTA_CPF);
 
-		CpfValidationResponse response = receitaFederalRestTemplate.consultarCpf(dto.getCpf());
+		CpfValidationResponse response = receitaFederalPort.consultarCpf(dto.getCpf());
 		log.info(ConstantUtils.SUCESSO_CONSULTA_CPF);
 
 		long endTime = System.currentTimeMillis();

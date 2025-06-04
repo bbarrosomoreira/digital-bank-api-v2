@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.config;
 
-import br.com.cdb.bancodigital.service.UsuarioService;
+import br.com.cdb.bancodigital.application.core.service.usuario.UsuarioService;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

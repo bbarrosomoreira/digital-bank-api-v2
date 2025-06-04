@@ -8,6 +8,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
 import br.com.cdb.bancodigital.application.port.in.conta.AbrirContaUseCase;
+import br.com.cdb.bancodigital.application.port.out.api.ConversorMoedasPort;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.ContaRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.PoliticaDeTaxasRepository;
@@ -30,6 +31,7 @@ public class AbrirContaService implements AbrirContaUseCase {
     private final ClienteRepository clienteRepository;
     private final ContaRepository contaRepository;
     private final PoliticaDeTaxasRepository politicaDeTaxasRepository;
+    private final ConversorMoedasPort conversorMoedasPort;
 
     @Transactional
     public ContaResponse abrirConta(Long id_cliente, Usuario usuarioLogado, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito) {
@@ -86,7 +88,7 @@ public class AbrirContaService implements AbrirContaUseCase {
         ci.setTarifaManutencao(parametros.getTarifaManutencaoContaInternacional());
         ci.setMoeda(moeda);
         ci.setSaldoEmReais(valorDeposito);
-        BigDecimal saldoMoedaExtrangeira = conversorMoedasService.converterDeBrl(ci.getMoeda(), ci.getSaldoEmReais());
+        BigDecimal saldoMoedaExtrangeira = conversorMoedasPort.converterDeBrl(ci.getMoeda(), ci.getSaldoEmReais());
         ci.setSaldo(saldoMoedaExtrangeira);
         return ci;
     }
