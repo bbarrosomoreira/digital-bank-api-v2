@@ -1,8 +1,15 @@
-package br.com.cdb.bancodigital.service;
+package br.com.cdb.bancodigital.application.core.service.auth;
 
-import br.com.cdb.bancodigital.adapters.out.dao.UsuarioDAO;
+import br.com.cdb.bancodigital.application.core.domain.dto.LoginDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.UsuarioDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginResponse;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.port.in.auth.AuthUseCase;
+import br.com.cdb.bancodigital.application.port.out.repository.UsuarioRepository;
+import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
+import br.com.cdb.bancodigital.utils.ConstantUtils;
 import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,28 +18,20 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigital.application.core.domain.dto.LoginDTO;
-import br.com.cdb.bancodigital.application.core.domain.dto.UsuarioDTO;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
-import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginResponse;
-import br.com.cdb.bancodigital.utils.ConstantUtils;
-
 @Service
 @AllArgsConstructor
 @Slf4j
-public class AuthService {
+public class AuthService implements AuthUseCase {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
-    private final UsuarioDAO usuarioDAO;
     private final PasswordEncoder passwordEncoder;
+    private final UsuarioRepository usuarioRepository;
 
     public LoginResponse registrar(UsuarioDTO dto) {
 
         // verificar se email está em uso
         log.info(ConstantUtils.LOG_VERIFICANDO_EMAIL_CADASTRADO);
-        if (usuarioDAO.existWithEmail(dto.getEmail())) {
+        if (usuarioRepository.existWithEmail(dto.getEmail())) {
             log.error(ConstantUtils.LOG_EMAIL_JA_CADASTRADO);
             throw new ResourceAlreadyExistsException(ConstantUtils.EXC_EMAIL_JA_CADASTRADO);
         }
@@ -41,7 +40,7 @@ public class AuthService {
         // criar novo usuário e save no banco
         log.info(ConstantUtils.LOG_CRIANDO_NOVO_USUARIO);
         String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
-        Usuario novoUsuario = usuarioDAO.add(dto.getEmail(), senhaCriptografada, dto.getRole());
+        Usuario novoUsuario = usuarioRepository.add(dto.getEmail(), senhaCriptografada, dto.getRole());
         log.info(ConstantUtils.LOG_USUARIO_CRIADO_SUCESSO);
 
         try {
@@ -74,7 +73,7 @@ public class AuthService {
 
         // buscar usuário
         log.info(ConstantUtils.LOG_BUSCANDO_USUARIO_BANCO);
-        Usuario usuario = usuarioDAO.findByEmail(dto.getEmail());
+        Usuario usuario = usuarioRepository.findByEmail(dto.getEmail());
         if (usuario == null) {
             log.error(ConstantUtils.ERRO_BUSCA_USUARIO, dto.getEmail());
             throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO);
@@ -102,4 +101,5 @@ public class AuthService {
         }
 
     }
+
 }
