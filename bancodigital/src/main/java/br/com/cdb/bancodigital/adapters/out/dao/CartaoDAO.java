@@ -1,15 +1,16 @@
-package br.com.cdb.bancodigital.dao;
+package br.com.cdb.bancodigital.adapters.out.dao;
 
 import java.sql.CallableStatement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.mapper.CartaoMapper;
-import br.com.cdb.bancodigital.model.Cartao;
-import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -22,21 +23,21 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CartaoDAO {
+public class CartaoDAO implements CartaoRepository {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final CartaoMapper cartaoMapper;
 
 	// SAVE | Criar ou atualizar cartão
-	public Cartao salvar(Cartao cartao) {
+	public Cartao save(Cartao cartao) {
 		log.info(ConstantUtils.INICIO_SALVAR_CARTAO);
 		try {
 			if (cartao.getId() == null) {
 				// Se não tiver ID, é um novo cartão (INSERT)
-				return criarCartao(cartao);
+				return add(cartao);
 			} else {
 				// Se tiver ID, é um cartão existente (UPDATE)
-				return atualizarCartao(cartao);
+				return update(cartao);
 			}
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_SALVAR_CARTAO, e);
@@ -45,7 +46,7 @@ public class CartaoDAO {
 	}
 
 	// CREATE
-	public Cartao criarCartao(Cartao cartao) {
+	public Cartao add(Cartao cartao) {
 		log.info(ConstantUtils.INICIO_CRIAR_CARTAO_BANCO_DADOS);
 		try {
 			Long id = jdbcTemplate.queryForObject(SqlQueries.SQL_CREATE_CARTAO, Long.class,
@@ -71,7 +72,7 @@ public class CartaoDAO {
 		}
 	}
 	// READ - buscar cartões
-	public List<Cartao> buscarTodosCartoes() {
+	public List<Cartao> findAll() {
 		log.info(ConstantUtils.INICIO_BUSCA_CARTAO);
 		try {
 			List<Cartao> cartoes = jdbcTemplate.query(SqlQueries.SQL_READ_ALL_CARTOES, cartaoMapper);
@@ -82,7 +83,7 @@ public class CartaoDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO);
 		}
 	}
-	public Optional<Cartao> buscarCartaoById(Long id) {
+	public Optional<Cartao> findById(Long id) {
 		log.info(ConstantUtils.INICIO_BUSCA_CARTAO);
 		try {
 			Cartao cartao = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CARTAO_BY_ID, cartaoMapper, id);
@@ -130,8 +131,7 @@ public class CartaoDAO {
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CARTAO_POR_CLIENTE);
 		}
 	}
-
-	public void validarVinculosCartao(Long id) {
+	public void validateVinculosCartao(Long id) {
 		log.info(ConstantUtils.INICIO_VALIDAR_VINCULOS_CARTAO, id);
 		jdbcTemplate.call(con -> {
 			CallableStatement cs = con.prepareCall(SqlQueries.SQL_VALIDAR_VINCULOS_CARTAO);
@@ -139,9 +139,8 @@ public class CartaoDAO {
 			return cs;
 		}, Collections.emptyList());
 	}
-
 	// UPDATE
-	public Cartao atualizarCartao(Cartao cartao) {
+	public Cartao update(Cartao cartao) {
 		log.info(ConstantUtils.INICIO_UPDATE_CARTAO, cartao.getId());
 		try {
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(
@@ -172,9 +171,8 @@ public class CartaoDAO {
 			throw new SystemException(ConstantUtils.ERRO_INESPERADO_UPDATE_CARTAO + cartao.getId());
 		}
 	}
-
 	// DELETE
-	public void deletarCartaoPorId(Long id) {
+	public void delete(Long id) {
 		log.info(ConstantUtils.INICIO_DELETE_CARTAO, id);
 		try {
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(

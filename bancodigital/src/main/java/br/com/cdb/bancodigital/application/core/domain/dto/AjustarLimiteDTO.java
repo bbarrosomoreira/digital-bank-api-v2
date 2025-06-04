@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.dto;
+package br.com.cdb.bancodigital.application.core.domain.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

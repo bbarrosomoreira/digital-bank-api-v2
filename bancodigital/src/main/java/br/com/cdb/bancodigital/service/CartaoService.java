@@ -3,7 +3,7 @@ package br.com.cdb.bancodigital.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import br.com.cdb.bancodigital.dto.response.*;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.*;
 import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;
@@ -14,20 +14,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.cdb.bancodigital.model.Cartao;
-import br.com.cdb.bancodigital.model.Cliente;
-import br.com.cdb.bancodigital.model.Conta;
-import br.com.cdb.bancodigital.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.model.enums.CategoriaCliente;
-import br.com.cdb.bancodigital.model.enums.Status;
-import br.com.cdb.bancodigital.model.enums.TipoCartao;
+import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.model.Conta;
+import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoCartao;
 import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.dao.CartaoDAO;
-import br.com.cdb.bancodigital.dao.ClienteDAO;
-import br.com.cdb.bancodigital.dao.ContaDAO;
-import br.com.cdb.bancodigital.dao.PoliticaDeTaxasDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.CartaoDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.ClienteDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.ContaDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.PoliticaDeTaxasDAO;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Service
@@ -60,7 +60,7 @@ public class CartaoService {
         log.info(ConstantUtils.CARTAO_CRIADO, cartaoNovo.getId());
 
         try {
-            cartaoDAO.salvar(cartaoNovo);
+            cartaoDAO.save(cartaoNovo);
             log.info(ConstantUtils.CARTAO_SALVO_BANCO, cartaoNovo.getId());
         } catch (DataAccessException e) {
             log.error(ConstantUtils.ERRO_SALVAR_CARTAO_BANCO, e);
@@ -70,8 +70,7 @@ public class CartaoService {
         log.info(ConstantUtils.SUCESSO_EMISSAO_CARTAO);
         return toResponse(cartaoNovo);
     }
-
-    public Cartao criarCartaoPorTipo(TipoCartao tipo, Conta conta, String senha) {
+    private Cartao criarCartaoPorTipo(TipoCartao tipo, Conta conta, String senha) {
         log.info(ConstantUtils.VERIFICANDO_POLITICA_TAXAS);
         CategoriaCliente categoria = conta.getCliente().getCategoria();
         PoliticaDeTaxas parametros = Validator.verificarPoliticaExitente(politicaDeTaxasDAO, categoria);
@@ -95,14 +94,12 @@ public class CartaoService {
         };
 
     }
-
     // get cartoes
     public List<CartaoResponse> getCartoes() {
         log.info(ConstantUtils.INICIO_BUSCA_CARTAO);
-        List<Cartao> cartoes = cartaoDAO.buscarTodosCartoes();
+        List<Cartao> cartoes = cartaoDAO.findAll();
         return cartoes.stream().map(this::toResponse).toList();
     }
-
     // get cartoes por conta
     public List<CartaoResponse> listarPorConta(Long id_conta, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_CONTA, id_conta);
@@ -114,7 +111,6 @@ public class CartaoService {
         List<Cartao> cartoes = cartaoDAO.findByContaId(id_conta);
         return cartoes.stream().map(this::toResponse).toList();
     }
-
     // get cartao por cliente
     public List<CartaoResponse> listarPorCliente(Long id_cliente, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_CLIENTE, id_cliente);
@@ -126,7 +122,6 @@ public class CartaoService {
         List<Cartao> cartoes = cartaoDAO.findByContaClienteId(id_cliente);
         return cartoes.stream().map(this::toResponse).toList();
     }
-
     // get um cartao
     public CartaoResponse getCartaoById(Long id_cartao, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_CARTAO, id_cartao);
@@ -136,14 +131,12 @@ public class CartaoService {
         log.info(ConstantUtils.ACESSO_VALIDADO);
         return toResponse(cartao);
     }
-
     // get cartão por usuário
     public List<CartaoResponse> listarPorUsuario(Usuario usuario) {
         log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_USUARIO, usuario.getId());
         List<Cartao> cartoes = cartaoDAO.findByContaClienteUsuario(usuario);
         return cartoes.stream().map(this::toResponse).toList();
     }
-
     // deletar cartoes de cliente
     @Transactional
     public void deleteCartoesByCliente(Long id_cliente) {
@@ -155,10 +148,10 @@ public class CartaoService {
         }
         for (Cartao cartao : cartoes) {
             try {
-                cartaoDAO.validarVinculosCartao(cartao.getId());
+                cartaoDAO.validateVinculosCartao(cartao.getId());
                 Validator.verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
                 Long id = cartao.getId();
-                cartaoDAO.deletarCartaoPorId(cartao.getId());
+                cartaoDAO.delete(cartao.getId());
                 log.info(ConstantUtils.CARTAO_DELETADO_SUCESSO, id);
 
             } catch (DataIntegrityViolationException e) {
@@ -167,7 +160,6 @@ public class CartaoService {
             }
         }
     }
-
     // pagar
     @Transactional
     public PagamentoResponse pagar(Long id_cartao, Usuario usuarioLogado, BigDecimal valor, String senha, String descricao) {
@@ -182,10 +174,9 @@ public class CartaoService {
         }
 
         cartao.realizarPagamento(valor);
-        cartaoDAO.salvar(cartao);
+        cartaoDAO.save(cartao);
         return PagamentoResponse.toPagamentoResponse(cartao, valor, descricao);
     }
-
     // alter limite
     @Transactional
     public LimiteResponse alterarLimite(Long id_cartao, BigDecimal valor) {
@@ -201,10 +192,9 @@ public class CartaoService {
             throw new InvalidInputParameterException(ConstantUtils.ERRO_LIMITE_CONSUMIDO);
 
         cartao.alterarLimite(valor);
-        cartaoDAO.salvar(cartao);
+        cartaoDAO.save(cartao);
         return LimiteResponse.toLimiteResponse(cartao, valor);
     }
-
     // alter status cartao
     @Transactional
     public StatusCartaoResponse alterarStatus(Long id_cartao, Usuario usuarioLogado, Status statusNovo) {
@@ -216,10 +206,9 @@ public class CartaoService {
         }
 
         cartao.alterarStatus(statusNovo);
-        cartaoDAO.salvar(cartao);
+        cartaoDAO.save(cartao);
         return StatusCartaoResponse.toStatusCartaoResponse(cartao, statusNovo);
     }
-
     // alter senha
     @Transactional
     public void alterarSenha(Long id_cartao, Usuario usuarioLogado, String senhaAntiga, String senhaNova) {
@@ -229,9 +218,8 @@ public class CartaoService {
         Validator.verificarCartaoAtivo(cartao.getStatus());
 
         cartao.alterarSenha(senhaAntiga, senhaNova, passwordEncoder);
-        cartaoDAO.salvar(cartao);
+        cartaoDAO.save(cartao);
     }
-
     // get fatura
     public FaturaResponse getFatura(Long id_cartao, Usuario usuarioLogado) {
         Cartao ccr = Validator.verificarCartaoExistente(cartaoDAO, id_cartao);
@@ -243,7 +231,6 @@ public class CartaoService {
 
         return FaturaResponse.toFaturaResponse(ccr);
     }
-
     // ressetar limite credito
     @Transactional
     public FaturaPagaResponse pagarFatura(Long id_cartao, Usuario usuarioLogado) {
@@ -255,10 +242,9 @@ public class CartaoService {
             throw new InvalidInputParameterException(ConstantUtils.ERRO_SALDO_INSUFICIENTE);
 
         ccr.pagarFatura();
-        cartaoDAO.salvar(ccr);
+        cartaoDAO.save(ccr);
         return FaturaPagaResponse.toFaturaPagaResponse(ccr);
     }
-
     // ressetar limite diario
     @Transactional
     public RessetarLimiteDiarioResponse ressetarDebito(Long id_cartao) {
@@ -266,11 +252,10 @@ public class CartaoService {
 
         Validator.verificarCartaoAtivo(cdb.getStatus());
         cdb.reiniciarLimiteDebito();
-        cartaoDAO.salvar(cdb);
+        cartaoDAO.save(cdb);
         return RessetarLimiteDiarioResponse.toRessetarLimiteDiarioResponse(cdb);
     }
-
-    public CartaoResponse toResponse(Cartao cartao) {
+    private CartaoResponse toResponse(Cartao cartao) {
         return new CartaoResponse(cartao.getId(), cartao.getNumeroCartao(), cartao.getTipoCartao(),
                 cartao.getStatus(), cartao.getConta().getNumeroConta(), cartao.getDataVencimento(), cartao.getLimite());
     }

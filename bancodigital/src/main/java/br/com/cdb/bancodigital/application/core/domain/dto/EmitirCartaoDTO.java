@@ -1,6 +1,6 @@
-package br.com.cdb.bancodigital.dto;
+package br.com.cdb.bancodigital.application.core.domain.dto;
 
-import br.com.cdb.bancodigital.model.enums.TipoCartao;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoCartao;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;

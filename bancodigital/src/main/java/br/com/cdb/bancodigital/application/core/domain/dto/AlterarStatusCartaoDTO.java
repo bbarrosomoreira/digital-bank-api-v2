@@ -1,6 +1,6 @@
-package br.com.cdb.bancodigital.dto;
+package br.com.cdb.bancodigital.application.core.domain.dto;
 
-import br.com.cdb.bancodigital.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,8 +1,8 @@
-package br.com.cdb.bancodigital.dto.response;
+package br.com.cdb.bancodigital.application.core.domain.dto.response;
 
 
-import br.com.cdb.bancodigital.model.Cartao;
-import br.com.cdb.bancodigital.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
 
 public record StatusCartaoResponse (
 		String numCartao,

@@ -1,11 +1,11 @@
 package br.com.cdb.bancodigital.mapper;
 
-import br.com.cdb.bancodigital.dao.ContaDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.ContaDAO;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.model.Cartao;
-import br.com.cdb.bancodigital.model.Conta;
-import br.com.cdb.bancodigital.model.enums.Status;
-import br.com.cdb.bancodigital.model.enums.TipoCartao;
+import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.model.Conta;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoCartao;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ public class CartaoMapper implements RowMapper<Cartao> {
         cartao.setNumeroCartao(rs.getString("numero_cartao"));
 
         Long contaId = rs.getLong("conta_id");
-        Conta conta = contaDAO.buscarContaPorId(contaId)
+        Conta conta = contaDAO.findById(contaId)
                         .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CONTA + contaId));
         cartao.setConta(conta);
 

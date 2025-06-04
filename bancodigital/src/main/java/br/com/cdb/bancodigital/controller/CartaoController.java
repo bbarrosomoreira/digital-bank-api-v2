@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.controller;
 
 import java.util.List;
 
-import br.com.cdb.bancodigital.dto.response.*;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.*;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.cdb.bancodigital.dto.AjustarLimiteDTO;
-import br.com.cdb.bancodigital.dto.AlterarSenhaDTO;
-import br.com.cdb.bancodigital.dto.AlterarStatusCartaoDTO;
-import br.com.cdb.bancodigital.dto.EmitirCartaoDTO;
-import br.com.cdb.bancodigital.dto.PagamentoDTO;
-import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.dto.AjustarLimiteDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.AlterarSenhaDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.AlterarStatusCartaoDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.EmitirCartaoDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.PagamentoDTO;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.service.CartaoService;
 import jakarta.validation.Valid;
 
@@ -193,7 +193,7 @@ public class CartaoController {
 	// só o admin pode confirmar a alteração de limites
 	@PreAuthorize(ConstantUtils.ROLE_ADMIN)
 	@PutMapping(ConstantUtils.CARTAO_ID + ConstantUtils.LIMITE_ENDPOINT)
-	public ResponseEntity<LimiteResponse> alterarLimite(@PathVariable Long id_cartao,@Valid @RequestBody AjustarLimiteDTO dto){
+	public ResponseEntity<LimiteResponse> alterarLimite(@PathVariable Long id_cartao, @Valid @RequestBody AjustarLimiteDTO dto){
 		long startTime = System.currentTimeMillis();
 		log.info(ConstantUtils.INICIO_ALTERACAO_LIMITE, id_cartao);
 
