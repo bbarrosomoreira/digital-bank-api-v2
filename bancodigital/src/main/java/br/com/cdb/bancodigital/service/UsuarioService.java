@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.service;
 
-import br.com.cdb.bancodigital.dao.UsuarioDAO;
+import br.com.cdb.bancodigital.adapters.out.dao.UsuarioDAO;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +18,14 @@ public class UsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return usuarioDAO.buscarUsuarioPorEmail(email);
+        return usuarioDAO.findByEmail(email);
     }
 
     // DELETE | Deletar usuário
     public void deleteUsuario(Long id_usuario) {
         // adicionar verificação de vínculo com cliente
         log.info(ConstantUtils.INICIO_DELETE_USUARIO, id_usuario);
-        usuarioDAO.deletarUsuario(id_usuario);
+        usuarioDAO.delete(id_usuario);
         log.info(ConstantUtils.SUCESSO_DELETE_USUARIO, id_usuario);
     }
 }

@@ -9,8 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.dto.response.UsuarioResponse;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.UsuarioResponse;
 
 @RestController
 @RequestMapping(ConstantUtils.USUARIO)

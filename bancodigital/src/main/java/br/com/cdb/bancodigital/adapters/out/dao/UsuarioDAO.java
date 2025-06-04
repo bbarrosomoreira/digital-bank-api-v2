@@ -1,8 +1,9 @@
-package br.com.cdb.bancodigital.dao;
+package br.com.cdb.bancodigital.adapters.out.dao;
 
+import br.com.cdb.bancodigital.application.port.out.repository.UsuarioRepository;
 import br.com.cdb.bancodigital.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.mapper.UsuarioMapper;
-import br.com.cdb.bancodigital.model.enums.Role;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Role;
 import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
@@ -12,7 +13,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import br.com.cdb.bancodigital.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,13 +21,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UsuarioDAO {
+public class UsuarioDAO implements UsuarioRepository {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final UsuarioMapper usuarioMapper;
 
 	// CREATE | Criar usuário
-	public Usuario criarUsuario(String email, String senha, Role role) {
+	public Usuario add(String email, String senha, Role role) {
 		log.info(ConstantUtils.INICIO_CRIAR_USUARIO_BANCO_DADOS);
 		try {
 			Long id = jdbcTemplate.queryForObject(
@@ -45,7 +46,7 @@ public class UsuarioDAO {
 	}
 
 	// READ | Listar usuários
-	public boolean existByEmail(String email) {
+	public boolean existWithEmail(String email) {
 		log.info(ConstantUtils.INICIO_BUSCA_USUARIO);
 		try {
 			Boolean existe = jdbcTemplate.queryForObject(
@@ -60,7 +61,7 @@ public class UsuarioDAO {
 			return false;
 		}
 	}
-	public Usuario buscarUsuarioPorEmail(String email) {
+	public Usuario findByEmail(String email) {
 		log.info(ConstantUtils.INICIO_BUSCA_USUARIO);
 		try {
 			Usuario usuario = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_USUARIO_BY_EMAIL, usuarioMapper, email);
@@ -80,7 +81,7 @@ public class UsuarioDAO {
 	}
 
 	// Encontrar usuário pelo ID
-	public Optional<Usuario> buscarUsuarioporId(Long id) {
+	public Optional<Usuario> findById(Long id) {
 		log.info(ConstantUtils.INICIO_BUSCA_USUARIO);
 		try {
 			Usuario usuario = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_USUARIO_BY_ID, usuarioMapper, id);
@@ -97,7 +98,7 @@ public class UsuarioDAO {
 	}
 
 	// UPDATE | Atualizar usuários
-	public void atualizarUsuario(Long id, String email, String senha, Role role) {
+	public void update(Long id, String email, String senha, Role role) {
 		log.info(ConstantUtils.INICIO_UPDATE_USUARIO, id);
 		try {
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(
@@ -120,7 +121,7 @@ public class UsuarioDAO {
 	}
 
 	// DELETE | Excluir usuários
-	public void deletarUsuario(Long id) {
+	public void delete(Long id) {
 		log.info(ConstantUtils.INICIO_DELETE_USUARIO, id);
 		try {
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(

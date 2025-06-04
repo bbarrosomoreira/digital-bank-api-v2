@@ -1,7 +1,7 @@
 package br.com.cdb.bancodigital.mapper;
 
-import br.com.cdb.bancodigital.model.Usuario;
-import br.com.cdb.bancodigital.model.enums.Role;
+import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.model.enums.Role;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
