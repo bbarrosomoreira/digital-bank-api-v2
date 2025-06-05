@@ -1,0 +1,2114 @@
+{
+	"info": {
+		"_postman_id": "b9bc03f6-1bc9-43b0-975e-2868de6b7d8f",
+		"name": "Projeto Banco Digital",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43288018"
+	},
+	"item": [
+		{
+			"name": "Usuario",
+			"item": [
+				{
+					"name": "Get usuario logado",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/usuario/me",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"usuario",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete usuario by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/usuario/9",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"usuario",
+								"9"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID do cliente",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clientes",
+			"item": [
+				{
+					"name": "Add Cliente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZmJAZ21haWwuY29tIiwiaWF0IjoxNzQ5MTMyMDU3LCJleHAiOjE3NDkxMzkyNTd9.KDcSGTE2GpwjUYKwUdpKL_pla8NsrD6an9JAojJNHvg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqZ2RAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzM5OTU5LCJleHAiOjE3NDQ3NDcxNTl9.KT_UgkL3W0l_NnCsFz_Et2cqUojaIciOVs_D7dTKCfk",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Fufa Bohr\",\r\n    \"cpf\": \"62184856096\",\r\n    \"dataNascimento\": \"16-09-1970\",\r\n    \"cep\": \"72901536\",\r\n    \"numero\": 123,\r\n    \"complemento\": \"Apto 101\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cliente",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cliente"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar cliente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYm1AZ21haWwuY29tIiwiaWF0IjoxNzQ5MTMyMzE4LCJleHAiOjE3NDkxMzk1MTh9.fa7My5hFKCcQdXkZBfx4A6XFSnaSvp6AWH8RccnEHmY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Gun Vuh\",\r\n    \"cpf\": \"68253305001\",\r\n    \"dataNascimento\": \"16-09-2000\",\r\n    \"cep\": \"64077420\",\r\n    \"numero\": 123,\r\n    \"complemento\": \"Apto 101\",\r\n    \"email\": \"gvu@gmail.com\",\r\n    \"senha\": \"123456\",\r\n    \"role\": \"CLIENTE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cliente/admin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cliente",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar por Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqZ2RAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzM0NjAzLCJleHAiOjE3NDQ3NDE4MDN9.l_qwemAHYSWYzeh58b0cdTZvYkjehcP0qPxIv4-L2-A",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/cliente/me",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cliente",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Clientes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYm1AZ21haWwuY29tIiwiaWF0IjoxNzQ5MTMxNjUwLCJleHAiOjE3NDkxMzg4NTB9.f0T3QbnrZB2ZtFqqdspbZH2g6K7nHe885yAi_ntpt18",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cliente",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cliente"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Cliente by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cliente/10",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cliente",
+								"10"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID do cliente",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Cliente by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cliente/6",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cliente",
+								"6"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null,
+									"description": "ID do cliente",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Todos os Dados Cliente by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Rubilma Muh Bohr\",\r\n        \"dataNascimento\": \"16-07-2000\",\r\n    \"endereco\": {\r\n        \"rua\": \"Rua das Flores\",\r\n        \"numero\": \"123\",\r\n        \"complemento\": \"Apto 101\",\r\n        \"bairro\": \"Centro\",\r\n        \"cidade\": \"São Paulo\",\r\n        \"estado\": \"SP\",\r\n         \"cep\": \"12345-678\"\r\n  }\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cliente/10",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cliente",
+								"10"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID do cliente",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Parcialmente os Dados Cliente by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYm1AZ21haWwuY29tIiwiaWF0IjoxNzQ5MTMxNjUwLCJleHAiOjE3NDkxMzg4NTB9.f0T3QbnrZB2ZtFqqdspbZH2g6K7nHe885yAi_ntpt18",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cpf\": \"19412326041\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cliente/11",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cliente",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Categoria Cliente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"categoria\": \"PREMIUM\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cliente/categoria/10",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cliente",
+								"categoria",
+								"10"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contas",
+			"item": [
+				{
+					"name": "Add Conta",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_cliente\": 10,\r\n    \"tipoConta\": \"corrente\",\r\n    \"moeda\": \"BRL\",\r\n    \"valorDeposito\": \"108.00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/conta",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta"
+							],
+							"query": [
+								{
+									"key": "tipoConta",
+									"value": "poupanca",
+									"description": "CORRENTE ou POUPANCA",
+									"disabled": true
+								},
+								{
+									"key": "clienteId",
+									"value": "1",
+									"description": "ID do cliente que deseja abrir a conta",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Tipos de Conta",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/conta/tipos",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"tipos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Contas",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/conta",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar por Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/conta/me",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Contas por Cliente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/conta/cliente/10",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"cliente",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Conta by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/conta/5",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Contas by Cliente ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/conta/cliente/6",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"cliente",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fazer depósito",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"valor\": \"1500.00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/conta/5/deposito",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"5",
+								"deposito"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fazer transferencia",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_contaDestino\": 3,\r\n    \"valor\": \"108.00\",\r\n    \"dataTransacao\": \"29-05-2025\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/conta/5/transferencia",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"5",
+								"transferencia"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fazer pix",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_contaDestino\": 3,\r\n    \"valor\": \"108.00\",\r\n    \"dataTransacao\": \"29-05-2025\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/conta/5/pix",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"5",
+								"pix"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mostrar Saldo de Conta by ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/conta/3/saldo",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"3",
+								"saldo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fazer saque",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"valor\": \"216\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/conta/3/saque",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"3",
+								"saque"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aplica tx manutenção",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/conta/5/manutencao",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"5",
+								"manutencao"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aplica rendimentos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/conta/6/rendimentos",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"conta",
+								"6",
+								"rendimentos"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cartoes",
+			"item": [
+				{
+					"name": "Add Cartao",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_conta\": 5,\r\n    \"tipoCartao\": \"debito\",\r\n    \"senha\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cartao",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar por Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cartao/me",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Cartoes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cartao",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Cartao By ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cartao/6",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Cartoes By Cliente ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cartao/cliente/10",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"cliente",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Cartoes By Conta ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cartao/conta/5",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"conta",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Pagamento",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"valor\": \"595\",\r\n    \"descricao\": \"Curso Parte 1\",\r\n    \"senha\": \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cartao/6/pagamento",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"6",
+								"pagamento"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar Limite Cartao",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"limiteNovo\": \"1000\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cartao/7/limite",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"7",
+								"limite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar Status Cartao",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"INATIVO\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cartao/7/status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"7",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar Senha Cartao",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"senhaAntiga\": \"1234\",\r\n    \"senhaNova\": \"4321\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cartao/6/senha",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"6",
+								"senha"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mostrar Fatura",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cartao/6/fatura",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"6",
+								"fatura"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pagar Fatura",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cartao/6/fatura/pagamento",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"6",
+								"fatura",
+								"pagamento"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ressetar Limite Diário Debito",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cartao/7/limite-diario",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"7",
+								"limite-diario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Cartoes by Cliente ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/cartao/cliente/8",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cartao",
+								"cliente",
+								"8"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Seguros",
+			"item": [
+				{
+					"name": "Add Seguro",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_cartao\": 6,\r\n    \"tipo\": \"viagem\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/seguro",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Tipos de Seguro",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/seguro/tipos",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro",
+								"tipos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Seguros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/seguro",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar por Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/seguro/me",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Seguros By Cartao ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/seguro/cartao/7",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro",
+								"cartao",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Seguros By Cliente ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/seguro/cliente/10",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro",
+								"cliente",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Seguro By ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/seguro/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancelar Apólice de Seguro",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/seguro/5/cancelar",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro",
+								"5",
+								"cancelar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Acionar Seguro Fraude",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"valorFraude\": \"850\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/seguro/fraude/4/acionar",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro",
+								"fraude",
+								"4",
+								"acionar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Acionar Seguro Viagem",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/seguro/viagem/5/acionar",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro",
+								"viagem",
+								"5",
+								"acionar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Debitar Premio Seguro",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/seguro/2/premio",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro",
+								"2",
+								"premio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Seguros by Cliente ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/seguro/cliente/8",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"seguro",
+								"cliente",
+								"8"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Parametros",
+			"item": [
+				{
+					"name": "Listar Parametros",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/politica-taxa",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"politica-taxa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Parametros por Categoria",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"categoria\": \"premium\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/politica-taxa/premium",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"politica-taxa",
+								"premium"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cambio",
+			"item": [
+				{
+					"name": "Converter Moedas",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"moedaOrigem\": \"USD\",\r\n    \"moedaDestino\": \"BRL\",\r\n    \"valor\": \"108.00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cambio/conversor-moedas",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cambio",
+								"conversor-moedas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Converter de Real",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"moedaOrigem\": \"BRL\",\r\n    \"moedaDestino\": \"EUR\",\r\n    \"valor\": \"108.00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cambio/conversor-real",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cambio",
+								"conversor-real"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Teste Cambio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.apilayer.com/currency_data/convert?from=USD&to=BRL&amount=1&apikey=j6k9BY4OO4oXOOhLiUbdjPzfsKKcxoIZ",
+							"protocol": "https",
+							"host": [
+								"api",
+								"apilayer",
+								"com"
+							],
+							"path": [
+								"currency_data",
+								"convert"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "USD"
+								},
+								{
+									"key": "to",
+									"value": "BRL"
+								},
+								{
+									"key": "amount",
+									"value": "1"
+								},
+								{
+									"key": "apikey",
+									"value": "j6k9BY4OO4oXOOhLiUbdjPzfsKKcxoIZ"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ReceitaFederal",
+			"item": [
+				{
+					"name": "Simular consulta de CPF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cpf\": \"87504447005\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/receita-federal/consultar-cpf",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"receita-federal",
+								"consultar-cpf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Teste CPF",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/receita/cpf/87504447005",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"receita",
+								"cpf",
+								"87504447005"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Autentificação",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var json = pm.response.json();\r",
+									"pm.environment.set(\"jwt_token\", json.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"bbm@gmail.com\",\r\n    \"senha\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var json = pm.response.json();\r",
+									"pm.environment.set(\"jwt_token\", json.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"ffb@gmail.com\",\r\n    \"senha\": \"123456\",\r\n    \"role\": \"CLIENTE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/auth/signin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
