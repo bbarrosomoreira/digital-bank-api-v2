@@ -3,6 +3,7 @@ package br.com.cdb.bancodigital.adapter.input;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.UsuarioResponse;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.service.usuario.UsuarioService;
+import br.com.cdb.bancodigital.application.port.in.usuario.UsuarioUseCase;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class UsuarioController {
 
-    private final UsuarioService usuarioService;
+    private final UsuarioUseCase usuarioUseCase;
 
     @GetMapping(ConstantUtils.GET_USUARIO)
     public ResponseEntity<UsuarioResponse> getUsuarioLogado(@AuthenticationPrincipal Usuario usuario) {
@@ -38,7 +39,7 @@ public class UsuarioController {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_DELETE_USUARIO, id_usuario);
 
-        usuarioService.deleteUsuario(id_usuario);
+        usuarioUseCase.deleteUsuario(id_usuario);
         log.info(ConstantUtils.SUCESSO_DELETE_USUARIO, id_usuario);
 
         long endTime = System.currentTimeMillis();

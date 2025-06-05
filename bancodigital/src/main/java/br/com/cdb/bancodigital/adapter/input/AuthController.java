@@ -3,7 +3,7 @@ package br.com.cdb.bancodigital.adapter.input;
 import br.com.cdb.bancodigital.application.core.domain.dto.LoginDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.UsuarioDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginResponse;
-import br.com.cdb.bancodigital.application.core.service.auth.AuthService;
+import br.com.cdb.bancodigital.application.port.in.auth.AuthUseCase;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AuthController {
 
-    private final AuthService authService;
+    private final AuthUseCase authUseCase;
 
     // Endpoint para cadastro de usuário (retorna token JWT após registro)
     @PostMapping(ConstantUtils.SIGNIN)
@@ -28,7 +28,7 @@ public class AuthController {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_REGISTRAR);
 
-        LoginResponse response = authService.registrar(dto);
+        LoginResponse response = authUseCase.registrar(dto);
         log.info(ConstantUtils.SUCESSO_REGISTRAR);
 
         long endTime = System.currentTimeMillis();
@@ -42,7 +42,7 @@ public class AuthController {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_AUTENTICACAO);
 
-        LoginResponse response = authService.autenticar(dto);
+        LoginResponse response = authUseCase.autenticar(dto);
         log.info(ConstantUtils.SUCESSO_AUTENTICACAO);
 
         long endTime = System.currentTimeMillis();

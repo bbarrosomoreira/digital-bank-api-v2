@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.config;
 
-import br.com.cdb.bancodigital.application.core.service.usuario.UsuarioService;
+import br.com.cdb.bancodigital.application.port.in.usuario.UsuarioUseCase;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Slf4j
 public class SecurityConfig {
 	
-	private final UsuarioService usuarioService;
+	private final UsuarioUseCase usuarioUseCase;
 	private final JwtAuthFilter jwtAuthFilter;
 	
     @Bean
@@ -55,7 +55,7 @@ public class SecurityConfig {
     public AuthenticationProvider authenticationProvider() {
         log.info(ConstantUtils.AUTENTICACAO_PROVIDER);
     	DaoAuthenticationProvider provider =  new DaoAuthenticationProvider();
-    	provider.setUserDetailsService(usuarioService);
+    	provider.setUserDetailsService(usuarioUseCase);
     	provider.setPasswordEncoder(passwordEncoder());
         log.info(ConstantUtils.SUCESSO_AUTENTICACAO_PROVIDER);
     	return provider;

@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.config;
 
 import java.io.IOException;
 
-import br.com.cdb.bancodigital.application.core.service.JwtService;
+import br.com.cdb.bancodigital.application.port.in.JwtUseCase;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 	
-	private final JwtService jwtService;
+	private final JwtUseCase jwtUseCase;
 	private final UserDetailsService userDetailsService;
 
 	@Override
@@ -71,12 +71,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	}
 
 	private void processTokenAuthentication(HttpServletRequest request, String token) {
-		final String username = jwtService.extrairUsername(token);
+		final String username = jwtUseCase.extrairUsername(token);
 
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-			if (jwtService.tokenValido(token, userDetails)) {
+			if (jwtUseCase.tokenValido(token, userDetails)) {
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
