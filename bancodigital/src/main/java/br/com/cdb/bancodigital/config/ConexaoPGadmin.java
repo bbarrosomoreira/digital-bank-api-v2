@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.config;
 
-import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
+import br.com.cdb.bancodigital.config.exceptions.custom.CommunicationException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;

@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.config;
 
 import java.io.IOException;
 
-import br.com.cdb.bancodigital.service.JwtService;
+import br.com.cdb.bancodigital.application.core.service.JwtService;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

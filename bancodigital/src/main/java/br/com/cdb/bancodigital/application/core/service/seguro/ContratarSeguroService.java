@@ -11,7 +11,7 @@ import br.com.cdb.bancodigital.application.port.in.seguro.ContratarSeguroUseCase
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.SeguroRepository;
-import br.com.cdb.bancodigital.exceptions.custom.SystemException;
+import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;

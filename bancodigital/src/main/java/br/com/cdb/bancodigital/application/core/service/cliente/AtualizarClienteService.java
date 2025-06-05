@@ -8,10 +8,10 @@ import br.com.cdb.bancodigital.application.port.out.repository.EnderecoClienteRe
 import br.com.cdb.bancodigital.application.port.out.api.ReceitaFederalPort;
 import br.com.cdb.bancodigital.application.core.domain.dto.ClienteAtualizadoDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.ClienteResponse;
-import br.com.cdb.bancodigital.exceptions.custom.CommunicationException;
-import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.exceptions.custom.SystemException;
+import br.com.cdb.bancodigital.config.exceptions.custom.CommunicationException;
+import br.com.cdb.bancodigital.config.exceptions.custom.InvalidInputParameterException;
+import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
+import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
 import br.com.cdb.bancodigital.application.core.domain.model.EnderecoCliente;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;

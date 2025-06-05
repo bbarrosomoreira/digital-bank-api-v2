@@ -8,7 +8,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoCartao;
 import br.com.cdb.bancodigital.application.port.in.cartao.PagamentoUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
-import br.com.cdb.bancodigital.exceptions.custom.InvalidInputParameterException;
+import br.com.cdb.bancodigital.config.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;

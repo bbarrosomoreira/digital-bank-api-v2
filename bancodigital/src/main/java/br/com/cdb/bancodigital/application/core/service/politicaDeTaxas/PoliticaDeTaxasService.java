@@ -4,7 +4,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.application.port.in.politicaDeTaxas.PoliticaDeTaxasUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.PoliticaDeTaxasRepository;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
+import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

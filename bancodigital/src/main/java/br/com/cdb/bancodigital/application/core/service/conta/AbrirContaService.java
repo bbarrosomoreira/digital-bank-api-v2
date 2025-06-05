@@ -12,7 +12,7 @@ import br.com.cdb.bancodigital.application.port.out.api.ConversorMoedasPort;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.ContaRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.PoliticaDeTaxasRepository;
-import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
+import br.com.cdb.bancodigital.config.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;

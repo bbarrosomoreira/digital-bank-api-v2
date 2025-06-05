@@ -6,9 +6,9 @@ import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginRespons
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.port.in.auth.AuthUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.UsuarioRepository;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceAlreadyExistsException;
-import br.com.cdb.bancodigital.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.exceptions.custom.ValidationException;
+import br.com.cdb.bancodigital.config.exceptions.custom.ResourceAlreadyExistsException;
+import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
+import br.com.cdb.bancodigital.config.exceptions.custom.ValidationException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
