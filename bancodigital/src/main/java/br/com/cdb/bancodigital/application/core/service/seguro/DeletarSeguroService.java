@@ -4,6 +4,7 @@ import br.com.cdb.bancodigital.application.core.domain.dto.response.CancelarSegu
 import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.seguro.DeletarSeguroUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.SeguroRepository;
@@ -26,6 +27,7 @@ public class DeletarSeguroService implements DeletarSeguroUseCase {
 
     private final SeguroRepository seguroRepository;
     private final ClienteRepository clienteRepository;
+    private final SecurityUseCase securityUseCase;
 
     // cancelar apolice seguro
     @Transactional
@@ -33,7 +35,7 @@ public class DeletarSeguroService implements DeletarSeguroUseCase {
         log.info(ConstantUtils.INICIO_CANCELAMENTO_SEGURO);
         Seguro seguro = Validator.verificarSeguroExistente(seguroRepository, id_seguro);
         log.info(ConstantUtils.SEGURO_ENCONTRADO, seguro.getId());
-        securityService.validateAccess(usuarioLogado, seguro.getCartao().getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, seguro.getCartao().getConta().getCliente());
         log.info(ConstantUtils.ACESSO_VALIDADO);
         seguro.setarStatusSeguro(Status.INATIVO);
         try {

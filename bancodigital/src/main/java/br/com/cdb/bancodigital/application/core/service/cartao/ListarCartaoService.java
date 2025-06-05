@@ -5,6 +5,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
 import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
 import br.com.cdb.bancodigital.application.core.domain.model.Conta;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.cartao.ListarCartaoUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
@@ -25,6 +26,7 @@ public class ListarCartaoService implements ListarCartaoUseCase {
     private final ClienteRepository clienteRepository;
     private final ContaRepository contaRepository;
     private final CartaoRepository cartaoRepository;
+    private final SecurityUseCase securityUseCase;
 
     public List<CartaoResponse> getCartoes() {
         log.info(ConstantUtils.INICIO_BUSCA_CARTAO);
@@ -36,7 +38,7 @@ public class ListarCartaoService implements ListarCartaoUseCase {
         log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_CONTA, id_conta);
         Conta conta = Validator.verificarContaExistente(contaRepository, id_conta);
         log.info(ConstantUtils.CONTA_ENCONTRADA, conta.getId());
-        securityService.validateAccess(usuarioLogado, conta.getCliente());
+        securityUseCase.validateAccess(usuarioLogado, conta.getCliente());
         log.info(ConstantUtils.ACESSO_VALIDADO);
         log.info(ConstantUtils.BUSCANDO_CARTOES_VINCULADOS_CONTA, id_conta);
         List<Cartao> cartoes = cartaoRepository.findByContaId(id_conta);
@@ -47,7 +49,7 @@ public class ListarCartaoService implements ListarCartaoUseCase {
         log.info(ConstantUtils.INICIO_BUSCA_CARTAO_POR_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteRepository, id_cliente);
         log.info(ConstantUtils.CLIENTE_ENCONTRADO, cliente.getId());
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
         log.info(ConstantUtils.BUSCANDO_CARTOES_VINCULADOS_CLIENTE, id_cliente);
         List<Cartao> cartoes = cartaoRepository.findByContaClienteId(id_cliente);
@@ -58,7 +60,7 @@ public class ListarCartaoService implements ListarCartaoUseCase {
         log.info(ConstantUtils.INICIO_BUSCA_CARTAO, id_cartao);
         Cartao cartao = Validator.verificarCartaoExistente(cartaoRepository, id_cartao);
         log.info(ConstantUtils.CARTAO_ENCONTRADO, cartao.getId());
-        securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, cartao.getConta().getCliente());
         log.info(ConstantUtils.ACESSO_VALIDADO);
         return toResponse(cartao);
     }

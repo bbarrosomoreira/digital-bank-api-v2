@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.application.core.service.cliente;
 
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.cliente.ListarClienteUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.EnderecoClienteRepository;
@@ -24,6 +25,7 @@ public class ListarClienteService implements ListarClienteUseCase {
 
     private final ClienteRepository clienteRepository;
     private final EnderecoClienteRepository enderecoClienteRepository;
+    private final SecurityUseCase securityUseCase;
 
     public List<ClienteResponse> getClientes() throws AccessDeniedException { //só admin
         log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
@@ -34,7 +36,7 @@ public class ListarClienteService implements ListarClienteUseCase {
         log.info(ConstantUtils.INICIO_BUSCA_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteRepository, id_cliente);
         log.info(ConstantUtils.CLIENTE_ENCONTRADO, cliente.getId());
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
         return toResponse(cliente);
     }

@@ -5,6 +5,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
 import br.com.cdb.bancodigital.application.core.domain.model.Conta;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.conta.ListarContaUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.ContaRepository;
@@ -24,6 +25,7 @@ public class ListarContaService implements ListarContaUseCase {
 
     private final ClienteRepository clienteRepository;
     private final ContaRepository contaRepository;
+    private final SecurityUseCase securityUseCase;
 
     public List<ContaResponse> getContas() {
         log.info(ConstantUtils.INICIO_BUSCA_CONTA);
@@ -41,7 +43,7 @@ public class ListarContaService implements ListarContaUseCase {
         log.info(ConstantUtils.INICIO_BUSCA_CONTA_POR_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteRepository, id_cliente);
         log.info(ConstantUtils.CLIENTE_ENCONTRADO);
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
         List<Conta> contas = contaRepository.findByClienteId(id_cliente);
         return contas.stream().map(this::toResponse).toList();
@@ -52,7 +54,7 @@ public class ListarContaService implements ListarContaUseCase {
         Conta conta = Validator.verificarContaExistente(contaRepository, id_conta);
         log.info(ConstantUtils.CONTA_ENCONTRADA);
         Cliente cliente = conta.getCliente();
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
         return toResponse(conta);
     }

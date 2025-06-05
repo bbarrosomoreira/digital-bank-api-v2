@@ -5,6 +5,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
 import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
 import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.seguro.ListarSeguroUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
@@ -26,13 +27,14 @@ public class ListarSeguroService implements ListarSeguroUseCase {
     private final ClienteRepository clienteRepository;
     private final CartaoRepository cartaoRepository;
     private final SeguroRepository seguroRepository;
+    private final SecurityUseCase securityUseCase;
     
 
     public SeguroResponse getSeguroById(Long id_seguro, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
         Seguro seguro = Validator.verificarSeguroExistente(seguroRepository, id_seguro);
         log.info(ConstantUtils.SEGURO_ENCONTRADO, seguro.getId());
-        securityService.validateAccess(usuarioLogado, seguro.getCartao().getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, seguro.getCartao().getConta().getCliente());
         log.info(ConstantUtils.ACESSO_VALIDADO);
         return SeguroResponse.toSeguroResponse(seguro);
     }
@@ -50,7 +52,7 @@ public class ListarSeguroService implements ListarSeguroUseCase {
         log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
         Cartao cartao = Validator.verificarCartaoExistente(cartaoRepository, id_cartao);
         log.info(ConstantUtils.CARTAO_ENCONTRADO, cartao.getId());
-        securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, cartao.getConta().getCliente());
         log.info(ConstantUtils.ACESSO_VALIDADO);
         List<Seguro> seguros = seguroRepository.findByCartaoId(id_cartao);
         return seguros.stream().map(this::toResponse).toList();
@@ -59,7 +61,7 @@ public class ListarSeguroService implements ListarSeguroUseCase {
         log.info(ConstantUtils.INICIO_BUSCA_SEGURO);
         Cliente cliente = Validator.verificarClienteExistente(clienteRepository, id_cliente);
         log.info(ConstantUtils.CLIENTE_ENCONTRADO, cliente.getId());
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
         List<Seguro> seguros = seguroRepository.findyClienteId(id_cliente);
         return seguros.stream().map(this::toResponse).toList();

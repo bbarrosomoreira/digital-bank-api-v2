@@ -7,6 +7,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoCartao;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.cartao.EmitirCartaoUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.ContaRepository;
@@ -32,6 +33,7 @@ public class EmitirCartaoService implements EmitirCartaoUseCase {
     private final CartaoRepository cartaoRepository;
     private final PoliticaDeTaxasRepository politicaDeTaxasRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SecurityUseCase securityUseCase;
 
     @Transactional
     public CartaoResponse emitirCartao(Long id_conta, Usuario usuarioLogado, TipoCartao tipo, String senha) {
@@ -41,7 +43,7 @@ public class EmitirCartaoService implements EmitirCartaoUseCase {
         Conta conta = Validator.verificarContaExistente(contaRepository, id_conta);
         log.info(ConstantUtils.CONTA_ENCONTRADA, conta.getId());
 
-        securityService.validateAccess(usuarioLogado, conta.getCliente());
+        securityUseCase.validateAccess(usuarioLogado, conta.getCliente());
         log.info(ConstantUtils.ACESSO_VALIDADO_USUARIO, usuarioLogado.getId());
 
         // Lógica de criação

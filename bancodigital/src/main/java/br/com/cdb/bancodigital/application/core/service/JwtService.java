@@ -4,6 +4,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
+import br.com.cdb.bancodigital.application.port.in.JwtUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +18,7 @@ import br.com.cdb.bancodigital.utils.ConstantUtils;
 
 @Service
 @Slf4j
-public class JwtService {
+public class JwtService implements JwtUseCase {
 	
 	@Value("${jwt.secret}")
 	private String secret;

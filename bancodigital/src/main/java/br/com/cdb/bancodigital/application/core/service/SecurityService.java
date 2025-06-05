@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.application.core.service;
 
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class SecurityService {
+public class SecurityService implements SecurityUseCase {
 
     public boolean isAdmin(Usuario usuario) {
         log.info(ConstantUtils.INICIO_VERIFICACAO_ADMIN, usuario.getId());

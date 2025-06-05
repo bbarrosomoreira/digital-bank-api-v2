@@ -4,6 +4,7 @@ import br.com.cdb.bancodigital.application.core.domain.dto.LoginDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.UsuarioDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginResponse;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.port.in.JwtUseCase;
 import br.com.cdb.bancodigital.application.port.in.auth.AuthUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.UsuarioRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceAlreadyExistsException;
@@ -26,6 +27,7 @@ public class AuthService implements AuthUseCase {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UsuarioRepository usuarioRepository;
+    private final JwtUseCase jwtUseCase;
 
     public LoginResponse registrar(UsuarioDTO dto) {
 
@@ -46,7 +48,7 @@ public class AuthService implements AuthUseCase {
         try {
             // gerar token
             log.info(ConstantUtils.LOG_GERANDO_TOKEN);
-            String token = jwtService.gerarToken(novoUsuario);
+            String token = jwtUseCase.gerarToken(novoUsuario);
             log.info(ConstantUtils.LOG_TOKEN_GERADO_SUCESSO);
 
             return new LoginResponse(token);
@@ -84,7 +86,7 @@ public class AuthService implements AuthUseCase {
         try {
             // gerar token
             log.info(ConstantUtils.LOG_GERANDO_TOKEN);
-            String token = jwtService.gerarToken(usuario);
+            String token = jwtUseCase.gerarToken(usuario);
             log.info(ConstantUtils.LOG_TOKEN_GERADO_SUCESSO);
 
             return new LoginResponse(token);

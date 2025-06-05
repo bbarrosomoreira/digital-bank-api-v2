@@ -5,6 +5,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.seguro.AcionarSeguroUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.SeguroRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.InvalidInputParameterException;
@@ -25,13 +26,14 @@ import java.math.BigDecimal;
 public class AcionarSeguroService implements AcionarSeguroUseCase {
     
     private final SeguroRepository seguroRepository;
+    private final SecurityUseCase securityUseCase;
 
     @Transactional
     public Seguro acionarSeguro(Long id_seguro, Usuario usuarioLogado, BigDecimal valor) {
         log.info(ConstantUtils.INICIO_ACIONAMENTO_SEGURO);
         Seguro seguro = Validator.verificarSeguroExistente(seguroRepository, id_seguro);
         log.info(ConstantUtils.SEGURO_ENCONTRADO, seguro.getId());
-        securityService.validateAccess(usuarioLogado, seguro.getCartao().getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, seguro.getCartao().getConta().getCliente());
         log.info(ConstantUtils.ACESSO_VALIDADO);
 
         if (seguro.getTipoSeguro().equals(TipoSeguro.FRAUDE) && seguro.getStatusSeguro().equals(Status.INATIVO))

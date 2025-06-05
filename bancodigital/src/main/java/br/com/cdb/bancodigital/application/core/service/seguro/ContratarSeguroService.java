@@ -7,6 +7,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.seguro.ContratarSeguroUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.PoliticaDeTaxasRepository;
@@ -27,6 +28,7 @@ public class ContratarSeguroService implements ContratarSeguroUseCase {
     private final SeguroRepository seguroRepository;
     private final CartaoRepository cartaoRepository;
     private final PoliticaDeTaxasRepository politicaDeTaxasRepository;
+    private final SecurityUseCase securityUseCase;
 
     @Transactional
     public SeguroResponse contratarSeguro(Long id_cartao, Usuario usuarioLogado, TipoSeguro tipo) {
@@ -35,7 +37,7 @@ public class ContratarSeguroService implements ContratarSeguroUseCase {
         log.info(ConstantUtils.CARTAO_ENCONTRADO, ccr.getId());
         Validator.verificarCartaoAtivo(ccr.getStatus());
         log.info(ConstantUtils.CARTAO_ATIVO);
-        securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, ccr.getConta().getCliente());
         log.info(ConstantUtils.ACESSO_VALIDADO);
         Seguro seguroNovo = contratarSeguroPorTipo(tipo, ccr);
         log.info(ConstantUtils.SEGURO_CRIADO, seguroNovo.getId());

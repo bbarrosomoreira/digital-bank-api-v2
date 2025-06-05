@@ -1,6 +1,7 @@
 package br.com.cdb.bancodigital.application.core.service.cliente;
 
 import br.com.brasilapi.api.CEP2;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.cliente.AtualizarClienteUseCase;
 import br.com.cdb.bancodigital.application.port.out.api.BrasilApiPort;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
@@ -34,12 +35,13 @@ public class AtualizarClienteService implements AtualizarClienteUseCase {
     private final EnderecoClienteRepository enderecoClienteRepository;
     private final BrasilApiPort brasilApiPort;
     private final ReceitaFederalPort receitaFederalPort;
+    private final SecurityUseCase securityUseCase;
 
     @Transactional
     public ClienteResponse updateCliente(Long id_cliente, ClienteAtualizadoDTO dto, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_UPDATE_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteRepository, id_cliente);
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
 
         updateDadosCliente(cliente, dto);
 

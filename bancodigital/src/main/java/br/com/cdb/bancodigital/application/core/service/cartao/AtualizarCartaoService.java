@@ -7,6 +7,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoCartao;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.cartao.AtualizarCartaoUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.InvalidInputParameterException;
@@ -27,6 +28,7 @@ public class AtualizarCartaoService implements AtualizarCartaoUseCase {
 
     private final CartaoRepository cartaoRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SecurityUseCase securityUseCase;
 
     @Transactional
     public LimiteResponse alterarLimite(Long id_cartao, BigDecimal valor) {
@@ -49,7 +51,7 @@ public class AtualizarCartaoService implements AtualizarCartaoUseCase {
     @Transactional
     public StatusCartaoResponse alterarStatus(Long id_cartao, Usuario usuarioLogado, Status statusNovo) {
         Cartao cartao = Validator.verificarCartaoExistente(cartaoRepository, id_cartao);
-        securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 
         if (statusNovo.equals(Status.INATIVO) && cartao.getTipoCartao().equals(TipoCartao.CREDITO)) {
             Validator.verificaSeTemFaturaAbertaDeCartaoCredito(cartao);
@@ -63,7 +65,7 @@ public class AtualizarCartaoService implements AtualizarCartaoUseCase {
     @Transactional
     public void alterarSenha(Long id_cartao, Usuario usuarioLogado, String senhaAntiga, String senhaNova) {
         Cartao cartao = Validator.verificarCartaoExistente(cartaoRepository, id_cartao);
-        securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, cartao.getConta().getCliente());
 
         Validator.verificarCartaoAtivo(cartao.getStatus());
 

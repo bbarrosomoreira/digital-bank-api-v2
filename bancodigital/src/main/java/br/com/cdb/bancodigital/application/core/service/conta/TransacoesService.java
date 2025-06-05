@@ -4,6 +4,7 @@ import br.com.cdb.bancodigital.application.core.domain.dto.response.*;
 import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
 import br.com.cdb.bancodigital.application.core.domain.model.Conta;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.conta.TransacoesUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.ContaRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.ValidationException;
@@ -22,6 +23,7 @@ import java.math.BigDecimal;
 public class TransacoesService implements TransacoesUseCase {
 
     private final ContaRepository contaRepository;
+    private final SecurityUseCase securityUseCase;
 
     // transferencia
     @Transactional
@@ -32,7 +34,7 @@ public class TransacoesService implements TransacoesUseCase {
         Conta destino = Validator.verificarContaExistente(contaRepository, id_contaDestino);
         log.info(ConstantUtils.CONTA_ENCONTRADA);
         Cliente cliente = origem.getCliente();
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
         Validator.verificarSaldoSuficiente(valor, origem.getSaldo());
         log.info(ConstantUtils.SALDO_SUFICIENTE);
@@ -56,7 +58,7 @@ public class TransacoesService implements TransacoesUseCase {
         Conta destino = Validator.verificarContaExistente(contaRepository, id_contaDestino);
         log.info(ConstantUtils.CONTA_ENCONTRADA);
         Cliente cliente = origem.getCliente();
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
         Validator.verificarSaldoSuficiente(valor, origem.getSaldo());
         log.info(ConstantUtils.SALDO_SUFICIENTE);
@@ -77,7 +79,7 @@ public class TransacoesService implements TransacoesUseCase {
         Conta conta = Validator.verificarContaExistente(contaRepository, id_conta);
         log.info(ConstantUtils.CONTA_ENCONTRADA);
         Cliente cliente = conta.getCliente();
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
         return SaldoResponse.toSaldoResponse(conta);
     }
@@ -104,7 +106,7 @@ public class TransacoesService implements TransacoesUseCase {
         Conta conta = Validator.verificarContaExistente(contaRepository, id_conta);
         log.info(ConstantUtils.CONTA_ENCONTRADA);
         Cliente cliente = conta.getCliente();
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
         Validator.verificarSaldoSuficiente(valor, conta.getSaldo());
         log.info(ConstantUtils.SALDO_SUFICIENTE);

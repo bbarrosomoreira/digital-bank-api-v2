@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.application.core.service.cliente;
 import br.com.brasilapi.api.CEP2;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.cliente.CadastrarClienteUseCase;
 import br.com.cdb.bancodigital.application.core.domain.dto.ClienteDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.ClienteUsuarioDTO;

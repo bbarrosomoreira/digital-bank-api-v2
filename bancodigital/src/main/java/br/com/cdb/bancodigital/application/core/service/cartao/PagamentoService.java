@@ -6,6 +6,7 @@ import br.com.cdb.bancodigital.application.core.domain.dto.response.PagamentoRes
 import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoCartao;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.cartao.PagamentoUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.InvalidInputParameterException;
@@ -26,11 +27,12 @@ public class PagamentoService implements PagamentoUseCase {
 
     private final CartaoRepository cartaoRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SecurityUseCase securityUseCase;
 
     @Transactional
     public PagamentoResponse pagar(Long id_cartao, Usuario usuarioLogado, BigDecimal valor, String senha, String descricao) {
         Cartao cartao = Validator.verificarCartaoExistente(cartaoRepository, id_cartao);
-        securityService.validateAccess(usuarioLogado, cartao.getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, cartao.getConta().getCliente());
         Validator.verificarCartaoAtivo(cartao.getStatus());
         Validator.verificarSenhaCorreta(senha, cartao.getSenha(), passwordEncoder);
         Validator.verificarLimiteSuficiente(valor, cartao.getLimiteAtual());
@@ -45,7 +47,7 @@ public class PagamentoService implements PagamentoUseCase {
     }
     public FaturaResponse getFatura(Long id_cartao, Usuario usuarioLogado) {
         Cartao ccr = Validator.verificarCartaoExistente(cartaoRepository, id_cartao);
-        securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, ccr.getConta().getCliente());
         Validator.verificarCartaoAtivo(ccr.getStatus());
 
         if (ccr.getTipoCartao() != TipoCartao.CREDITO)
@@ -56,7 +58,7 @@ public class PagamentoService implements PagamentoUseCase {
     @Transactional
     public FaturaPagaResponse pagarFatura(Long id_cartao, Usuario usuarioLogado) {
         Cartao ccr = Validator.verificarCartaoExistente(cartaoRepository, id_cartao);
-        securityService.validateAccess(usuarioLogado, ccr.getConta().getCliente());
+        securityUseCase.validateAccess(usuarioLogado, ccr.getConta().getCliente());
 
         Validator.verificarCartaoAtivo(ccr.getStatus());
         if (ccr.getTotalFatura().compareTo(ccr.getConta().getSaldo()) > 0)

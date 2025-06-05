@@ -7,6 +7,7 @@ import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
 import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
 import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.conta.AbrirContaUseCase;
 import br.com.cdb.bancodigital.application.port.out.api.ConversorMoedasPort;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
@@ -32,13 +33,14 @@ public class AbrirContaService implements AbrirContaUseCase {
     private final ContaRepository contaRepository;
     private final PoliticaDeTaxasRepository politicaDeTaxasRepository;
     private final ConversorMoedasPort conversorMoedasPort;
+    private final SecurityUseCase securityUseCase;
 
     @Transactional
     public ContaResponse abrirConta(Long id_cliente, Usuario usuarioLogado, TipoConta tipo, Moeda moeda, BigDecimal valorDeposito) {
         log.info(ConstantUtils.INICIO_ABERTURA_CONTA);
         Cliente cliente = Validator.verificarClienteExistente(clienteRepository, id_cliente);
         log.info(ConstantUtils.CLIENTE_ENCONTRADO);
-        securityService.validateAccess(usuarioLogado, cliente);
+        securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
         Conta contaNova = criarContaPorTipo(tipo, cliente, moeda, valorDeposito);
         log.info(ConstantUtils.CONTA_CRIADA, contaNova.getId());
