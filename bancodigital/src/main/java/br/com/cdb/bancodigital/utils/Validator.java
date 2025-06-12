@@ -1,21 +1,22 @@
 package br.com.cdb.bancodigital.utils;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
-import br.com.cdb.bancodigital.application.core.domain.model.Conta;
-import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.entity.Conta;
+import br.com.cdb.bancodigital.application.core.domain.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
 import br.com.cdb.bancodigital.application.port.out.repository.*;
 import br.com.cdb.bancodigital.config.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceAlreadyExistsException;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.config.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Slf4j
 public class Validator {
@@ -29,8 +30,14 @@ public class Validator {
             throw new ResourceAlreadyExistsException(ConstantUtils.CPF_JA_CADASTRADO);
     }
     public static void validarMaiorIdade(Cliente cliente) {
-        if (cliente.isMenorDeIdade())
+        if (isMenorDeIdade(cliente))
             throw new ValidationException(ConstantUtils.CLIENTE_MAIOR_18);
+    }
+    public static boolean isMenorDeIdade(Cliente cliente) {
+        if (cliente.getDataNascimento() == null) {
+            throw new InvalidInputParameterException(ConstantUtils.DATA_NASCIMENTO_NULA);
+        }
+        return cliente.getDataNascimento().plusYears(18).isAfter(LocalDate.now());
     }
     public static Cliente verificarClienteExistente(ClienteRepository clienteRepository, Long id_cliente) {
         return clienteRepository.findById(id_cliente)
