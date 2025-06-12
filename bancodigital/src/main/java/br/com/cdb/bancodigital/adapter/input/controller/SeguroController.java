@@ -1,11 +1,11 @@
-package br.com.cdb.bancodigital.adapter.input;
+package br.com.cdb.bancodigital.adapter.input.controller;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.AcionarSeguroFraudeDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.ContratarSeguroDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.*;
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.TipoSeguro;
 import br.com.cdb.bancodigital.application.port.in.seguro.AcionarSeguroUseCase;
 import br.com.cdb.bancodigital.application.port.in.seguro.ContratarSeguroUseCase;
 import br.com.cdb.bancodigital.application.port.in.seguro.DeletarSeguroUseCase;

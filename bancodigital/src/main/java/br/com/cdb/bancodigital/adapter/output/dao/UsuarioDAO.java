@@ -2,8 +2,8 @@ package br.com.cdb.bancodigital.adapter.output.dao;
 
 import br.com.cdb.bancodigital.application.port.out.repository.UsuarioRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
-import br.com.cdb.bancodigital.application.core.domain.mapper.UsuarioMapper;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Role;
+import br.com.cdb.bancodigital.adapter.output.dao.rowMapper.UsuarioRowMapper;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Role;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
@@ -13,7 +13,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,7 +24,7 @@ import java.util.Optional;
 public class UsuarioDAO implements UsuarioRepository {
 
 	private final JdbcTemplate jdbcTemplate;
-	private final UsuarioMapper usuarioMapper;
+	private final UsuarioRowMapper usuarioMapper;
 
 	// CREATE | Criar usuário
 	public Usuario add(String email, String senha, Role role) {

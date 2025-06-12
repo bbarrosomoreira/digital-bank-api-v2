@@ -6,8 +6,8 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.TipoConta;
 import jakarta.validation.constraints.Digits;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

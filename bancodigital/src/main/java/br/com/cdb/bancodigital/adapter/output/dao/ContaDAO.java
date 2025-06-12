@@ -8,8 +8,8 @@ import java.util.Optional;
 import br.com.cdb.bancodigital.application.port.out.repository.ContaRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
-import br.com.cdb.bancodigital.application.core.domain.mapper.ContaMapper;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.adapter.output.dao.rowMapper.ContaRowMapper;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Conta;
+import br.com.cdb.bancodigital.application.core.domain.entity.Conta;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class ContaDAO implements ContaRepository {
 
 	private final JdbcTemplate jdbcTemplate;
-	private final ContaMapper contaMapper;
+	private final ContaRowMapper contaMapper;
 
 	// SAVE | Criar ou atualizar conta
 	public Conta save(Conta conta) {

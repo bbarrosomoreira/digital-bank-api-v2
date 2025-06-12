@@ -1,9 +1,9 @@
-package br.com.cdb.bancodigital.adapter.input;
+package br.com.cdb.bancodigital.adapter.input.controller;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.*;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.*;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.TipoConta;
 import br.com.cdb.bancodigital.application.port.in.conta.AbrirContaUseCase;
 import br.com.cdb.bancodigital.application.port.in.conta.DeletarContaUseCase;
 import br.com.cdb.bancodigital.application.port.in.conta.ListarContaUseCase;

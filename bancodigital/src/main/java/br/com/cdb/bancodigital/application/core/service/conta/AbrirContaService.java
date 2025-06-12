@@ -1,12 +1,12 @@
 package br.com.cdb.bancodigital.application.core.service.conta;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.response.ContaResponse;
-import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.model.Conta;
-import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Conta;
+import br.com.cdb.bancodigital.application.core.domain.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.TipoConta;
 import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.conta.AbrirContaUseCase;
 import br.com.cdb.bancodigital.application.port.out.api.ConversorMoedasPort;

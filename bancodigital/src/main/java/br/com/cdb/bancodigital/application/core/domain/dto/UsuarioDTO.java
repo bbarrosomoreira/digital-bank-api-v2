@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.application.core.domain.dto;
 
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Role;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

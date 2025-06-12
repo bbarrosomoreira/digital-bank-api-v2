@@ -3,9 +3,9 @@ package br.com.cdb.bancodigital.adapter.output.dao;
 import br.com.cdb.bancodigital.application.port.out.repository.SeguroRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
-import br.com.cdb.bancodigital.application.core.domain.mapper.SeguroMapper;
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.adapter.output.dao.rowMapper.SeguroRowMapper;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.Optional;
 public class SeguroDAO implements SeguroRepository {
 
 	private final JdbcTemplate jdbcTemplate;
-	private final SeguroMapper seguroMapper;
+	private final SeguroRowMapper seguroMapper;
 
 	// SAVE | Criar ou atualizar cartão
 	public Seguro save(Seguro seguro) {

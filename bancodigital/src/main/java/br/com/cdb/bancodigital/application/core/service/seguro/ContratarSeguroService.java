@@ -1,12 +1,12 @@
 package br.com.cdb.bancodigital.application.core.service.seguro;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.response.SeguroResponse;
-import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
-import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.TipoSeguro;
 import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.seguro.ContratarSeguroUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;

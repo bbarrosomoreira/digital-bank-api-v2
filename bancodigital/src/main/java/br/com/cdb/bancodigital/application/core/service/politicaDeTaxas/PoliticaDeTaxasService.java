@@ -1,7 +1,7 @@
 package br.com.cdb.bancodigital.application.core.service.politicaDeTaxas;
 
-import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.application.port.in.politicaDeTaxas.PoliticaDeTaxasUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;

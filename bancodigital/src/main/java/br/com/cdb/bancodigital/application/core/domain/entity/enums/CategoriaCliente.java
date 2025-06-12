@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.application.core.domain.model.enums;
+package br.com.cdb.bancodigital.application.core.domain.entity.enums;
 
 import java.util.Arrays;
 

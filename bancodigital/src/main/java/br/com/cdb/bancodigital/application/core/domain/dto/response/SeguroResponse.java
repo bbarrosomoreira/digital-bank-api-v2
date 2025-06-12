@@ -5,8 +5,8 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

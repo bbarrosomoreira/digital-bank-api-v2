@@ -1,8 +1,8 @@
-package br.com.cdb.bancodigital.adapter.input;
+package br.com.cdb.bancodigital.adapter.input.controller;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.*;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.*;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.application.port.in.cartao.*;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.Valid;

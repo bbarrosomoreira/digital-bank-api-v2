@@ -8,9 +8,9 @@ import java.util.Optional;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
-import br.com.cdb.bancodigital.application.core.domain.mapper.CartaoMapper;
-import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.adapter.output.dao.rowMapper.CartaoRowMapper;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class CartaoDAO implements CartaoRepository {
 
 	private final JdbcTemplate jdbcTemplate;
-	private final CartaoMapper cartaoMapper;
+	private final CartaoRowMapper cartaoMapper;
 
 	// SAVE | Criar ou atualizar cartão
 	public Cartao save(Cartao cartao) {

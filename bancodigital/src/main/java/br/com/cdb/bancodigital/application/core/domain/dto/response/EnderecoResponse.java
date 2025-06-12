@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.application.core.domain.dto.response;
 
-import br.com.cdb.bancodigital.application.core.domain.model.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

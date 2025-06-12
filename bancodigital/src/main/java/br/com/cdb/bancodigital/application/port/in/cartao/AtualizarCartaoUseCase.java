@@ -3,8 +3,8 @@ package br.com.cdb.bancodigital.application.port.in.cartao;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.LimiteResponse;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.RessetarLimiteDiarioResponse;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.StatusCartaoResponse;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Status;
 
 import java.math.BigDecimal;
 

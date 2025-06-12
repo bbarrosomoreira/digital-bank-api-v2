@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.utils;
 
-import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.TipoConta;
 
 import java.security.SecureRandom;
 import java.util.HashSet;

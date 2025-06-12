@@ -3,7 +3,7 @@ package br.com.cdb.bancodigital.application.core.service.auth;
 import br.com.cdb.bancodigital.application.core.domain.dto.LoginDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.UsuarioDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginResponse;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.application.port.in.JwtUseCase;
 import br.com.cdb.bancodigital.application.port.in.auth.AuthUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.UsuarioRepository;

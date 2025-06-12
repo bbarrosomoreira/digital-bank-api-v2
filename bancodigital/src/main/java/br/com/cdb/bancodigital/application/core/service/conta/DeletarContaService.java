@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.application.core.service.conta;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Conta;
+import br.com.cdb.bancodigital.application.core.domain.entity.Conta;
 import br.com.cdb.bancodigital.application.port.in.conta.DeletarContaUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.ContaRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.ValidationException;

@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.application.core.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.CategoriaCliente;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

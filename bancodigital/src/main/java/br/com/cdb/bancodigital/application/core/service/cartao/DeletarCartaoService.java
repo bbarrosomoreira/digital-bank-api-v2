@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.application.core.service.cartao;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cartao;
 import br.com.cdb.bancodigital.application.port.in.cartao.DeletarCartaoUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.ValidationException;

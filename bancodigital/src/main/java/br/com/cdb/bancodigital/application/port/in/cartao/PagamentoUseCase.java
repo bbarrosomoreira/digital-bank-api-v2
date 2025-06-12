@@ -3,7 +3,7 @@ package br.com.cdb.bancodigital.application.port.in.cartao;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.FaturaPagaResponse;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.FaturaResponse;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.PagamentoResponse;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 
 import java.math.BigDecimal;
 

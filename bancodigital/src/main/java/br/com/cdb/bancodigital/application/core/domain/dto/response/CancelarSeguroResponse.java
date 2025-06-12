@@ -1,7 +1,7 @@
 package br.com.cdb.bancodigital.application.core.domain.dto.response;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Status;
 
 public record CancelarSeguroResponse (
 		String tipoSeguro,

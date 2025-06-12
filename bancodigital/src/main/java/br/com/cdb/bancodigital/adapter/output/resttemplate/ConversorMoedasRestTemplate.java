@@ -3,7 +3,7 @@ package br.com.cdb.bancodigital.adapter.output.resttemplate;
 import br.com.cdb.bancodigital.application.port.out.api.ConversorMoedasPort;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.ApiConversorMoedasResponse;
 import br.com.cdb.bancodigital.config.exceptions.custom.CommunicationException;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Moeda;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

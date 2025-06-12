@@ -1,15 +1,14 @@
 package br.com.cdb.bancodigital.application.core.service.seguro;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.response.SeguroResponse;
-import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
-import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.seguro.ListarSeguroUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
-import br.com.cdb.bancodigital.application.port.out.repository.ContaRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.SeguroRepository;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.Validator;

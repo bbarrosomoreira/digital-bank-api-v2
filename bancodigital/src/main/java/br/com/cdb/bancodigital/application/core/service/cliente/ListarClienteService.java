@@ -6,9 +6,9 @@ import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository
 import br.com.cdb.bancodigital.application.port.out.repository.EnderecoClienteRepository;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.ClienteResponse;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.model.EnderecoCliente;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;

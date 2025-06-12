@@ -1,8 +1,8 @@
-package br.com.cdb.bancodigital.application.core.domain.model;
+package br.com.cdb.bancodigital.application.core.domain.entity;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Status;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface CartaoBase {

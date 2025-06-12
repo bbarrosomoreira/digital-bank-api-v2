@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.application.core.domain.model;
+package br.com.cdb.bancodigital.application.core.domain.entity;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -8,8 +8,8 @@ import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.NumberGenerator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.TipoConta;
 import lombok.*;
 
 @Getter

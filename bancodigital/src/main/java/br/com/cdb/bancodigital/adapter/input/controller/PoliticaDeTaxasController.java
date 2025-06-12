@@ -1,7 +1,7 @@
-package br.com.cdb.bancodigital.adapter.input;
+package br.com.cdb.bancodigital.adapter.input.controller;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.PoliticaTaxaDTO;
-import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.entity.PoliticaDeTaxas;
 import br.com.cdb.bancodigital.application.core.service.politicaDeTaxas.PoliticaDeTaxasService;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.Valid;

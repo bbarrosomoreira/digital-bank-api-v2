@@ -1,10 +1,10 @@
 package br.com.cdb.bancodigital.application.core.service.cartao;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.response.CartaoResponse;
-import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
-import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.model.Conta;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Conta;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.cartao.ListarCartaoUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.CartaoRepository;

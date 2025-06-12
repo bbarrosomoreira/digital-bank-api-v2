@@ -1,8 +1,7 @@
-package br.com.cdb.bancodigital.adapter.input;
+package br.com.cdb.bancodigital.adapter.input.controller;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.response.UsuarioResponse;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.application.core.service.usuario.UsuarioService;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.application.port.in.usuario.UsuarioUseCase;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.AllArgsConstructor;

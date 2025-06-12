@@ -1,6 +1,5 @@
 package br.com.cdb.bancodigital.application.core.service.cliente;
 import br.com.brasilapi.api.CEP2;
-import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.cliente.CadastrarClienteUseCase;
 import br.com.cdb.bancodigital.application.core.domain.dto.ClienteDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.ClienteUsuarioDTO;
@@ -13,10 +12,10 @@ import br.com.cdb.bancodigital.application.port.out.repository.UsuarioRepository
 import br.com.cdb.bancodigital.config.exceptions.custom.InvalidInputParameterException;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
-import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.model.EnderecoCliente;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;

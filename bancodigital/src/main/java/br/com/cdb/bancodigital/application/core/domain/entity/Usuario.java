@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.application.core.domain.model;
+package br.com.cdb.bancodigital.application.core.domain.entity;
 
 import java.io.Serial;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Role;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Role;
 
 @Getter
 @Setter

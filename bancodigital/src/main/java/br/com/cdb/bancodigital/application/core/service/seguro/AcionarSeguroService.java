@@ -1,10 +1,10 @@
 package br.com.cdb.bancodigital.application.core.service.seguro;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.response.DebitarPremioSeguroResponse;
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.TipoSeguro;
 import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.seguro.AcionarSeguroUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.SeguroRepository;

@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.adapter.input;
+package br.com.cdb.bancodigital.adapter.input.controller;
 
 import br.com.cdb.bancodigital.application.core.domain.dto.ConsultaCpfDTO;
 import br.com.cdb.bancodigital.utils.ConstantUtils;

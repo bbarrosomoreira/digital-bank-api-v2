@@ -4,7 +4,7 @@ import br.com.cdb.bancodigital.application.port.in.cliente.DeletarClienteUseCase
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.config.exceptions.custom.ValidationException;
-import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.Validator;
 import lombok.AllArgsConstructor;

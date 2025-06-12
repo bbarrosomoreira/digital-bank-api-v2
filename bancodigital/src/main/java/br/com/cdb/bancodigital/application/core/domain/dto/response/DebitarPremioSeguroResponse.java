@@ -2,7 +2,7 @@ package br.com.cdb.bancodigital.application.core.domain.dto.response;
 
 import java.math.BigDecimal;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
 
 public record DebitarPremioSeguroResponse (
 		String tipoSeguro,

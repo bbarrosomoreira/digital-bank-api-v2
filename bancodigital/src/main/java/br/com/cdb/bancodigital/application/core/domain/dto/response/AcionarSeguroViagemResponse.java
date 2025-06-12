@@ -3,7 +3,7 @@ package br.com.cdb.bancodigital.application.core.domain.dto.response;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
 
 public record AcionarSeguroViagemResponse(
 		String tipoSeguro,

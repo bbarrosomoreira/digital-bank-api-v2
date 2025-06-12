@@ -5,9 +5,9 @@ import java.util.Optional;
 
 import br.com.cdb.bancodigital.application.port.out.repository.PoliticaDeTaxasRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
-import br.com.cdb.bancodigital.application.core.domain.mapper.PoliticaDeTaxasMapper;
-import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.adapter.output.dao.rowMapper.PoliticaDeTaxasRowMapper;
+import br.com.cdb.bancodigital.application.core.domain.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 public class PoliticaDeTaxasDAO implements PoliticaDeTaxasRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final PoliticaDeTaxasMapper politicaDeTaxasMapper;
+    private final PoliticaDeTaxasRowMapper politicaDeTaxasMapper;
 
     public List<PoliticaDeTaxas> findAll() {
         log.info(ConstantUtils.INICIO_LISTAGEM_POLITICA_TAXAS);

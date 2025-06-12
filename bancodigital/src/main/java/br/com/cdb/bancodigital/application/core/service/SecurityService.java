@@ -4,9 +4,9 @@ import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Role;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Role;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.extern.slf4j.Slf4j;
 
