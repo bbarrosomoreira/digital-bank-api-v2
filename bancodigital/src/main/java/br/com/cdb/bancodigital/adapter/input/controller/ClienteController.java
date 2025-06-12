@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.adapter.input;
+package br.com.cdb.bancodigital.adapter.input.controller;
 
 import br.com.cdb.bancodigital.application.port.in.cliente.AtualizarClienteUseCase;
 import br.com.cdb.bancodigital.application.port.in.cliente.CadastrarClienteUseCase;
@@ -9,7 +9,7 @@ import br.com.cdb.bancodigital.application.core.domain.dto.ClienteAtualizadoDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.ClienteDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.ClienteUsuarioDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.ClienteResponse;
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

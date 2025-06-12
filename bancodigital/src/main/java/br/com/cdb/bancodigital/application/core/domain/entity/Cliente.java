@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.application.core.domain.model;
+package br.com.cdb.bancodigital.application.core.domain.entity;
 
 import java.time.LocalDate;
 
@@ -6,7 +6,7 @@ import br.com.cdb.bancodigital.config.exceptions.custom.InvalidInputParameterExc
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.*;
 
-import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.CategoriaCliente;
 
 
 @Getter
@@ -14,7 +14,6 @@ import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaClie
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 public class Cliente {
 
 	private Long id;
@@ -23,13 +22,6 @@ public class Cliente {
 	private CategoriaCliente categoria;
 	private LocalDate dataNascimento;
 	private Usuario usuario;
-
-	public boolean isMenorDeIdade() {
-		if (this.dataNascimento == null) {
-			throw new InvalidInputParameterException(ConstantUtils.DATA_NASCIMENTO_NULA);
-		}
-		return this.dataNascimento.plusYears(18).isAfter(LocalDate.now());
-	}
 
 }
 
