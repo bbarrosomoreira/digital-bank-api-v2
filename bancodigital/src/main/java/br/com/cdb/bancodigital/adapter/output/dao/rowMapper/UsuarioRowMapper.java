@@ -1,7 +1,7 @@
-package br.com.cdb.bancodigital.application.core.domain.mapper;
+package br.com.cdb.bancodigital.adapter.output.dao.rowMapper;
 
-import br.com.cdb.bancodigital.application.core.domain.model.Usuario;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Role;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Role;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Service
-public class UsuarioMapper implements RowMapper<Usuario> {
+public class UsuarioRowMapper implements RowMapper<Usuario> {
 
     @Override
     public Usuario mapRow(@NotNull ResultSet rs, int rowNum) throws SQLException {

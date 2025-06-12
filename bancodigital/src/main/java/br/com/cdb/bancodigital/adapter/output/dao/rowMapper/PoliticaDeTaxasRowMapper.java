@@ -1,7 +1,7 @@
-package br.com.cdb.bancodigital.application.core.domain.mapper;
+package br.com.cdb.bancodigital.adapter.output.dao.rowMapper;
 
-import br.com.cdb.bancodigital.application.core.domain.model.PoliticaDeTaxas;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.CategoriaCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.PoliticaDeTaxas;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.CategoriaCliente;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Service
-public class PoliticaDeTaxasMapper implements RowMapper<PoliticaDeTaxas> {
+public class PoliticaDeTaxasRowMapper implements RowMapper<PoliticaDeTaxas> {
 
     @Override
     public PoliticaDeTaxas mapRow(@NotNull ResultSet rs, int rowNum) throws SQLException {

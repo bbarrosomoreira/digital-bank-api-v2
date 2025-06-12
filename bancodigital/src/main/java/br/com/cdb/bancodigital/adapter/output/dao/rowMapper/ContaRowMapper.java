@@ -1,11 +1,11 @@
-package br.com.cdb.bancodigital.application.core.domain.mapper;
+package br.com.cdb.bancodigital.adapter.output.dao.rowMapper;
 
 import br.com.cdb.bancodigital.adapter.output.dao.ClienteDAO;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.model.Conta;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Moeda;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoConta;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Conta;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Moeda;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.TipoConta;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +17,7 @@ import java.sql.SQLException;
 
 @Service
 @RequiredArgsConstructor
-public class ContaMapper implements RowMapper<Conta> {
+public class ContaRowMapper implements RowMapper<Conta> {
 
     private final ClienteDAO clienteDAO;
 

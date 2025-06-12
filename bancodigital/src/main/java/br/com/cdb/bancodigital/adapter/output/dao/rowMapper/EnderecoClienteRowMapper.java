@@ -1,9 +1,9 @@
-package br.com.cdb.bancodigital.application.core.domain.mapper;
+package br.com.cdb.bancodigital.adapter.output.dao.rowMapper;
 
 import br.com.cdb.bancodigital.adapter.output.dao.ClienteDAO;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.application.core.domain.model.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.model.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 @Service
 @RequiredArgsConstructor
-public class EnderecoClienteMapper implements RowMapper<EnderecoCliente> {
+public class EnderecoClienteRowMapper implements RowMapper<EnderecoCliente> {
 
     private final ClienteDAO clienteDAO;
 

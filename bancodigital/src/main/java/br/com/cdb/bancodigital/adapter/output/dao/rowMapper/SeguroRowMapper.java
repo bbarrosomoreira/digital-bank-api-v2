@@ -1,11 +1,11 @@
-package br.com.cdb.bancodigital.application.core.domain.mapper;
+package br.com.cdb.bancodigital.adapter.output.dao.rowMapper;
 
 import br.com.cdb.bancodigital.adapter.output.dao.CartaoDAO;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.application.core.domain.model.Cartao;
-import br.com.cdb.bancodigital.application.core.domain.model.Seguro;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.Status;
-import br.com.cdb.bancodigital.application.core.domain.model.enums.TipoSeguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.Cartao;
+import br.com.cdb.bancodigital.application.core.domain.entity.Seguro;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.Status;
+import br.com.cdb.bancodigital.application.core.domain.entity.enums.TipoSeguro;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +17,7 @@ import java.sql.SQLException;
 
 @Service
 @RequiredArgsConstructor
-public class SeguroMapper implements RowMapper<Seguro> {
+public class SeguroRowMapper implements RowMapper<Seguro> {
 
     public final CartaoDAO cartaoDAO;
 
