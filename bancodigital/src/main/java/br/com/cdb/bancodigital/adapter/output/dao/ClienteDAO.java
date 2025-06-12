@@ -1,6 +1,7 @@
 package br.com.cdb.bancodigital.adapter.output.dao;
 
 import br.com.cdb.bancodigital.adapter.output.mapper.ClientePersistenceMapper;
+import br.com.cdb.bancodigital.adapter.output.model.ClienteModel;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.CommunicationException;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -36,18 +38,7 @@ public class ClienteDAO implements ClienteRepository {
 	@Override
 	public Cliente save(Cliente cliente) {
 		log.info(ConstantUtils.INICIO_SALVAR_CLIENTE);
-		try {
-			if (cliente.getId() == null) {
-				// Se não tiver ID, é um novo cliente (INSERT)
-				return add(cliente);
-			} else {
-				// Se tiver ID, é um cliente existente (UPDATE)
-				return update(cliente);
-			}
-		} catch (SystemException e) {
-			log.error(ConstantUtils.ERRO_SALVAR_CLIENTE, e);
-			throw new SystemException(ConstantUtils.ERRO_SALVAR_CLIENTE);
-		}
+		return cliente.getId() == null ? add(cliente) : update(cliente);
 	}
 
 	// CREATE | Criar cliente
@@ -55,18 +46,19 @@ public class ClienteDAO implements ClienteRepository {
 	public Cliente add(Cliente cliente) {
 		log.info(ConstantUtils.INICIO_CRIAR_CLIENTE_BANCO_DADOS);
 		try {
+			ClienteModel clienteModel = clientePersistenceMapper.toModel(cliente);
 			Long id = jdbcTemplate.queryForObject(
 					SqlQueries.SQL_CREATE_CLIENTE,
 					Long.class,
-					cliente.getNome(),
-					cliente.getCpf(),
-					cliente.getCategoria().name(),
-					cliente.getDataNascimento(),
-					cliente.getUsuario().getId()
+					clienteModel.getNome(),
+					clienteModel.getCpf(),
+					clienteModel.getCategoria().name(),
+					clienteModel.getDataNascimento(),
+					clienteModel.getUsuario().getId()
 			);
-			cliente.setId(id);
+			clienteModel.setId(id);
 			log.info(ConstantUtils.SUCESSO_CRIAR_CLIENTE_BANCO_DADOS);
-			return cliente;
+			return clientePersistenceMapper.toEntity(clienteModel);
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_CRIAR_CLIENTE_BANCO_DADOS, e);
 			throw new SystemException(ConstantUtils.ERRO_CRIAR_CLIENTE_BANCO_DADOS);
@@ -78,9 +70,11 @@ public class ClienteDAO implements ClienteRepository {
 	public List<Cliente> findAll() {
 		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
 		try {
-			List<Cliente> clientes = jdbcTemplate.query(SqlQueries.SQL_READ_ALL_CLIENTES, clienteRowMapper);
+			List<ClienteModel> clienteModels = jdbcTemplate.query(SqlQueries.SQL_READ_ALL_CLIENTES, clienteRowMapper);
 			log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE);
-			return clientes;
+			return clienteModels.stream()
+					.map(clientePersistenceMapper::toEntity)
+					.toList();
 		} catch (SystemException e) {
 			log.error(ConstantUtils.ERRO_BUSCA_CLIENTE, e);
 			throw new SystemException(ConstantUtils.ERRO_BUSCA_CLIENTE);
@@ -90,11 +84,12 @@ public class ClienteDAO implements ClienteRepository {
 	public Optional<Cliente> findById(Long id) {
 		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
 		try {
-			Cliente cliente = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_ID, clienteRowMapper, id);
-			if (cliente == null) {
+			ClienteModel clienteModel = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_ID, clienteRowMapper, id);
+			if (clienteModel == null) {
 				log.warn(ConstantUtils.ERRO_CLIENTE_NULO);
 				return Optional.empty();
 			}
+			Cliente cliente = clientePersistenceMapper.toEntity(clienteModel);
 			log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE);
 			return Optional.of(cliente);
 		} catch (EmptyResultDataAccessException e) {
@@ -109,11 +104,12 @@ public class ClienteDAO implements ClienteRepository {
 	public Optional<Cliente> findByUsuario(Usuario usuario) {
 		log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
 		try {
-			Cliente cliente = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_USUARIO, clienteRowMapper, usuario.getId());
-			if (cliente == null) {
+			ClienteModel clienteModel = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_CLIENTE_BY_USUARIO, clienteRowMapper, usuario.getId());
+			if (clienteModel == null) {
 				log.warn(ConstantUtils.ERRO_CLIENTE_NULO);
 				return Optional.empty();
 			}
+			Cliente cliente = clientePersistenceMapper.toEntity(clienteModel);
 			log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE);
 			return Optional.of(cliente);
 		} catch (EmptyResultDataAccessException e) {
@@ -149,15 +145,16 @@ public class ClienteDAO implements ClienteRepository {
 	public Cliente update(Cliente cliente) {
 		log.info(ConstantUtils.INICIO_UPDATE_CLIENTE, cliente.getId());
 		try{
+			ClienteModel clienteModel = clientePersistenceMapper.toModel(cliente);
 			Integer linhasAfetadas = jdbcTemplate.queryForObject(
 					SqlQueries.SQL_UPDATE_CLIENTE,
 					Integer.class,
-					cliente.getId(),
-					cliente.getNome(),
-					cliente.getCpf(),
-					cliente.getCategoria().name(),
-					cliente.getDataNascimento(),
-					cliente.getUsuario().getId()
+					clienteModel.getId(),
+					clienteModel.getNome(),
+					clienteModel.getCpf(),
+					clienteModel.getCategoria().name(),
+					clienteModel.getDataNascimento(),
+					clienteModel.getUsuario().getId()
 
 			);
 			if (linhasAfetadas == null || linhasAfetadas == 0) {
@@ -165,7 +162,7 @@ public class ClienteDAO implements ClienteRepository {
 				throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_CLIENTE);
 			}
 			log.info(ConstantUtils.SUCESSO_UPDATE_CLIENTE, cliente.getId());
-			return cliente;
+			return clientePersistenceMapper.toEntity(clienteModel);
 		} catch (DataAccessException e) {
 			log.error(ConstantUtils.ERRO_INESPERADO_UPDATE_CLIENTE, cliente.getId(), e);
 			throw new SystemException(ConstantUtils.ERRO_INESPERADO_UPDATE_CLIENTE + cliente.getId());
@@ -180,6 +177,7 @@ public class ClienteDAO implements ClienteRepository {
 	}
 
 	// DELETE | Excluir clientes
+	@Override
 	public void delete(Long id) {
 		log.info(ConstantUtils.INICIO_DELETE_CLIENTE, id);
 		try {

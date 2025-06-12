@@ -1,8 +1,8 @@
 package br.com.cdb.bancodigital.adapter.output.dao.rowMapper;
 
 import br.com.cdb.bancodigital.adapter.output.dao.UsuarioDAO;
+import br.com.cdb.bancodigital.adapter.output.model.ClienteModel;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
 import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.entity.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
@@ -16,24 +16,22 @@ import java.sql.SQLException;
 
 @Service
 @RequiredArgsConstructor
-public class ClienteRowMapper implements RowMapper<Cliente> {
+public class ClienteRowMapper implements RowMapper<ClienteModel> {
 
     private final UsuarioDAO usuarioDAO;
 
     @Override
-    public Cliente mapRow(@NotNull ResultSet rs, int rowNum) throws SQLException {
-        Cliente cliente = new Cliente();
-        cliente.setId(rs.getLong("id"));
-        cliente.setNome(rs.getString("nome"));
-        cliente.setCpf(rs.getString("cpf"));
-        cliente.setCategoria(CategoriaCliente.fromString(rs.getString("categoria")));
-        cliente.setDataNascimento(rs.getDate("data_nascimento").toLocalDate());
+    public ClienteModel mapRow(@NotNull ResultSet rs, int rowNum) throws SQLException {
+        ClienteModel clienteModel = new ClienteModel();
+        clienteModel.setId(rs.getLong("id"));
+        clienteModel.setNome(rs.getString("nome"));
+        clienteModel.setCpf(rs.getString("cpf"));
+        clienteModel.setCategoria(CategoriaCliente.fromString(rs.getString("categoria")));
+        clienteModel.setDataNascimento(rs.getDate("data_nascimento").toLocalDate());
 
         Long usuarioId = rs.getLong("usuario_id");
-        Usuario usuario = usuarioDAO.findById(usuarioId)
-                        .orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO));
-        cliente.setUsuario(usuario);
+        clienteModel.setUsuario(Usuario.builder().id(usuarioId).build());
 
-        return cliente;
+        return clienteModel;
     }
 }
