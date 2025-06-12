@@ -1,13 +1,11 @@
 package br.com.cdb.bancodigital.application.core.service.cliente;
 
+import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
 import br.com.cdb.bancodigital.application.port.in.SecurityUseCase;
 import br.com.cdb.bancodigital.application.port.in.cliente.ListarClienteUseCase;
 import br.com.cdb.bancodigital.application.port.out.repository.ClienteRepository;
 import br.com.cdb.bancodigital.application.port.out.repository.EnderecoClienteRepository;
-import br.com.cdb.bancodigital.application.core.domain.dto.response.ClienteResponse;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
-import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
 import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.Validator;
@@ -27,28 +25,26 @@ public class ListarClienteService implements ListarClienteUseCase {
     private final EnderecoClienteRepository enderecoClienteRepository;
     private final SecurityUseCase securityUseCase;
 
-    public List<ClienteResponse> getClientes() throws AccessDeniedException { //só admin
+    public List<Cliente> getClientes() throws AccessDeniedException { //só admin
         log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
-        List<Cliente> clientes = clienteRepository.findAll();
-        return clientes.stream().map(this::toResponse).toList();
+        return clienteRepository.findAll();
     }
-    public ClienteResponse getClientePorId(Long id_cliente, Usuario usuarioLogado) {
+    public Cliente getClientePorId(Long id_cliente, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_BUSCA_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteRepository, id_cliente);
         log.info(ConstantUtils.CLIENTE_ENCONTRADO, cliente.getId());
         securityUseCase.validateAccess(usuarioLogado, cliente);
         log.info(ConstantUtils.ACESSO_VALIDADO);
-        return toResponse(cliente);
+        return cliente;
     }
-    public ClienteResponse getClientePorUsuario(Usuario usuario) {
+    public Cliente getClientePorUsuario(Usuario usuario) {
         log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
-        Cliente cliente = clienteRepository.findByUsuario(usuario)
+        return clienteRepository.findByUsuario(usuario)
                 .orElseThrow(() -> new ResourceNotFoundException(ConstantUtils.ERRO_CLIENTE_NAO_ENCONTRADO_USUARIO_LOGADO));
-        return toResponse(cliente);
     }
-    private ClienteResponse toResponse(Cliente cliente) {
-        EnderecoCliente endereco = enderecoClienteRepository.findByCliente(cliente)
-                .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_ENDERECO));
-        return new ClienteResponse(cliente, endereco);
-    }
+//    private ClienteResponse toResponse(Cliente cliente) {
+//        EnderecoCliente endereco = enderecoClienteRepository.findByCliente(cliente)
+//                .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_ENDERECO));
+//        return new ClienteResponse(cliente, endereco);
+//    }
 }

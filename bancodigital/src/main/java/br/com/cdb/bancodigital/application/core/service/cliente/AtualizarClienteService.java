@@ -38,7 +38,7 @@ public class AtualizarClienteService implements AtualizarClienteUseCase {
     private final SecurityUseCase securityUseCase;
 
     @Transactional
-    public ClienteResponse updateCliente(Long id_cliente, ClienteAtualizadoDTO dto, Usuario usuarioLogado) {
+    public Cliente updateCliente(Long id_cliente, ClienteAtualizadoDTO dto, Usuario usuarioLogado) {
         log.info(ConstantUtils.INICIO_UPDATE_CLIENTE, id_cliente);
         Cliente cliente = Validator.verificarClienteExistente(clienteRepository, id_cliente);
         securityUseCase.validateAccess(usuarioLogado, cliente);
@@ -53,7 +53,7 @@ public class AtualizarClienteService implements AtualizarClienteUseCase {
             throw new SystemException(ConstantUtils.ERRO_UPDATE_CLIENTE + id_cliente);
         }
 
-        return toResponse(cliente);
+        return cliente;
     }
     @Transactional
     public void updateCategoriaCliente(Long id_cliente, CategoriaCliente novaCategoria) throws AccessDeniedException {
