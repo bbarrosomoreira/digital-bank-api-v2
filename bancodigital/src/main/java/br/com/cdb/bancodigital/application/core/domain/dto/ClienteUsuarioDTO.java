@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.br.CPF;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Endereco;
 import br.com.cdb.bancodigital.application.core.domain.entity.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -60,12 +60,12 @@ public class ClienteUsuarioDTO {
 	
 	private Role role;
 
-	public EnderecoCliente transformaEnderecoParaObjeto() {
-		EnderecoCliente enderecoCliente = new EnderecoCliente();
-		enderecoCliente.setCep(cep);
-		enderecoCliente.setNumero(numero);
-		enderecoCliente.setComplemento(complemento);
-		return enderecoCliente;
+	public Endereco transformaEnderecoParaObjeto() {
+		Endereco endereco = new Endereco();
+		endereco.setCep(cep);
+		endereco.setNumero(numero);
+		endereco.setComplemento(complemento);
+		return endereco;
 	}
 	public Cliente transformaClienteParaObjeto() {
 		Cliente cliente = new Cliente();

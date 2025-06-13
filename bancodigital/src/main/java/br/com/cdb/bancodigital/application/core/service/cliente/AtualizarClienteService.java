@@ -15,7 +15,7 @@ import br.com.cdb.bancodigital.config.exceptions.custom.InvalidInputParameterExc
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Endereco;
 import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.application.core.domain.entity.enums.CategoriaCliente;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
@@ -78,7 +78,7 @@ public class AtualizarClienteService implements AtualizarClienteUseCase {
         }
     }
     private ClienteResponse toResponse(Cliente cliente) {
-        EnderecoCliente endereco = enderecoClienteRepository.findByCliente(cliente)
+        Endereco endereco = enderecoClienteRepository.findByCliente(cliente)
                 .orElseThrow(()-> new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_ENDERECO));
         return new ClienteResponse(cliente, endereco);
     }
@@ -100,9 +100,9 @@ public class AtualizarClienteService implements AtualizarClienteUseCase {
     }
     private void updateEnderecoSeNecessario(Cliente cliente, ClienteAtualizadoDTO dto) {
         if (possuiDadosDeEndereco(dto)) {
-            EnderecoCliente enderecoExistente = enderecoClienteRepository.findByCliente(cliente).orElse(null);
+            Endereco enderecoExistente = enderecoClienteRepository.findByCliente(cliente).orElse(null);
             if (enderecoExistente == null) {
-                EnderecoCliente novoEndereco = construirEndereco(dto, cliente);
+                Endereco novoEndereco = construirEndereco(dto, cliente);
                 enderecoClienteRepository.save(novoEndereco);
             } else {
                 atualizarEnderecoExistente(enderecoExistente, dto);
@@ -114,8 +114,8 @@ public class AtualizarClienteService implements AtualizarClienteUseCase {
         return dto.getRua() != null || dto.getNumero() != null || dto.getComplemento() != null ||
                 dto.getBairro() != null || dto.getCidade() != null || dto.getEstado() != null || dto.getCep() != null;
     }
-    private EnderecoCliente construirEndereco(ClienteAtualizadoDTO dto, Cliente cliente) {
-        EnderecoCliente endereco = new EnderecoCliente();
+    private Endereco construirEndereco(ClienteAtualizadoDTO dto, Cliente cliente) {
+        Endereco endereco = new Endereco();
         endereco.setCliente(cliente);
         endereco.setRua(dto.getRua());
         endereco.setNumero(dto.getNumero());
@@ -136,7 +136,7 @@ public class AtualizarClienteService implements AtualizarClienteUseCase {
 
         return endereco;
     }
-    private void atualizarEnderecoExistente(EnderecoCliente endereco, ClienteAtualizadoDTO dto) {
+    private void atualizarEnderecoExistente(Endereco endereco, ClienteAtualizadoDTO dto) {
         if (dto.getRua() != null) endereco.setRua(dto.getRua());
         if (dto.getNumero() != null) endereco.setNumero(dto.getNumero());
         if (dto.getComplemento() != null) endereco.setComplemento(dto.getComplemento());
