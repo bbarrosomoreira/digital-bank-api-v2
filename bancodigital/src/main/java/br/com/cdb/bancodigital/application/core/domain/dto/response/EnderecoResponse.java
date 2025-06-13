@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.application.core.domain.dto.response;
 
-import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Endereco;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,7 +16,7 @@ public class EnderecoResponse {
     private String estado;
     private String cep;
 
-    public EnderecoResponse(EnderecoCliente endereco) {
+    public EnderecoResponse(Endereco endereco) {
         this.rua = endereco.getRua();
         this.numero = endereco.getNumero();
         this.complemento = endereco.getComplemento();

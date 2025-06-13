@@ -4,7 +4,7 @@ import br.com.brasilapi.api.CEP2;
 import br.com.cdb.bancodigital.application.core.domain.dto.ClienteDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.ClienteUsuarioDTO;
 import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Endereco;
 import br.com.cdb.bancodigital.application.port.out.api.BrasilApiPort;
 import br.com.cdb.bancodigital.application.port.out.repository.EnderecoClienteRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
@@ -39,7 +39,7 @@ public class EnderecoService {
         salvarEndereco(dto, cliente, cepInfo);
         log.info(ConstantUtils.SUCESSO_CRIAR_ENDERECO);
     }
-    public Optional<EnderecoCliente> findByCliente(Cliente cliente) {
+    public Optional<Endereco> findByCliente(Cliente cliente) {
         return enderecoClienteRepository.findByCliente(cliente);
     }
     private CEP2 buscarEnderecoPorCep(String cep) {
@@ -54,23 +54,23 @@ public class EnderecoService {
     }
     private void salvarEndereco(ClienteDTO dto, Cliente cliente, CEP2 cepInfo) {
         log.info(ConstantUtils.SALVANDO_ENDERECO_CLIENTE);
-        EnderecoCliente enderecoCliente = dto.transformaEnderecoParaObjeto();
-        enderecoCliente.setCliente(cliente);
-        enderecoCliente.setBairro(cepInfo.getNeighborhood());
-        enderecoCliente.setCidade(cepInfo.getCity());
-        enderecoCliente.setEstado(cepInfo.getState());
-        enderecoCliente.setRua(cepInfo.getStreet());
-        enderecoClienteRepository.save(enderecoCliente);
+        Endereco endereco = dto.transformaEnderecoParaObjeto();
+        endereco.setCliente(cliente);
+        endereco.setBairro(cepInfo.getNeighborhood());
+        endereco.setCidade(cepInfo.getCity());
+        endereco.setEstado(cepInfo.getState());
+        endereco.setRua(cepInfo.getStreet());
+        enderecoClienteRepository.save(endereco);
     }
     private void salvarEndereco(ClienteUsuarioDTO dto, Cliente cliente, CEP2 cepInfo) {
         log.info(ConstantUtils.SALVANDO_ENDERECO_CLIENTE);
-        EnderecoCliente enderecoCliente = dto.transformaEnderecoParaObjeto();
-        enderecoCliente.setCliente(cliente);
-        enderecoCliente.setBairro(cepInfo.getNeighborhood());
-        enderecoCliente.setCidade(cepInfo.getCity());
-        enderecoCliente.setEstado(cepInfo.getState());
-        enderecoCliente.setRua(cepInfo.getStreet());
-        enderecoClienteRepository.save(enderecoCliente);
+        Endereco endereco = dto.transformaEnderecoParaObjeto();
+        endereco.setCliente(cliente);
+        endereco.setBairro(cepInfo.getNeighborhood());
+        endereco.setCidade(cepInfo.getCity());
+        endereco.setEstado(cepInfo.getState());
+        endereco.setRua(cepInfo.getStreet());
+        enderecoClienteRepository.save(endereco);
     }
 
 }
