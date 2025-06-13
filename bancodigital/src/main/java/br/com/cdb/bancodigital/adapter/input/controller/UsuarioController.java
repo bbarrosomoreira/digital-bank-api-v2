@@ -1,6 +1,7 @@
 package br.com.cdb.bancodigital.adapter.input.controller;
 
-import br.com.cdb.bancodigital.application.core.domain.dto.response.UsuarioResponse;
+import br.com.cdb.bancodigital.adapter.input.dto.UsuarioDTO;
+import br.com.cdb.bancodigital.adapter.input.mapper.UsuarioDTOMapper;
 import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.application.port.in.usuario.UsuarioUseCase;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
@@ -18,13 +19,14 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
     private final UsuarioUseCase usuarioUseCase;
+    private final UsuarioDTOMapper usuarioDTOMapper;
 
     @GetMapping(ConstantUtils.GET_USUARIO)
-    public ResponseEntity<UsuarioResponse> getUsuarioLogado(@AuthenticationPrincipal Usuario usuario) {
+    public ResponseEntity<UsuarioDTO> getUsuarioLogado(@AuthenticationPrincipal Usuario usuario) {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_BUSCA_USUARIO);
 
-        UsuarioResponse dto = new UsuarioResponse(usuario);
+        UsuarioDTO dto = usuarioDTOMapper.toDTO(usuario);
         log.info(ConstantUtils.SUCESSO_BUSCA_USUARIO);
 
         long endTime = System.currentTimeMillis();

@@ -1,8 +1,8 @@
 package br.com.cdb.bancodigital.adapter.input.controller;
 
-import br.com.cdb.bancodigital.application.core.domain.dto.LoginDTO;
-import br.com.cdb.bancodigital.application.core.domain.dto.UsuarioDTO;
-import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginResponse;
+import br.com.cdb.bancodigital.adapter.input.dto.UsuarioDTO;
+import br.com.cdb.bancodigital.adapter.input.mapper.UsuarioDTOMapper;
+import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.application.port.in.auth.AuthUseCase;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.Valid;
@@ -21,14 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthUseCase authUseCase;
+    private final UsuarioDTOMapper usuarioDTOMapper;
 
     // Endpoint para cadastro de usuário (retorna token JWT após registro)
     @PostMapping(ConstantUtils.SIGNIN)
-    public ResponseEntity<LoginResponse> registrar(@Valid @RequestBody UsuarioDTO dto) {
+    public ResponseEntity<UsuarioDTO> registrar(@Valid @RequestBody UsuarioDTO dto) {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_REGISTRAR);
 
-        LoginResponse response = authUseCase.registrar(dto);
+        Usuario usuario = usuarioDTOMapper.toEntity(dto);
+        UsuarioDTO response = usuarioDTOMapper.toDTO(authUseCase.registrar(usuario));
         log.info(ConstantUtils.SUCESSO_REGISTRAR);
 
         long endTime = System.currentTimeMillis();
@@ -38,11 +40,12 @@ public class AuthController {
 
     // Endpoint para login de usuário (retorna token JWT)
     @PostMapping(ConstantUtils.LOGIN)
-    public ResponseEntity<LoginResponse> autenticar(@Valid @RequestBody LoginDTO dto) {
+    public ResponseEntity<UsuarioDTO> autenticar(@Valid @RequestBody UsuarioDTO dto) {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_AUTENTICACAO);
 
-        LoginResponse response = authUseCase.autenticar(dto);
+        Usuario usuario = usuarioDTOMapper.toEntity(dto);
+        UsuarioDTO response = usuarioDTOMapper.toDTO(authUseCase.autenticar(usuario));
         log.info(ConstantUtils.SUCESSO_AUTENTICACAO);
 
         long endTime = System.currentTimeMillis();
