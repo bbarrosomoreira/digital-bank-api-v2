@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.application.core.service.cliente;
-import br.com.cdb.bancodigital.adapter.input.dto.ClienteRequest;
-import br.com.cdb.bancodigital.adapter.input.mapper.ClienteRequestMapper;
+import br.com.cdb.bancodigital.adapter.input.dto.ClienteDTO;
+import br.com.cdb.bancodigital.adapter.input.mapper.ClienteDTOMapper;
 import br.com.cdb.bancodigital.application.port.in.cliente.CadastrarClienteUseCase;
 import br.com.cdb.bancodigital.application.port.in.endereco.EnderecoUseCase;
 import br.com.cdb.bancodigital.application.port.out.api.ReceitaFederalPort;
@@ -30,12 +30,12 @@ public class CadastrarClienteService implements CadastrarClienteUseCase {
     private final UsuarioRepository usuarioRepository;
     private final ReceitaFederalPort receitaFederalPort;
     private final PasswordEncoder passwordEncoder;
-    private final ClienteRequestMapper clienteRequestMapper;
+    private final ClienteDTOMapper clienteDTOMapper;
 
     // Acesso cliente
     @Transactional
     @Override
-    public Cliente addCliente(ClienteRequest dto, Usuario usuario) {
+    public Cliente addCliente(ClienteDTO dto, Usuario usuario) {
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
 
@@ -58,7 +58,7 @@ public class CadastrarClienteService implements CadastrarClienteUseCase {
     // Acesso admin
     @Transactional
     @Override
-    public Cliente addCliente(ClienteRequest dto) {
+    public Cliente addCliente(ClienteDTO dto) {
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
 
@@ -87,9 +87,9 @@ public class CadastrarClienteService implements CadastrarClienteUseCase {
 //        String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
 //        return usuarioRepository.add(dto.getEmail(), senhaCriptografada, dto.getRole());
 //    }
-    private Cliente criarCliente(ClienteRequest dto, Usuario usuario) {
+    private Cliente criarCliente(ClienteDTO dto, Usuario usuario) {
         log.info(ConstantUtils.CRIANDO_CLIENTE);
-        Cliente cliente = clienteRequestMapper.toEntity(dto);
+        Cliente cliente = clienteDTOMapper.toEntity(dto);
         cliente.setCategoria(CategoriaCliente.COMUM);
         cliente.setUsuario(usuario);
         return cliente;

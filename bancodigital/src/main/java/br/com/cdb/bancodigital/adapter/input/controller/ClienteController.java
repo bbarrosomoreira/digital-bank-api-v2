@@ -1,8 +1,7 @@
 package br.com.cdb.bancodigital.adapter.input.controller;
 
-import br.com.cdb.bancodigital.adapter.input.dto.ClienteRequest;
-import br.com.cdb.bancodigital.adapter.input.dto.ClienteResponse;
-import br.com.cdb.bancodigital.adapter.input.mapper.ClienteRequestMapper;
+import br.com.cdb.bancodigital.adapter.input.dto.ClienteDTO;
+import br.com.cdb.bancodigital.adapter.input.mapper.ClienteDTOMapper;
 import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
 import br.com.cdb.bancodigital.application.port.in.cliente.AtualizarClienteUseCase;
 import br.com.cdb.bancodigital.application.port.in.cliente.CadastrarClienteUseCase;
@@ -32,13 +31,13 @@ public class ClienteController {
     private final ListarClienteUseCase listarClienteUseCase;
     private final AtualizarClienteUseCase atualizarClienteUseCase;
     private final DeletarClienteUseCase deletarClienteUseCase;
-    private final ClienteRequestMapper clienteRequestMapper;
+    private final ClienteDTOMapper clienteDTOMapper;
 
     // Acesso cliente - vincula cliente ao usuário logado
     @PreAuthorize(ConstantUtils.ROLE_CLIENTE)
     @PostMapping
-    public ResponseEntity<ClienteResponse> cadastrarCliente(
-            @Valid @RequestBody ClienteRequest dto,
+    public ResponseEntity<ClienteDTO> cadastrarCliente(
+            @Valid @RequestBody ClienteDTO dto,
             Authentication authentication) {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
@@ -46,9 +45,9 @@ public class ClienteController {
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
         log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-//        Cliente cliente = clienteRequestMapper.toEntity(dto);
+//        Cliente cliente = clienteDTOMapper.toEntity(dto);
 
-        ClienteResponse response = clienteRequestMapper.toResponse(cadastrarClienteUseCase.addCliente(dto, usuarioLogado));
+        ClienteDTO response = clienteDTOMapper.toDTO(cadastrarClienteUseCase.addCliente(dto, usuarioLogado));
 
         log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, response.getId());
 
@@ -59,13 +58,13 @@ public class ClienteController {
     // Acesso admin
     @PreAuthorize(ConstantUtils.ROLE_ADMIN)
     @PostMapping(ConstantUtils.ADMIN)
-    public ResponseEntity<ClienteResponse> cadastrarCliente(
-            @Valid @RequestBody ClienteRequest dto) {
+    public ResponseEntity<ClienteDTO> cadastrarCliente(
+            @Valid @RequestBody ClienteDTO dto) {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
         Cliente cliente = cadastrarClienteUseCase.addCliente(dto);
-        ClienteResponse response = clienteRequestMapper.toResponse(cliente);
+        ClienteDTO response = clienteDTOMapper.toDTO(cliente);
         log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, response.getId());
 
         long endTime = System.currentTimeMillis();
@@ -76,7 +75,7 @@ public class ClienteController {
     // para usuário logado ver suas informações (cliente)
     @PreAuthorize(ConstantUtils.ROLE_CLIENTE)
     @GetMapping(ConstantUtils.GET_USUARIO)
-    public ResponseEntity<ClienteResponse> buscarClienteDoUsuario(
+    public ResponseEntity<ClienteDTO> buscarClienteDoUsuario(
             Authentication authentication) {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
@@ -87,16 +86,16 @@ public class ClienteController {
         Cliente cliente = listarClienteUseCase.getClientePorUsuario(usuarioLogado);
         log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE);
 
-        ClienteResponse clienteResponse = clienteRequestMapper.toResponse(cliente);
+        ClienteDTO ClienteDTO = clienteDTOMapper.toDTO(cliente);
 
         long endTime = System.currentTimeMillis();
         log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
-        return ResponseEntity.ok(clienteResponse);
+        return ResponseEntity.ok(ClienteDTO);
     }
 
     @PreAuthorize(ConstantUtils.ROLE_ADMIN)
     @GetMapping
-    public ResponseEntity<List<ClienteResponse>> getClientes() {
+    public ResponseEntity<List<ClienteDTO>> getClientes() {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_BUSCA_CLIENTE);
 
@@ -108,13 +107,13 @@ public class ClienteController {
         long endTime = System.currentTimeMillis();
         log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
         return ResponseEntity.ok(clientes.stream()
-                            .map(clienteRequestMapper::toResponse)
+                            .map(clienteDTOMapper::toDTO)
                             .toList());
     }
 
     // admin tem acesso ao id, cliente só pode ver se for dele
     @GetMapping(ConstantUtils.CLIENTE_ID)
-    public ResponseEntity<ClienteResponse> getClienteById(
+    public ResponseEntity<ClienteDTO> getClienteById(
             @PathVariable Long id_cliente,
             Authentication authentication) {
         long startTime = System.currentTimeMillis();
@@ -126,11 +125,11 @@ public class ClienteController {
         Cliente cliente = listarClienteUseCase.getClientePorId(id_cliente, usuarioLogado);
         log.info(ConstantUtils.SUCESSO_BUSCA_CLIENTE + ConstantUtils.ID_CLIENTE, id_cliente);
 
-        ClienteResponse clienteResponse = clienteRequestMapper.toResponse(cliente);
+        ClienteDTO ClienteDTO = clienteDTOMapper.toDTO(cliente);
 
         long endTime = System.currentTimeMillis();
         log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
-        return ResponseEntity.ok(clienteResponse);
+        return ResponseEntity.ok(ClienteDTO);
     }
 
     // só o admin pode confirmar a exclusão de cadastro de cliente
@@ -150,9 +149,9 @@ public class ClienteController {
 
     // admin podem atualizar dados cadastrais, cliente só se for dele
     @PutMapping(ConstantUtils.CLIENTE_ID)
-    public ResponseEntity<ClienteResponse> updateCliente(
+    public ResponseEntity<ClienteDTO> updateCliente(
             @PathVariable Long id_cliente,
-            @Valid @RequestBody ClienteRequest clienteAtualizado,
+            @Valid @RequestBody ClienteDTO clienteAtualizado,
             Authentication authentication){
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_ATUALIZACAO_CLIENTE, id_cliente);
@@ -163,18 +162,18 @@ public class ClienteController {
         Cliente atualizado = atualizarClienteUseCase.updateCliente(id_cliente, clienteAtualizado, usuarioLogado);
         log.info(ConstantUtils.SUCESSO_ATUALIZACAO_CLIENTE, id_cliente);
 
-        ClienteResponse clienteResponse = clienteRequestMapper.toResponse(atualizado);
+        ClienteDTO ClienteDTO = clienteDTOMapper.toDTO(atualizado);
 
         long endTime = System.currentTimeMillis();
         log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
-        return ResponseEntity.ok(clienteResponse);
+        return ResponseEntity.ok(ClienteDTO);
     }
 
     // admin podem atualizar dados cadastrais, cliente só se for dele
     @PatchMapping(ConstantUtils.CLIENTE_ID)
-    public ResponseEntity<ClienteResponse> updateParcial(
+    public ResponseEntity<ClienteDTO> updateParcial(
             @PathVariable Long id_cliente,
-            @Valid @RequestBody ClienteRequest clienteAtualizado,
+            @Valid @RequestBody ClienteDTO clienteAtualizado,
             Authentication authentication){
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_ATUALIZACAO_CLIENTE, id_cliente);
@@ -185,11 +184,11 @@ public class ClienteController {
         Cliente atualizado = atualizarClienteUseCase.updateCliente(id_cliente, clienteAtualizado, usuarioLogado);
         log.info(ConstantUtils.SUCESSO_ATUALIZACAO_CLIENTE, id_cliente);
 
-        ClienteResponse clienteResponse = clienteRequestMapper.toResponse(atualizado);
+        ClienteDTO ClienteDTO = clienteDTOMapper.toDTO(atualizado);
 
         long endTime = System.currentTimeMillis();
         log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
-        return ResponseEntity.ok(clienteResponse);
+        return ResponseEntity.ok(ClienteDTO);
     }
 
     @PreAuthorize(ConstantUtils.ROLE_ADMIN)
