@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.adapter.input.controller;
 
+import br.com.cdb.bancodigital.adapter.input.dto.ClienteRequest;
 import br.com.cdb.bancodigital.adapter.input.dto.ClienteResponse;
 import br.com.cdb.bancodigital.adapter.input.mapper.ClienteRequestMapper;
 import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
@@ -8,9 +9,6 @@ import br.com.cdb.bancodigital.application.port.in.cliente.CadastrarClienteUseCa
 import br.com.cdb.bancodigital.application.port.in.cliente.DeletarClienteUseCase;
 import br.com.cdb.bancodigital.application.port.in.cliente.ListarClienteUseCase;
 import br.com.cdb.bancodigital.application.core.domain.dto.AtualizarCategoriaClienteDTO;
-import br.com.cdb.bancodigital.application.core.domain.dto.ClienteAtualizadoDTO;
-import br.com.cdb.bancodigital.application.core.domain.dto.ClienteDTO;
-import br.com.cdb.bancodigital.application.core.domain.dto.ClienteUsuarioDTO;
 import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import jakarta.validation.Valid;
@@ -40,7 +38,7 @@ public class ClienteController {
     @PreAuthorize(ConstantUtils.ROLE_CLIENTE)
     @PostMapping
     public ResponseEntity<ClienteResponse> cadastrarCliente(
-            @Valid @RequestBody ClienteDTO dto,
+            @Valid @RequestBody ClienteRequest dto,
             Authentication authentication) {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
@@ -48,8 +46,9 @@ public class ClienteController {
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
         log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-        Cliente cliente = cadastrarClienteUseCase.addCliente(dto, usuarioLogado);
-        ClienteResponse response = clienteRequestMapper.toResponse(cliente);
+//        Cliente cliente = clienteRequestMapper.toEntity(dto);
+
+        ClienteResponse response = clienteRequestMapper.toResponse(cadastrarClienteUseCase.addCliente(dto, usuarioLogado));
 
         log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, response.getId());
 
@@ -61,7 +60,7 @@ public class ClienteController {
     @PreAuthorize(ConstantUtils.ROLE_ADMIN)
     @PostMapping(ConstantUtils.ADMIN)
     public ResponseEntity<ClienteResponse> cadastrarCliente(
-            @Valid @RequestBody ClienteUsuarioDTO dto) {
+            @Valid @RequestBody ClienteRequest dto) {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
@@ -153,7 +152,7 @@ public class ClienteController {
     @PutMapping(ConstantUtils.CLIENTE_ID)
     public ResponseEntity<ClienteResponse> updateCliente(
             @PathVariable Long id_cliente,
-            @Valid @RequestBody ClienteAtualizadoDTO clienteAtualizado,
+            @Valid @RequestBody ClienteRequest clienteAtualizado,
             Authentication authentication){
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_ATUALIZACAO_CLIENTE, id_cliente);
@@ -175,7 +174,7 @@ public class ClienteController {
     @PatchMapping(ConstantUtils.CLIENTE_ID)
     public ResponseEntity<ClienteResponse> updateParcial(
             @PathVariable Long id_cliente,
-            @Valid @RequestBody ClienteAtualizadoDTO clienteAtualizado,
+            @Valid @RequestBody ClienteRequest clienteAtualizado,
             Authentication authentication){
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_ATUALIZACAO_CLIENTE, id_cliente);
