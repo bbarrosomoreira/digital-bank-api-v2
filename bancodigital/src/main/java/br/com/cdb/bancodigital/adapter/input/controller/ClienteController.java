@@ -45,7 +45,7 @@ public class ClienteController {
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
         log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-//        Cliente cliente = clienteDTOMapper.toEntity(dto);
+        Cliente cliente = clienteDTOMapper.toEntity(dto);
 
         ClienteDTO response = clienteDTOMapper.toDTO(cadastrarClienteUseCase.addCliente(dto, usuarioLogado));
 
@@ -63,8 +63,8 @@ public class ClienteController {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
-        Cliente cliente = cadastrarClienteUseCase.addCliente(dto);
-        ClienteDTO response = clienteDTOMapper.toDTO(cliente);
+        Cliente cliente = clienteDTOMapper.toEntity(dto);
+        ClienteDTO response = clienteDTOMapper.toDTO(cadastrarClienteUseCase.addCliente(cliente));
         log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, response.getId());
 
         long endTime = System.currentTimeMillis();
