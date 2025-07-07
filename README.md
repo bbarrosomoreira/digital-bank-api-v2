@@ -6,23 +6,31 @@
 
 The project is currently undergoing improvements to its architecture and technology stack.
 
-## Upcoming Changes
+## 🚧 Upcoming Changes
 
-1. **Removal of JPA + Hibernate**: To simplify database communication.
-2. **Migration to PostgreSQL**: For better integration, scalability, and performance.
+- [x] **Removal of JPA + Hibernate**: To simplify database communication.
+- [x] **Migration to PostgreSQL**: For better integration, scalability, and performance.
+- [x] **Hexagonal Architecture**: Refactoring the project to adopt a clean, layered structure.
+- [ ] **MapStruct**: Implementation for simplified and efficient object mapping.
+- [ ] **Testing**: Adding unit and integration tests to ensure application stability.
 
-All updates are being developed in the `dev` branch.
+> 🔄 All updates are being developed in the `dev` branch.
 
 ---
 
 ## Atualizações em Andamento 🚀
 
-O projeto está se modernizando com as seguintes mudanças:
+O projeto está se modernizando.
 
-1. **Remoção do JPA + Hibernate**: Simplificar a comunicação com o banco de dados.
-2. **Troca do banco para PostgreSQL**: Melhor integração, escalabilidade e desempenho.
+## 🚧 Próximas Mudanças
 
-Essas mudanças estão em desenvolvimento na branch `dev`.
+- [x] **Remoção de JPA + Hibernate**: Para simplificar a comunicação com o banco de dados.
+- [x] **Migração para PostgreSQL**: Para melhor integração, escalabilidade e desempenho.
+- [x] **Arquitetura Hexagonal**: Refatoração do projeto para adotar uma estrutura limpa e em camadas.
+- [ ] **MapStruct**: Implementação para mapeamento de objetos de forma eficiente e simplificada.
+- [ ] **Testes**: Adição de testes unitários e de integração para garantir a estabilidade da aplicação.
+
+> 🔄 Todas as atualizações estão sendo desenvolvidas na branch `dev`.
 
 ---
 
