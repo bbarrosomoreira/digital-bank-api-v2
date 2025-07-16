@@ -12,8 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
-public class EnderecoCliente {
+public class Endereco {
 
 	private Long id;
 	private Cliente cliente;

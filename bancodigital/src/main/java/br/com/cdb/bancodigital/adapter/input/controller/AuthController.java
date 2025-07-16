@@ -1,5 +1,6 @@
 package br.com.cdb.bancodigital.adapter.input.controller;
 
+import br.com.cdb.bancodigital.adapter.input.mapper.UsuarioDTOMapper;
 import br.com.cdb.bancodigital.application.core.domain.dto.LoginDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.UsuarioDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginResponse;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthUseCase authUseCase;
+    private final UsuarioDTOMapper usuarioDTOMapper;
 
     // Endpoint para cadastro de usuário (retorna token JWT após registro)
     @PostMapping(ConstantUtils.SIGNIN)
@@ -28,12 +30,9 @@ public class AuthController {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_REGISTRAR);
 
-        LoginResponse response = authUseCase.registrar(dto);
-        log.info(ConstantUtils.SUCESSO_REGISTRAR);
-
         long endTime = System.currentTimeMillis();
         log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authUseCase.registrar(dto));
     }
 
     // Endpoint para login de usuário (retorna token JWT)
@@ -42,12 +41,9 @@ public class AuthController {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_AUTENTICACAO);
 
-        LoginResponse response = authUseCase.autenticar(dto);
-        log.info(ConstantUtils.SUCESSO_AUTENTICACAO);
-
         long endTime = System.currentTimeMillis();
         log.info(ConstantUtils.FIM_CHAMADA, endTime - startTime);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authUseCase.autenticar(dto));
     }
 
 }

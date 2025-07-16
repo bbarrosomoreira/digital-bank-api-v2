@@ -51,7 +51,7 @@ public class AuthService implements AuthUseCase {
             String token = jwtUseCase.gerarToken(novoUsuario);
             log.info(ConstantUtils.LOG_TOKEN_GERADO_SUCESSO);
 
-            return new LoginResponse(token);
+            return new LoginResponse(token); //ajuste para retornar apenas o token
         } catch (IllegalArgumentException e) {
             log.error(ConstantUtils.LOG_ERRO_GERAR_TOKEN_ARG, e);
             throw new ValidationException(ConstantUtils.EXC_ERRO_GERAR_TOKEN_ARG);
@@ -75,8 +75,8 @@ public class AuthService implements AuthUseCase {
 
         // buscar usuário
         log.info(ConstantUtils.LOG_BUSCANDO_USUARIO_BANCO);
-        Usuario usuario = usuarioRepository.findByEmail(dto.getEmail());
-        if (usuario == null) {
+        Usuario usuarioAuth = usuarioRepository.findByEmail(dto.getEmail());
+        if (usuarioAuth == null) {
             log.error(ConstantUtils.ERRO_BUSCA_USUARIO, dto.getEmail());
             throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO);
         }
@@ -86,7 +86,7 @@ public class AuthService implements AuthUseCase {
         try {
             // gerar token
             log.info(ConstantUtils.LOG_GERANDO_TOKEN);
-            String token = jwtUseCase.gerarToken(usuario);
+            String token = jwtUseCase.gerarToken(usuarioAuth);
             log.info(ConstantUtils.LOG_TOKEN_GERADO_SUCESSO);
 
             return new LoginResponse(token);

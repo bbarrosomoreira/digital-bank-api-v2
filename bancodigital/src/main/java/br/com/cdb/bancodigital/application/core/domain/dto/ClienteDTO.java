@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.br.CPF;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Endereco;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -47,12 +47,12 @@ public class ClienteDTO {
 	@Size(max = 100, message = COMPLEMENTO_TAMANHO)
 	private String complemento;
 	
-	public EnderecoCliente transformaEnderecoParaObjeto() {
-		EnderecoCliente enderecoCliente = new EnderecoCliente();
-		enderecoCliente.setCep(cep);
-		enderecoCliente.setNumero(numero);
-		enderecoCliente.setComplemento(complemento);
-		return enderecoCliente;
+	public Endereco transformaEnderecoParaObjeto() {
+		Endereco endereco = new Endereco();
+		endereco.setCep(cep);
+		endereco.setNumero(numero);
+		endereco.setComplemento(complemento);
+		return endereco;
 	}
 	public Cliente transformaClienteParaObjeto() {
 		Cliente cliente = new Cliente();

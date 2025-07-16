@@ -1,11 +1,13 @@
 package br.com.cdb.bancodigital.adapter.output.dao;
 
+import br.com.cdb.bancodigital.adapter.output.mapper.EnderecoPersistenceMapper;
+import br.com.cdb.bancodigital.adapter.output.model.EnderecoModel;
 import br.com.cdb.bancodigital.application.port.out.repository.EnderecoClienteRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
 import br.com.cdb.bancodigital.adapter.output.dao.rowMapper.EnderecoClienteRowMapper;
 import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
-import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Endereco;
 import br.com.cdb.bancodigital.utils.ConstantUtils;
 import br.com.cdb.bancodigital.utils.SqlQueries;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +25,10 @@ public class EnderecoClienteDAO implements EnderecoClienteRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final EnderecoClienteRowMapper enderecoClienteMapper;
+    private final EnderecoPersistenceMapper enderecoPersistenceMapper;
 
     // SAVE | Criar ou atualizar endereço
-    public EnderecoCliente save(EnderecoCliente endereco) {
+    public Endereco save(Endereco endereco) {
         log.info(ConstantUtils.INICIO_SALVAR_ENDERECO);
         try {
             if (endereco.getId() == null) {
@@ -42,9 +45,10 @@ public class EnderecoClienteDAO implements EnderecoClienteRepository {
     }
 
     // CREATE | Criar endereço
-    public EnderecoCliente add(EnderecoCliente endereco) {
+    public Endereco add(Endereco enderecoEntity) {
         log.info(ConstantUtils.INICIO_CRIAR_ENDERECO);
         try {
+            EnderecoModel endereco = enderecoPersistenceMapper.toModel(enderecoEntity);
             Long id = jdbcTemplate.queryForObject(
                     SqlQueries.SQL_CREATE_ENDERECO_CLIENTE,
                     Long.class,
@@ -59,7 +63,7 @@ public class EnderecoClienteDAO implements EnderecoClienteRepository {
             );
             endereco.setId(id);
             log.info(ConstantUtils.SUCESSO_CRIAR_ENDERECO);
-            return endereco;
+            return enderecoPersistenceMapper.toEntity(endereco);
         } catch (SystemException e) {
             log.error(ConstantUtils.ERRO_CRIAR_ENDERECO, e);
             throw new SystemException(ConstantUtils.ERRO_CRIAR_ENDERECO);
@@ -67,10 +71,10 @@ public class EnderecoClienteDAO implements EnderecoClienteRepository {
     }
 
     // READ | Listar endereço
-    public Optional<EnderecoCliente> findByCliente(Cliente cliente) {
+    public Optional<Endereco> findByCliente(Cliente cliente) {
         log.info(ConstantUtils.INICIO_BUSCA_ENDERECO, cliente.getId());
         try {
-            EnderecoCliente endereco = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_ENDERECO_CLIENTE_BY_CLIENTE, enderecoClienteMapper, cliente.getId());
+            Endereco endereco = jdbcTemplate.queryForObject(SqlQueries.SQL_READ_ENDERECO_CLIENTE_BY_CLIENTE, enderecoClienteMapper, cliente.getId());
             if (endereco == null) {
                 log.warn(ConstantUtils.ERRO_ENDERECO_NULO);
                 return Optional.empty();
@@ -83,7 +87,7 @@ public class EnderecoClienteDAO implements EnderecoClienteRepository {
         }
     }
     // UPDATE | Atualizar endereço
-    public EnderecoCliente update(EnderecoCliente endereco) {
+    public Endereco update(Endereco endereco) {
         log.info(ConstantUtils.INICIO_UPDATE_ENDERECO);
         try {
             Integer linhasAfetadas = jdbcTemplate.queryForObject(

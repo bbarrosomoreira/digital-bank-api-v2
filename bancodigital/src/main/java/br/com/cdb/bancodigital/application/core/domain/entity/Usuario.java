@@ -16,7 +16,6 @@ import br.com.cdb.bancodigital.application.core.domain.entity.enums.Role;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 public class Usuario implements UserDetails {
 	
 	@Serial

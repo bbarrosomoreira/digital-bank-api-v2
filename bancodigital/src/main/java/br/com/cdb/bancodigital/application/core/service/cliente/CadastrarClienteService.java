@@ -1,6 +1,6 @@
 package br.com.cdb.bancodigital.application.core.service.cliente;
-import br.com.cdb.bancodigital.adapter.input.dto.ClienteRequest;
-import br.com.cdb.bancodigital.adapter.input.mapper.ClienteRequestMapper;
+
+import br.com.cdb.bancodigital.application.core.domain.entity.Endereco;
 import br.com.cdb.bancodigital.application.port.in.cliente.CadastrarClienteUseCase;
 import br.com.cdb.bancodigital.application.port.in.endereco.EnderecoUseCase;
 import br.com.cdb.bancodigital.application.port.out.api.ReceitaFederalPort;
@@ -30,42 +30,35 @@ public class CadastrarClienteService implements CadastrarClienteUseCase {
     private final UsuarioRepository usuarioRepository;
     private final ReceitaFederalPort receitaFederalPort;
     private final PasswordEncoder passwordEncoder;
-    private final ClienteRequestMapper clienteRequestMapper;
 
     // Acesso cliente
     @Transactional
     @Override
-    public Cliente addCliente(ClienteRequest dto, Usuario usuario) {
+    public Cliente addCliente(Cliente clienteDTO, Usuario usuario) throws SystemException {
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
-
-        Cliente cliente = criarCliente(dto, usuario);
+        Cliente cliente = criarCliente(clienteDTO, usuario);
         log.info(ConstantUtils.CLIENTE_CRIADO);
 
         validarCliente(cliente);
         log.info(ConstantUtils.VALIDACAO_CLIENTE_CONCLUIDA);
 
-        try {
-            salvarCliente(cliente);
-            enderecoUseCase.addEndereco(dto, cliente);
-        } catch (DataAccessException e) {
-            log.error(ConstantUtils.ERRO_SALVAR_CLIENTE_BANCO, cliente.getId(), e);
-            throw new SystemException(ConstantUtils.ERRO_SALVAR_CLIENTE_BANCO + cliente.getId());
-        }
+        Cliente clienteSalvo = salvarCliente(cliente);
+        enderecoUseCase.addEndereco(clienteDTO.getEndereco(), clienteSalvo);
         log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, cliente.getId());
-        return cliente;
+        return clienteSalvo;
     }
     // Acesso admin
     @Transactional
     @Override
-    public Cliente addCliente(ClienteRequest dto) {
+    public Cliente addCliente(Cliente clienteDTO) {
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
 
         Usuario usuario = new Usuario(); // ajustar
         log.info(ConstantUtils.USUARIO_CRIADO_SUCESSO, usuario.getId());
 
-        Cliente cliente = criarCliente(dto, usuario);
+        Cliente cliente = criarCliente(clienteDTO, usuario);
         log.info(ConstantUtils.CLIENTE_CRIADO);
 
         validarCliente(cliente);
@@ -73,7 +66,7 @@ public class CadastrarClienteService implements CadastrarClienteUseCase {
 
         try {
             salvarCliente(cliente);
-            enderecoUseCase.addEndereco(dto, cliente);
+            enderecoUseCase.addEndereco(clienteDTO.getEndereco(), cliente);
         } catch (DataAccessException e) {
             log.error(ConstantUtils.ERRO_SALVAR_CLIENTE_BANCO, cliente.getId(), e);
             throw new SystemException(ConstantUtils.ERRO_SALVAR_CLIENTE_BANCO + cliente.getId());
@@ -87,21 +80,13 @@ public class CadastrarClienteService implements CadastrarClienteUseCase {
 //        String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
 //        return usuarioRepository.add(dto.getEmail(), senhaCriptografada, dto.getRole());
 //    }
-    private Cliente criarCliente(ClienteRequest dto, Usuario usuario) {
+    private Cliente criarCliente(Cliente cliente, Usuario usuario) {
         log.info(ConstantUtils.CRIANDO_CLIENTE);
-        Cliente cliente = clienteRequestMapper.toEntity(dto);
         cliente.setCategoria(CategoriaCliente.COMUM);
         cliente.setUsuario(usuario);
         return cliente;
     }
-//    private Cliente criarCliente(ClienteRequest dto, Usuario usuario) {
-//        log.info(ConstantUtils.CRIANDO_CLIENTE);
-//        Cliente cliente = clienteRequestMapper.toEntity(dto);
-//        cliente.setCategoria(CategoriaCliente.COMUM);
-//        cliente.setUsuario(usuario);
-//
-//        return cliente;
-//    }
+
     private void validarCliente(Cliente cliente) {
         if (receitaFederalPort.isCpfInvalidoOuInativo(cliente.getCpf())) {
             log.error(ConstantUtils.CPF_INVALIDO_RECEITA_FEDERAL);
@@ -113,9 +98,9 @@ public class CadastrarClienteService implements CadastrarClienteUseCase {
         Validator.validarMaiorIdade(cliente);
         log.info(ConstantUtils.CLIENTE_MAIOR_IDADE);
     }
-    private void salvarCliente(Cliente cliente) {
+    private Cliente salvarCliente(Cliente cliente) {
         log.info(ConstantUtils.SALVANDO_CLIENTE_BANCO);
-        clienteRepository.save(cliente);
+        return clienteRepository.save(cliente);
     }
 //    private ClienteResponse toResponse(Cliente cliente) {
 //        EnderecoCliente endereco = enderecoUseCase.findByCliente(cliente)

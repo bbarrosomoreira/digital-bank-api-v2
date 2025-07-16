@@ -3,7 +3,7 @@ package br.com.cdb.bancodigital.application.core.domain.dto.response;
 import java.time.LocalDate;
 import java.time.Period;
 
-import br.com.cdb.bancodigital.application.core.domain.entity.EnderecoCliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Endereco;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
@@ -25,7 +25,7 @@ public class ClienteResponse {
 	private EnderecoResponse endereco;
 	private CategoriaCliente categoria;
 
-	public ClienteResponse(Cliente cliente, EnderecoCliente endereco) {
+	public ClienteResponse(Cliente cliente, Endereco endereco) {
 		this.id = cliente.getId();
 		this.nome = cliente.getNome();
 		this.dataNascimento = cliente.getDataNascimento();
