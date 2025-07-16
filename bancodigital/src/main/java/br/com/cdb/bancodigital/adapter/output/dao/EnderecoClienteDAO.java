@@ -1,5 +1,7 @@
 package br.com.cdb.bancodigital.adapter.output.dao;
 
+import br.com.cdb.bancodigital.adapter.output.mapper.EnderecoPersistenceMapper;
+import br.com.cdb.bancodigital.adapter.output.model.EnderecoModel;
 import br.com.cdb.bancodigital.application.port.out.repository.EnderecoClienteRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.ResourceNotFoundException;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
@@ -23,6 +25,7 @@ public class EnderecoClienteDAO implements EnderecoClienteRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final EnderecoClienteRowMapper enderecoClienteMapper;
+    private final EnderecoPersistenceMapper enderecoPersistenceMapper;
 
     // SAVE | Criar ou atualizar endereço
     public Endereco save(Endereco endereco) {
@@ -42,9 +45,10 @@ public class EnderecoClienteDAO implements EnderecoClienteRepository {
     }
 
     // CREATE | Criar endereço
-    public Endereco add(Endereco endereco) {
+    public Endereco add(Endereco enderecoEntity) {
         log.info(ConstantUtils.INICIO_CRIAR_ENDERECO);
         try {
+            EnderecoModel endereco = enderecoPersistenceMapper.toModel(enderecoEntity);
             Long id = jdbcTemplate.queryForObject(
                     SqlQueries.SQL_CREATE_ENDERECO_CLIENTE,
                     Long.class,
@@ -59,7 +63,7 @@ public class EnderecoClienteDAO implements EnderecoClienteRepository {
             );
             endereco.setId(id);
             log.info(ConstantUtils.SUCESSO_CRIAR_ENDERECO);
-            return endereco;
+            return enderecoPersistenceMapper.toEntity(endereco);
         } catch (SystemException e) {
             log.error(ConstantUtils.ERRO_CRIAR_ENDERECO, e);
             throw new SystemException(ConstantUtils.ERRO_CRIAR_ENDERECO);

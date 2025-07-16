@@ -1,10 +1,10 @@
 package br.com.cdb.bancodigital.application.core.service.endereco;
 
 import br.com.brasilapi.api.CEP2;
-import br.com.cdb.bancodigital.application.core.domain.dto.ClienteDTO;
 import br.com.cdb.bancodigital.application.core.domain.dto.ClienteUsuarioDTO;
 import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
 import br.com.cdb.bancodigital.application.core.domain.entity.Endereco;
+import br.com.cdb.bancodigital.application.port.in.endereco.EnderecoUseCase;
 import br.com.cdb.bancodigital.application.port.out.api.BrasilApiPort;
 import br.com.cdb.bancodigital.application.port.out.repository.EnderecoClienteRepository;
 import br.com.cdb.bancodigital.config.exceptions.custom.SystemException;
@@ -20,16 +20,17 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class EnderecoService {
+public class EnderecoService implements EnderecoUseCase {
+
 
     private final EnderecoClienteRepository enderecoClienteRepository;
     private final BrasilApiPort brasilApiPort;
 
     // Acesso cliente
-    public void addEndereco(ClienteDTO dto, Cliente cliente){
+    public void addEndereco(Endereco endereco, Cliente cliente){
         log.info(ConstantUtils.INICIO_CRIAR_ENDERECO);
-        CEP2 cepInfo = buscarEnderecoPorCep(dto.getCep());
-        salvarEndereco(dto, cliente, cepInfo);
+        CEP2 cepInfo = buscarEnderecoPorCep(endereco.getCep());
+        salvarEndereco(endereco, cliente, cepInfo);
         log.info(ConstantUtils.SUCESSO_CRIAR_ENDERECO);
     }
     // Acesso admin
@@ -52,10 +53,13 @@ public class EnderecoService {
             throw new SystemException(ConstantUtils.ERRO_BUSCAR_CEP_MENSAGEM_EXCEPTION);
         }
     }
-    private void salvarEndereco(ClienteDTO dto, Cliente cliente, CEP2 cepInfo) {
+    private void salvarEndereco(Endereco enderecoDTO, Cliente cliente, CEP2 cepInfo) {
         log.info(ConstantUtils.SALVANDO_ENDERECO_CLIENTE);
-        Endereco endereco = dto.transformaEnderecoParaObjeto();
+        Endereco endereco = new Endereco();
         endereco.setCliente(cliente);
+        endereco.setCep(enderecoDTO.getCep());
+        endereco.setNumero(enderecoDTO.getNumero());
+        endereco.setComplemento(enderecoDTO.getComplemento());
         endereco.setBairro(cepInfo.getNeighborhood());
         endereco.setCidade(cepInfo.getCity());
         endereco.setEstado(cepInfo.getState());

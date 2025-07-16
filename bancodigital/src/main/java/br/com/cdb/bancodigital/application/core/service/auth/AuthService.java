@@ -1,5 +1,8 @@
 package br.com.cdb.bancodigital.application.core.service.auth;
 
+import br.com.cdb.bancodigital.application.core.domain.dto.LoginDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.UsuarioDTO;
+import br.com.cdb.bancodigital.application.core.domain.dto.response.LoginResponse;
 import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 import br.com.cdb.bancodigital.application.port.in.JwtUseCase;
 import br.com.cdb.bancodigital.application.port.in.auth.AuthUseCase;
@@ -26,11 +29,11 @@ public class AuthService implements AuthUseCase {
     private final UsuarioRepository usuarioRepository;
     private final JwtUseCase jwtUseCase;
 
-    public Usuario registrar(Usuario usuario) {
+    public LoginResponse registrar(UsuarioDTO dto) {
 
         // verificar se email está em uso
         log.info(ConstantUtils.LOG_VERIFICANDO_EMAIL_CADASTRADO);
-        if (usuarioRepository.existWithEmail(usuario.getEmail())) {
+        if (usuarioRepository.existWithEmail(dto.getEmail())) {
             log.error(ConstantUtils.LOG_EMAIL_JA_CADASTRADO);
             throw new ResourceAlreadyExistsException(ConstantUtils.EXC_EMAIL_JA_CADASTRADO);
         }
@@ -38,8 +41,8 @@ public class AuthService implements AuthUseCase {
 
         // criar novo usuário e save no banco
         log.info(ConstantUtils.LOG_CRIANDO_NOVO_USUARIO);
-        String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
-        Usuario novoUsuario = usuarioRepository.add(usuario.getEmail(), senhaCriptografada, usuario.getRole());
+        String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
+        Usuario novoUsuario = usuarioRepository.add(dto.getEmail(), senhaCriptografada, dto.getRole());
         log.info(ConstantUtils.LOG_USUARIO_CRIADO_SUCESSO);
 
         try {
@@ -48,7 +51,7 @@ public class AuthService implements AuthUseCase {
             String token = jwtUseCase.gerarToken(novoUsuario);
             log.info(ConstantUtils.LOG_TOKEN_GERADO_SUCESSO);
 
-            return new Usuario(token); //ajuste para retornar apenas o token
+            return new LoginResponse(token); //ajuste para retornar apenas o token
         } catch (IllegalArgumentException e) {
             log.error(ConstantUtils.LOG_ERRO_GERAR_TOKEN_ARG, e);
             throw new ValidationException(ConstantUtils.EXC_ERRO_GERAR_TOKEN_ARG);
@@ -62,19 +65,19 @@ public class AuthService implements AuthUseCase {
 
     }
 
-    public Usuario autenticar(Usuario usuario) {
+    public LoginResponse autenticar(LoginDTO dto) {
 
         // autenticar usuário
         log.info(ConstantUtils.LOG_AUTENTICANDO_USUARIO);
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(usuario.getEmail(), usuario.getSenha()));
+                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha()));
         log.info(ConstantUtils.LOG_USUARIO_AUTENTICADO_SUCESSO);
 
         // buscar usuário
         log.info(ConstantUtils.LOG_BUSCANDO_USUARIO_BANCO);
-        Usuario usuarioAuth = usuarioRepository.findByEmail(usuario.getEmail());
+        Usuario usuarioAuth = usuarioRepository.findByEmail(dto.getEmail());
         if (usuarioAuth == null) {
-            log.error(ConstantUtils.ERRO_BUSCA_USUARIO, usuario.getEmail());
+            log.error(ConstantUtils.ERRO_BUSCA_USUARIO, dto.getEmail());
             throw new ResourceNotFoundException(ConstantUtils.ERRO_BUSCA_USUARIO);
         }
 
@@ -83,10 +86,10 @@ public class AuthService implements AuthUseCase {
         try {
             // gerar token
             log.info(ConstantUtils.LOG_GERANDO_TOKEN);
-            String token = jwtUseCase.gerarToken(usuario);
+            String token = jwtUseCase.gerarToken(usuarioAuth);
             log.info(ConstantUtils.LOG_TOKEN_GERADO_SUCESSO);
 
-            return new Usuario(token);
+            return new LoginResponse(token);
 
         } catch (IllegalArgumentException e) {
             log.error(ConstantUtils.LOG_ERRO_GERAR_TOKEN_ARG, e);

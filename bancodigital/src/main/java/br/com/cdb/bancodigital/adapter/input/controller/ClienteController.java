@@ -2,7 +2,10 @@ package br.com.cdb.bancodigital.adapter.input.controller;
 
 import br.com.cdb.bancodigital.adapter.input.dto.ClienteDTO;
 import br.com.cdb.bancodigital.adapter.input.mapper.ClienteDTOMapper;
+import br.com.cdb.bancodigital.adapter.input.mapper.EnderecoDTOMapper;
+import br.com.cdb.bancodigital.application.core.domain.dto.ClienteAtualizadoDTO;
 import br.com.cdb.bancodigital.application.core.domain.entity.Cliente;
+import br.com.cdb.bancodigital.application.core.domain.entity.Endereco;
 import br.com.cdb.bancodigital.application.port.in.cliente.AtualizarClienteUseCase;
 import br.com.cdb.bancodigital.application.port.in.cliente.CadastrarClienteUseCase;
 import br.com.cdb.bancodigital.application.port.in.cliente.DeletarClienteUseCase;
@@ -45,9 +48,11 @@ public class ClienteController {
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
         log.info(ConstantUtils.USUARIO_LOGADO, usuarioLogado.getId());
 
-        Cliente cliente = clienteDTOMapper.toEntity(dto);
+        Cliente clienteEntity = clienteDTOMapper.toEntity(dto);
 
-        ClienteDTO response = clienteDTOMapper.toDTO(cadastrarClienteUseCase.addCliente(dto, usuarioLogado));
+        Cliente cliente = cadastrarClienteUseCase.addCliente(clienteEntity, usuarioLogado);
+
+        ClienteDTO response = clienteDTOMapper.toDTO(cliente);
 
         log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, response.getId());
 
@@ -63,8 +68,11 @@ public class ClienteController {
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
-        Cliente cliente = clienteDTOMapper.toEntity(dto);
-        ClienteDTO response = clienteDTOMapper.toDTO(cadastrarClienteUseCase.addCliente(cliente));
+        Cliente clienteEntity = clienteDTOMapper.toEntity(dto);
+
+        Cliente cliente = cadastrarClienteUseCase.addCliente(clienteEntity);
+
+        ClienteDTO response = clienteDTOMapper.toDTO(cliente);
         log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, response.getId());
 
         long endTime = System.currentTimeMillis();
@@ -151,7 +159,7 @@ public class ClienteController {
     @PutMapping(ConstantUtils.CLIENTE_ID)
     public ResponseEntity<ClienteDTO> updateCliente(
             @PathVariable Long id_cliente,
-            @Valid @RequestBody ClienteDTO clienteAtualizado,
+            @Valid @RequestBody ClienteAtualizadoDTO clienteAtualizado,
             Authentication authentication){
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_ATUALIZACAO_CLIENTE, id_cliente);
@@ -173,7 +181,7 @@ public class ClienteController {
     @PatchMapping(ConstantUtils.CLIENTE_ID)
     public ResponseEntity<ClienteDTO> updateParcial(
             @PathVariable Long id_cliente,
-            @Valid @RequestBody ClienteDTO clienteAtualizado,
+            @Valid @RequestBody ClienteAtualizadoDTO clienteAtualizado,
             Authentication authentication){
         long startTime = System.currentTimeMillis();
         log.info(ConstantUtils.INICIO_ATUALIZACAO_CLIENTE, id_cliente);
