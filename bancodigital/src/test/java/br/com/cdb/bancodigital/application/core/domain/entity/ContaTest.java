@@ -1,4 +1,4 @@
-package br.com.cdb.bancodigital.application.domain.entity;
+package br.com.cdb.bancodigital.application.core.domain.entity;
 
 import br.com.cdb.bancodigital.application.core.domain.entity.Conta;
 import org.junit.jupiter.api.*;
