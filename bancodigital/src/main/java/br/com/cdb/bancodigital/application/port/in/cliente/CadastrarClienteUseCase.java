@@ -7,6 +7,6 @@ import br.com.cdb.bancodigital.application.core.domain.entity.Usuario;
 
 public interface CadastrarClienteUseCase {
 
-    Cliente addCliente(Cliente cliente, Usuario usuario);
-    Cliente addCliente(Cliente cliente);
+    Cliente addCliente(Cliente cliente, Usuario usuario, Endereco endereco);
+    Cliente addCliente(Cliente cliente, Endereco endereco);
 }
