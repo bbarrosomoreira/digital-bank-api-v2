@@ -32,11 +32,19 @@ public class Conta implements ContaBase {
 	private BigDecimal saldoEmReais;
 	private BigDecimal taxaRendimento;
 
+	// Construtor usado na aplicação
 	public Conta(Cliente cliente, TipoConta tipoConta) {
 		this.tipoConta = tipoConta;
 		this.cliente = cliente;
 		this.dataCriacao = LocalDate.now();
 		this.numeroConta = NumberGenerator.gerarNumeroConta(tipoConta);
+	}
+
+	// Método estático apenas para facilitar testes unitários
+	public static Conta criarContaParaTeste(BigDecimal saldoInicial) {
+		Conta conta = new Conta();
+		conta.saldo = saldoInicial;
+		return conta;
 	}
 
 	@Override
@@ -86,6 +94,10 @@ public class Conta implements ContaBase {
 		BigDecimal rendimento = this.getSaldo().multiply(taxaRendimento).setScale(2, RoundingMode.HALF_UP);
 		BigDecimal novoSaldo = this.getSaldo().add(rendimento);
 		this.setSaldo(novoSaldo);
+	}
+
+	public boolean podeSacar (BigDecimal valor) {
+		return valor.compareTo(BigDecimal.ZERO) > 0 && this.getSaldo().compareTo(valor) >= 0;
 	}
 	
 }
