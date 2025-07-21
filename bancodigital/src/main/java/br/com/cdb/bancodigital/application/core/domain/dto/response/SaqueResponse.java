@@ -1,5 +1,7 @@
 package br.com.cdb.bancodigital.application.core.domain.dto.response;
 
+import lombok.Getter;
+
 import java.math.BigDecimal;
 
 public record SaqueResponse (

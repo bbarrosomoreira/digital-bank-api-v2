@@ -25,7 +25,6 @@ public class Cliente {
 	@JsonFormat(pattern = FORMATO_DATA_DD_MM_YYYY)
 	private LocalDate dataNascimento;
 	private Usuario usuario;
-	private Endereco endereco;
 
 }
 

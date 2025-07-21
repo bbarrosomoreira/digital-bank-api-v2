@@ -34,7 +34,7 @@ public class CadastrarClienteService implements CadastrarClienteUseCase {
     // Acesso cliente
     @Transactional
     @Override
-    public Cliente addCliente(Cliente clienteDTO, Usuario usuario) throws SystemException {
+    public Cliente addCliente(Cliente clienteDTO, Usuario usuario, Endereco endereco) throws SystemException {
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
         Cliente cliente = criarCliente(clienteDTO, usuario);
@@ -44,14 +44,14 @@ public class CadastrarClienteService implements CadastrarClienteUseCase {
         log.info(ConstantUtils.VALIDACAO_CLIENTE_CONCLUIDA);
 
         Cliente clienteSalvo = salvarCliente(cliente);
-        enderecoUseCase.addEndereco(clienteDTO.getEndereco(), clienteSalvo);
+        enderecoUseCase.addEndereco(endereco, clienteSalvo);
         log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, cliente.getId());
         return clienteSalvo;
     }
     // Acesso admin
     @Transactional
     @Override
-    public Cliente addCliente(Cliente clienteDTO) {
+    public Cliente addCliente(Cliente clienteDTO, Endereco endereco) {
         log.info(ConstantUtils.INICIO_CADASTRO_CLIENTE);
 
 
@@ -66,7 +66,7 @@ public class CadastrarClienteService implements CadastrarClienteUseCase {
 
         try {
             salvarCliente(cliente);
-            enderecoUseCase.addEndereco(clienteDTO.getEndereco(), cliente);
+            enderecoUseCase.addEndereco(endereco, cliente);
         } catch (DataAccessException e) {
             log.error(ConstantUtils.ERRO_SALVAR_CLIENTE_BANCO, cliente.getId(), e);
             throw new SystemException(ConstantUtils.ERRO_SALVAR_CLIENTE_BANCO + cliente.getId());

@@ -35,6 +35,7 @@ public class ClienteController {
     private final AtualizarClienteUseCase atualizarClienteUseCase;
     private final DeletarClienteUseCase deletarClienteUseCase;
     private final ClienteDTOMapper clienteDTOMapper;
+    private final EnderecoDTOMapper enderecoDTOMapper;
 
     // Acesso cliente - vincula cliente ao usuário logado
     @PreAuthorize(ConstantUtils.ROLE_CLIENTE)
@@ -50,7 +51,10 @@ public class ClienteController {
 
         Cliente clienteEntity = clienteDTOMapper.toEntity(dto);
 
-        Cliente cliente = cadastrarClienteUseCase.addCliente(clienteEntity, usuarioLogado);
+        Endereco enderecoEntity = enderecoDTOMapper.toEntity(dto.getEndereco());
+        enderecoEntity.setCliente(clienteEntity);
+
+        Cliente cliente = cadastrarClienteUseCase.addCliente(clienteEntity, usuarioLogado, enderecoEntity);
 
         ClienteDTO response = clienteDTOMapper.toDTO(cliente);
 
@@ -70,7 +74,10 @@ public class ClienteController {
 
         Cliente clienteEntity = clienteDTOMapper.toEntity(dto);
 
-        Cliente cliente = cadastrarClienteUseCase.addCliente(clienteEntity);
+        Endereco enderecoEntity = enderecoDTOMapper.toEntity(dto.getEndereco());
+        enderecoEntity.setCliente(clienteEntity);
+
+        Cliente cliente = cadastrarClienteUseCase.addCliente(clienteEntity, enderecoEntity);
 
         ClienteDTO response = clienteDTOMapper.toDTO(cliente);
         log.info(ConstantUtils.SUCESSO_CADASTRO_CLIENTE, response.getId());
