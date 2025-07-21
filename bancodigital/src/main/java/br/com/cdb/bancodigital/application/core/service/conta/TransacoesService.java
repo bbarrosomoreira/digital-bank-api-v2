@@ -38,14 +38,9 @@ public class TransacoesService implements TransacoesUseCase {
         log.info(ConstantUtils.ACESSO_VALIDADO);
         Validator.verificarSaldoSuficiente(valor, origem.getSaldo());
         log.info(ConstantUtils.SALDO_SUFICIENTE);
-        try {
-            origem.transferir(destino, valor);
-            contaRepository.save(origem);
-            contaRepository.save(destino);
-        } catch (ValidationException e) {
-            log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, origem.getId(), e);
-            throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + origem.getId());
-        }
+        origem.transferir(destino, valor);
+        contaRepository.save(origem);
+        contaRepository.save(destino);
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, origem.getId());
         return TransferenciaResponse.toTransferenciaResponse(origem.getNumeroConta(), destino.getNumeroConta(), valor);
     }
@@ -62,14 +57,9 @@ public class TransacoesService implements TransacoesUseCase {
         log.info(ConstantUtils.ACESSO_VALIDADO);
         Validator.verificarSaldoSuficiente(valor, origem.getSaldo());
         log.info(ConstantUtils.SALDO_SUFICIENTE);
-        try {
-            origem.pix(destino, valor);
-            contaRepository.save(origem);
-            contaRepository.save(destino);
-        } catch (ValidationException e) {
-            log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, origem.getId(), e);
-            throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + origem.getId());
-        }
+        origem.pix(destino, valor);
+        contaRepository.save(origem);
+        contaRepository.save(destino);
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, origem.getId());
         return PixResponse.toPixResponse(origem.getNumeroConta(), destino.getNumeroConta(), valor);
     }
@@ -89,13 +79,8 @@ public class TransacoesService implements TransacoesUseCase {
         log.info(ConstantUtils.INICIO_TRANSACAO_CONTA, ConstantUtils.DEPOSITO, id_conta);
         Conta conta = Validator.verificarContaExistente(contaRepository, id_conta);
         log.info(ConstantUtils.CONTA_ENCONTRADA);
-        try {
-            conta.depositar(valor);
-            contaRepository.save(conta);
-        } catch (ValidationException e) {
-            log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, conta.getId(), e);
-            throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + conta.getId());
-        }
+        conta.depositar(valor);
+        contaRepository.save(conta);
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, conta.getId());
         return DepositoResponse.toDepositoResponse(conta.getNumeroConta(), valor, conta.getSaldo());
     }
@@ -110,13 +95,8 @@ public class TransacoesService implements TransacoesUseCase {
         log.info(ConstantUtils.ACESSO_VALIDADO);
         Validator.verificarSaldoSuficiente(valor, conta.getSaldo());
         log.info(ConstantUtils.SALDO_SUFICIENTE);
-        try {
-            conta.sacar(valor);
-            contaRepository.save(conta);
-        } catch (ValidationException e) {
-            log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, conta.getId(), e);
-            throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + conta.getId());
-        }
+        conta.sacar(valor);
+        contaRepository.save(conta);
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, conta.getId());
         return SaqueResponse.toSaqueResponse(conta.getNumeroConta(), valor, conta.getSaldo());
     }
@@ -128,13 +108,8 @@ public class TransacoesService implements TransacoesUseCase {
         log.info(ConstantUtils.CONTA_ENCONTRADA);
         Validator.verificarSaldoSuficiente(cc.getTarifaManutencao(), cc.getSaldo());
         log.info(ConstantUtils.SALDO_SUFICIENTE);
-        try {
-            cc.aplicarTarifaManutencao();
-            contaRepository.save(cc);
-        } catch (ValidationException e) {
-            log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, cc.getId(), e);
-            throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + cc.getId());
-        }
+        cc.aplicarTarifaManutencao();
+        contaRepository.save(cc);
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, cc.getId());
         return AplicarTxManutencaoResponse.toAplicarTxManutencaoResponse(cc.getNumeroConta(), cc.getTarifaManutencao(), cc.getSaldo());
     }
@@ -144,13 +119,8 @@ public class TransacoesService implements TransacoesUseCase {
         log.info(ConstantUtils.INICIO_TRANSACAO_CONTA, ConstantUtils.APLICACAO_RENDIMENTO, id_conta);
         Conta cp = Validator.verificarContaExistente(contaRepository, id_conta);
         log.info(ConstantUtils.CONTA_ENCONTRADA);
-        try {
-            cp.aplicarRendimento();
-            contaRepository.save(cp);
-        } catch (ValidationException e) {
-            log.error(ConstantUtils.ERRO_TRANSACAO_CONTA, cp.getId(), e);
-            throw new ValidationException(ConstantUtils.ERRO_TRANSACAO_CONTA + cp.getId());
-        }
+        cp.aplicarRendimento();
+        contaRepository.save(cp);
         log.info(ConstantUtils.SUCESSO_TRANSACAO_CONTA, cp.getId());
         return AplicarTxRendimentoResponse.toAplicarTxRendimentoResponse(cp.getNumeroConta(), cp.getTaxaRendimento(), cp.getSaldo());
 
